@@ -1,0 +1,61 @@
+{
+  "name": "react-countdown",
+  "version": "1.0.0",
+  "description": "A customizable countdown component for React.",
+  "main": "dist/Countdown.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ndresx/react-countdown.git"
+  },
+  "author": "Martin Veith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ndresx/react-countdown/issues"
+  },
+  "homepage": "https://github.com/ndresx/react-countdown",
+  "keywords": [
+    "countdown",
+    "react-component",
+    "react"
+  ],
+  "scripts": {
+    "lint": "eslint \"src/**/*.{js,jsx}\"",
+    "prebuild": "yarn lint && yarn test",
+    "build": "babel src --out-dir dist --ignore spec.js,test.js,spec.jsx,test.jsx",
+    "build:watch": "yarn build -- --watch",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.7.5",
+    "babel-eslint": "^7.2.3",
+    "babel-jest": "^20.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "enzyme": "^2.8.2",
+    "enzyme-to-json": "^1.5.1",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^11.0.0",
+    "eslint-config-airbnb-base": "^11.1.3",
+    "eslint-config-prettier": "^1.7.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jest": "^20.0.0",
+    "eslint-plugin-jsx-a11y": "^2.2.1",
+    "eslint-plugin-prettier": "^2.0.1",
+    "eslint-plugin-react": "^7.0.0",
+    "jest": "^20.0.0",
+    "prettier": "^1.2.2",
+    "prop-types": "^15.5.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-test-renderer": "^15.5.4"
+  },
+  "jest": {
+    "snapshotSerializers": [
+      "<rootDir>/node_modules/enzyme-to-json/serializer"
+    ]
+  }
+}

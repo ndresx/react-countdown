@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Countdown /> compares snapshot of controlled countdown with custom renderer 1`] = `
+<div>
+  1
+  1
+  1
+  50
+</div>
+`;
+
+exports[`<Countdown /> compares snapshot of controlled countdown with daysInHours => true 1`] = `
+<span>
+  25
+  :
+  01
+  :
+  50
+</span>
+`;
+
+exports[`<Countdown /> should trigger onTick and onComplete 1`] = `
+<Countdown
+  controlled={false}
+  date={1482363377071}
+  daysInHours={false}
+  delay={1000}
+  onComplete={[Function]}
+  onTick={[Function]}
+  zeroPad={2}
+>
+  <span>
+    00
+    :
+    00
+    :
+    00
+    :
+    06
+  </span>
+</Countdown>
+`;
