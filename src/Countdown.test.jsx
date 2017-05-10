@@ -9,7 +9,7 @@ Date.now = now;
 describe('<Countdown />', () => {
   jest.useFakeTimers();
 
-  it('compares snapshot of controlled countdown with custom renderer', () => {
+  it('compares snapshot of countdown with custom renderer', () => {
     const wrapper = shallow(
       <Countdown
         date={Date.now() + timeDiff}
@@ -19,7 +19,7 @@ describe('<Countdown />', () => {
     expect(wrapper).toMatchSnapshot();
   });
 
-  it('compares snapshot of controlled countdown with daysInHours => true', () => {
+  it('compares snapshot of countdown with daysInHours => true', () => {
     const wrapper = shallow(<Countdown date={Date.now() + timeDiff} daysInHours />);
     expect(wrapper).toMatchSnapshot();
   });
@@ -34,7 +34,7 @@ describe('<Countdown />', () => {
     wrapper = mount(<Countdown date={date} />, { attachTo: root });
   });
 
-  it('should trigger onTick and onComplete', () => {
+  it('should trigger onTick and onComplete callbacks', () => {
     const onTick = jest.fn(stats => {
       expect(stats).toEqual(getTimeDifference(wrapperDate, Date.now));
     });
@@ -58,26 +58,20 @@ describe('<Countdown />', () => {
     expect(onTick.mock.calls.length).toBe(9);
     expect(wrapper.state().seconds).toBe(1);
 
-    // The End: onComplete replaces onTick
+    // The End: onComplete callback gets triggered instead of onTick
     Date.now = jest.fn(() => wrapperDate);
     jest.runTimersToTime(1000);
     expect(onTick.mock.calls.length).toBe(9);
     expect(onComplete.mock.calls.length).toBe(1);
   });
 
-  it('should trigger no callbacks', () => {
+  it('should run through the controlled component by updating the date prop', () => {
     const root = document.createElement('div');
     wrapper = mount(<Countdown date={1000} controlled />, { attachTo: root });
     expect(wrapper.instance().interval).toBeUndefined();
 
     wrapper.setProps({ date: 0 });
     expect(wrapper.state().total).toBe(0);
-  });
-
-  it('should update date prop', () => {
-    const total = wrapper.state().total;
-    wrapper.setProps({ date: wrapperDate + 10000 });
-    expect(wrapper.state().total).toEqual(total + 10000);
   });
 
   afterEach(() => {
@@ -90,7 +84,7 @@ describe('leftPad', () => {
     expect(leftPad(2, 3)).toBe('002');
   });
 
-  it('should add two 0s in front of "ab"', () => {
+  it('should add one 0 in front of "ab"', () => {
     expect(leftPad('ab', 3)).toBe('0ab');
   });
 
@@ -98,7 +92,7 @@ describe('leftPad', () => {
     expect(leftPad('', 3)).toBe('000');
   });
 
-  it('should not left-pad 1 when length is 0', () => {
+  it('should not left-pad 1 when length is not defined or 0', () => {
     expect(leftPad(1)).toBe('1');
     expect(leftPad(1, 0)).toBe('1');
   });
@@ -118,11 +112,11 @@ describe('getTimeDifference', () => {
     milliseconds: 0,
   };
 
-  it('should return a time difference of 0s', () => {
+  it('should return a time difference of 0 seconds', () => {
     expect(getTimeDifference(Date.now())).toEqual(stats);
   });
 
-  it('should return a time difference of 0s if values for start and current date are the same', () => {
+  it('should return a time difference of 0 seconds if values for start and current date are the same', () => {
     expect(getTimeDifference(Date.now(), Date.now)).toEqual(stats);
     expect(getTimeDifference(Date.now() + 10, () => Date.now() + 10)).toEqual(stats);
   });
