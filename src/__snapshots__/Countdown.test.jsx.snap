@@ -24,10 +24,11 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
   controlled={false}
   date={1482363377071}
   daysInHours={false}
-  delay={1000}
+  intervalDelay={1000}
   onComplete={[Function]}
   onTick={[Function]}
-  zeroPad={2}
+  precision={0}
+  zeroPadLength={2}
 >
   <span>
     00

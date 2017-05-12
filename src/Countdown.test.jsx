@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount, shallow } from 'enzyme';
-import Countdown, { leftPad, getTimeDifference } from './Countdown';
+import Countdown, { zeroPad, getTimeDifference } from './Countdown';
 
 const timeDiff = 90110456;
 const now = jest.fn(() => 1482363367071);
@@ -79,26 +79,31 @@ describe('<Countdown />', () => {
   });
 });
 
-describe('leftPad', () => {
-  it('should add two 0s in front of 2', () => {
-    expect(leftPad(2, 3)).toBe('002');
+describe('zeroPad', () => {
+  it('should add one 0 in front of "ab" if length is 3', () => {
+    expect(zeroPad('ab', 3)).toBe('0ab');
   });
 
-  it('should add one 0 in front of "ab"', () => {
-    expect(leftPad('ab', 3)).toBe('0ab');
+  it('should add two 0s in front of 2 if length is 3', () => {
+    expect(zeroPad(2, 3)).toBe('002');
   });
 
-  it('should add three 0s', () => {
-    expect(leftPad('', 3)).toBe('000');
+  it('should add one 0 in front of 1 if length is not defined', () => {
+    expect(zeroPad(1)).toBe('01');
   });
 
-  it('should not left-pad 1 when length is not defined or 0', () => {
-    expect(leftPad(1)).toBe('1');
-    expect(leftPad(1, 0)).toBe('1');
+  it('should add three 0s if value is "" and length is 3', () => {
+    expect(zeroPad('', 3)).toBe('000');
   });
 
-  it('should not left-pad 123 when passing 3 as length', () => {
-    expect(leftPad(123, 3)).toBe('123');
+  it('should not zero-pad 1 if length is 0 or 1', () => {
+    expect(zeroPad(1, 0)).toBe('1');
+    expect(zeroPad(1, 1)).toBe('1');
+  });
+
+  it('should not zero-pad 123 if length is 3', () => {
+    expect(zeroPad(123, 3)).toBe('123');
+    expect(zeroPad(123, 4)).toBe('0123');
   });
 });
 
@@ -112,17 +117,28 @@ describe('getTimeDifference', () => {
     milliseconds: 0,
   };
 
-  it('should return a time difference of 0 seconds', () => {
+  it('should return a time difference of 0s', () => {
     expect(getTimeDifference(Date.now())).toEqual(stats);
   });
 
-  it('should return a time difference of 0 seconds if values for start and current date are the same', () => {
+  it('should return a time difference of 0s if values for start and current date are the same', () => {
     expect(getTimeDifference(Date.now(), Date.now)).toEqual(stats);
     expect(getTimeDifference(Date.now() + 10, () => Date.now() + 10)).toEqual(stats);
   });
 
-  it('should calculate the time difference', () => {
+  it('should calculate the time difference with a precision of 0', () => {
     expect(getTimeDifference(Date.now() + timeDiff)).toEqual({
+      total: timeDiff - 456,
+      days: 1,
+      hours: 1,
+      minutes: 1,
+      seconds: 50,
+      milliseconds: 0,
+    });
+  });
+
+  it('should calculate the time difference with a precision of 3', () => {
+    expect(getTimeDifference(Date.now() + timeDiff, undefined, 3)).toEqual({
       total: timeDiff,
       days: 1,
       hours: 1,
@@ -134,7 +150,7 @@ describe('getTimeDifference', () => {
 
   it('should calculate the time difference by passing a date string', () => {
     Date.now = jest.fn(() => new Date('Thu Dec 22 2016 00:36:07').getTime());
-    expect(getTimeDifference('Thu Dec 23 2017 01:38:10:456')).toEqual({
+    expect(getTimeDifference('Thu Dec 23 2017 01:38:10:456', undefined, 3)).toEqual({
       total: 31626123456,
       days: 366,
       hours: 1,
@@ -146,7 +162,16 @@ describe('getTimeDifference', () => {
 
   it('should calculate the time difference when controlled is true', () => {
     const total = 91120003;
-    expect(getTimeDifference(total, undefined, true)).toEqual({
+    expect(getTimeDifference(total, undefined, undefined, true)).toEqual({
+      total: total - 3,
+      days: 1,
+      hours: 1,
+      minutes: 18,
+      seconds: 40,
+      milliseconds: 0,
+    });
+
+    expect(getTimeDifference(total, undefined, 3, true)).toEqual({
       total,
       days: 1,
       hours: 1,

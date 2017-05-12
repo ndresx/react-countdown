@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * Left-pads a given string or number with zeros.
+ * Pads a given string or number with zeros.
  *
- * @param {any} value Value to left-pad.
- * @param {number} [length=0] Amount of characters to pad.
+ * @param {any} value Value to zero-pad.
+ * @param {number} [length=2] Amount of characters to pad.
  * @returns Left-padded string.
  */
-export const leftPad = (value, length = 0) => {
+export const zeroPad = (value, length = 2) => {
   const strValue = String(value);
   return strValue.length >= length ? strValue : ('0'.repeat(length) + strValue).slice(length * -1);
 };
@@ -18,12 +18,17 @@ export const leftPad = (value, length = 0) => {
  *
  * @param {any} date Date or timestamp representation of the end date.
  * @param {any} [now=Date.now] Alternative function for returning the current date.
- * @param {boolean} [controlled=false] Defines whether the calculated value is already provided as end date.
+ * @param {number} [precision=0] The precision on a millisecond basis.
+ * @param {boolean} [controlled=false] Defines whether the calculated value is already provided as the time difference or not.
  * @returns Object that includes details about the time difference.
  */
-export const getTimeDifference = (date, now = Date.now, controlled = false) => {
+export const getTimeDifference = (date, now = Date.now, precision = 0, controlled = false) => {
   const startDate = typeof date === 'string' ? new Date(date) : date;
-  const total = Math.max(0, controlled ? startDate : startDate - now());
+  const total = parseInt(
+    (Math.max(0, controlled ? startDate : startDate - now()) / 1000).toFixed(precision) * 1000,
+    10
+  );
+
   const seconds = total / 1000;
 
   return {
@@ -39,20 +44,21 @@ export const getTimeDifference = (date, now = Date.now, controlled = false) => {
 export default class Countdown extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      ...getTimeDifference(props.date, props.now, this.props.controlled),
+      ...getTimeDifference(props.date, props.now, props.precision, this.props.controlled),
     };
   }
 
   componentDidMount() {
     if (!this.props.controlled) {
-      this.interval = setInterval(this.tick, this.props.delay);
+      this.interval = setInterval(this.tick, this.props.intervalDelay);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setDeltaState(getTimeDifference(nextProps.date, nextProps.now, nextProps.controlled));
+    this.setDeltaState(
+      getTimeDifference(nextProps.date, nextProps.now, nextProps.precision, nextProps.controlled)
+    );
   }
 
   componentWillUnmount() {
@@ -74,20 +80,20 @@ export default class Countdown extends React.Component {
   getFormattedDelta() {
     let { days, hours } = this.state;
     const { minutes, seconds } = this.state;
-    const { daysInHours, zeroPad } = this.props;
+    const { daysInHours, zeroPadLength } = this.props;
 
     if (daysInHours) {
       hours += days * 24;
       days = null;
     } else {
-      days = leftPad(days, zeroPad);
+      days = zeroPad(days, zeroPadLength);
     }
 
     return {
       days,
-      hours: leftPad(hours, zeroPad),
-      minutes: leftPad(minutes, Math.min(2, zeroPad)),
-      seconds: leftPad(seconds, Math.min(2, zeroPad)),
+      hours: zeroPad(hours, zeroPadLength),
+      minutes: zeroPad(minutes, Math.min(2, zeroPadLength)),
+      seconds: zeroPad(seconds, Math.min(2, zeroPadLength)),
     };
   }
 
@@ -97,7 +103,12 @@ export default class Countdown extends React.Component {
   }
 
   tick = () => {
-    const delta = getTimeDifference(this.props.date, this.props.now, this.props.controlled);
+    const delta = getTimeDifference(
+      this.props.date,
+      this.props.now,
+      this.props.precision,
+      this.props.controlled
+    );
     this.setDeltaState({
       ...delta,
     });
@@ -118,11 +129,13 @@ export default class Countdown extends React.Component {
 }
 
 Countdown.propTypes = {
-  date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.number]), // eslint-disable-line react/no-unused-prop-types
+  date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string, PropTypes.number])
+    .isRequired, // eslint-disable-line react/no-unused-prop-types
   daysInHours: PropTypes.bool,
-  zeroPad: PropTypes.number,
+  zeroPadLength: PropTypes.number,
   controlled: PropTypes.bool,
-  delay: PropTypes.number,
+  intervalDelay: PropTypes.number,
+  precision: PropTypes.number,
   renderer: PropTypes.func,
   now: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
   onTick: PropTypes.func,
@@ -131,7 +144,8 @@ Countdown.propTypes = {
 
 Countdown.defaultProps = {
   daysInHours: false,
-  zeroPad: 2,
+  zeroPadLength: 2,
   controlled: false,
-  delay: 1000,
+  intervalDelay: 1000,
+  precision: 0,
 };
