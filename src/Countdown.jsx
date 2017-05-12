@@ -14,7 +14,7 @@ export const zeroPad = (value, length = 2) => {
 };
 
 /**
- * Calculates the time difference between a given start date and the current date.
+ * Calculates the time difference between a given end date and the current date.
  *
  * @param {any} date Date or timestamp representation of the end date.
  * @param {any} [now=Date.now] Alternative function for returning the current date.
