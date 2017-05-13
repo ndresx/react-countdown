@@ -1,8 +1,8 @@
 dist/
 node_modules/
 coverage/
-.DS_Store
-.log
-.idea
-.vscode
+*.DS_Store
+*.log
+*.idea
+*.vscode
 jsconfig.json

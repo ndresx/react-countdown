@@ -19,6 +19,66 @@ exports[`<Countdown /> compares snapshot of countdown with daysInHours => true 1
 </span>
 `;
 
+exports[`<Countdown /> compares snapshots and correct mounting of React children on countdown end 1`] = `
+<Countdown
+  controlled={false}
+  date={1482453477527}
+  daysInHours={false}
+  intervalDelay={1000}
+  precision={0}
+  zeroPadLength={2}
+>
+  <span>
+    1
+    :
+    01
+    :
+    01
+    :
+    50
+  </span>
+</Countdown>
+`;
+
+exports[`<Countdown /> compares snapshots and correct mounting of React children on countdown end 2`] = `
+<Countdown
+  controlled={false}
+  date={0}
+  daysInHours={false}
+  intervalDelay={1000}
+  precision={0}
+  zeroPadLength={2}
+>
+  <Completionist
+    countdown={
+      Object {
+        "completed": true,
+        "controlled": false,
+        "date": 0,
+        "days": 0,
+        "daysInHours": false,
+        "hours": 0,
+        "intervalDelay": 1000,
+        "milliseconds": 0,
+        "minutes": 0,
+        "precision": 0,
+        "seconds": 0,
+        "total": 0,
+        "zeroPadLength": 2,
+      }
+    }
+    name="master"
+  >
+    <div>
+      Completed! 
+      master
+       
+      Another child
+    </div>
+  </Completionist>
+</Countdown>
+`;
+
 exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
 <Countdown
   controlled={false}
@@ -31,7 +91,7 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
   zeroPadLength={2}
 >
   <span>
-    00
+    0
     :
     00
     :

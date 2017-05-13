@@ -1,10 +1,21 @@
 import React from 'react';
 import { mount, shallow } from 'enzyme';
+
 import Countdown, { zeroPad, getTimeDifference } from './Countdown';
 
 const timeDiff = 90110456;
 const now = jest.fn(() => 1482363367071);
 Date.now = now;
+
+const defaultStats = {
+  total: 0,
+  days: 0,
+  hours: 0,
+  minutes: 0,
+  seconds: 0,
+  milliseconds: 0,
+  completed: false,
+};
 
 describe('<Countdown />', () => {
   jest.useFakeTimers();
@@ -16,6 +27,52 @@ describe('<Countdown />', () => {
         renderer={props => <div>{props.days}{props.hours}{props.minutes}{props.seconds}</div>}
       />
     );
+    expect(wrapper).toMatchSnapshot();
+  });
+
+  it('compares snapshots and correct mounting of React children on countdown end', () => {
+    class Completionist extends React.Component {
+      componentDidMount() {}
+
+      render() {
+        return <div>Completed! {this.props.name} {this.props.children}</div>; // eslint-disable-line react/prop-types
+      }
+    }
+
+    let completionist = null;
+    Completionist.prototype.componentDidMount = jest.fn();
+
+    const wrapper = mount(
+      <Countdown date={Date.now() + timeDiff}>
+        <Completionist
+          ref={el => {
+            completionist = el;
+          }}
+          name="master"
+        >
+          Another child
+        </Completionist>
+      </Countdown>
+    );
+    expect(Completionist.prototype.componentDidMount).not.toBeCalled();
+    expect(wrapper).toMatchSnapshot();
+
+    // Forward in time
+    wrapper.setProps({ date: 0 });
+    expect(wrapper.state().completed).toBe(true);
+    expect(wrapper.props().children.type).toBe(Completionist);
+    expect(Completionist.prototype.componentDidMount).toBeCalled();
+
+    const computedProps = { ...wrapper.props() };
+    delete computedProps.children;
+    expect(completionist.props).toEqual({
+      countdown: {
+        ...computedProps,
+        ...wrapper.state(),
+      },
+      name: 'master',
+      children: 'Another child',
+    });
     expect(wrapper).toMatchSnapshot();
   });
 
@@ -57,21 +114,32 @@ describe('<Countdown />', () => {
     jest.runTimersToTime(3000);
     expect(onTick.mock.calls.length).toBe(9);
     expect(wrapper.state().seconds).toBe(1);
+    expect(wrapper.state().completed).toBe(false);
 
     // The End: onComplete callback gets triggered instead of onTick
     Date.now = jest.fn(() => wrapperDate);
     jest.runTimersToTime(1000);
     expect(onTick.mock.calls.length).toBe(9);
+    expect(onTick).toBeCalledWith({
+      ...defaultStats,
+      total: 1000,
+      seconds: 1,
+    });
+
     expect(onComplete.mock.calls.length).toBe(1);
+    expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true });
+    expect(wrapper.state().completed).toBe(true);
   });
 
   it('should run through the controlled component by updating the date prop', () => {
     const root = document.createElement('div');
     wrapper = mount(<Countdown date={1000} controlled />, { attachTo: root });
     expect(wrapper.instance().interval).toBeUndefined();
+    expect(wrapper.state().completed).toBe(false);
 
     wrapper.setProps({ date: 0 });
     expect(wrapper.state().total).toBe(0);
+    expect(wrapper.state().completed).toBe(true);
   });
 
   afterEach(() => {
@@ -108,22 +176,22 @@ describe('zeroPad', () => {
 });
 
 describe('getTimeDifference', () => {
-  const stats = {
-    total: 0,
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-    milliseconds: 0,
-  };
-
   it('should return a time difference of 0s', () => {
-    expect(getTimeDifference(Date.now())).toEqual(stats);
+    expect(getTimeDifference(Date.now())).toEqual({
+      ...defaultStats,
+      completed: true,
+    });
   });
 
   it('should return a time difference of 0s if values for start and current date are the same', () => {
-    expect(getTimeDifference(Date.now(), Date.now)).toEqual(stats);
-    expect(getTimeDifference(Date.now() + 10, () => Date.now() + 10)).toEqual(stats);
+    expect(getTimeDifference(Date.now(), Date.now)).toEqual({
+      ...defaultStats,
+      completed: true,
+    });
+    expect(getTimeDifference(Date.now() + 10, () => Date.now() + 10)).toEqual({
+      ...defaultStats,
+      completed: true,
+    });
   });
 
   it('should calculate the time difference with a precision of 0', () => {
@@ -134,6 +202,7 @@ describe('getTimeDifference', () => {
       minutes: 1,
       seconds: 50,
       milliseconds: 0,
+      completed: false,
     });
   });
 
@@ -145,6 +214,7 @@ describe('getTimeDifference', () => {
       minutes: 1,
       seconds: 50,
       milliseconds: 456,
+      completed: false,
     });
   });
 
@@ -157,6 +227,7 @@ describe('getTimeDifference', () => {
       minutes: 2,
       seconds: 3,
       milliseconds: 456,
+      completed: false,
     });
   });
 
@@ -169,6 +240,7 @@ describe('getTimeDifference', () => {
       minutes: 18,
       seconds: 40,
       milliseconds: 0,
+      completed: false,
     });
 
     expect(getTimeDifference(total, undefined, 3, true)).toEqual({
@@ -178,6 +250,7 @@ describe('getTimeDifference', () => {
       minutes: 18,
       seconds: 40,
       milliseconds: 3,
+      completed: false,
     });
   });
 });

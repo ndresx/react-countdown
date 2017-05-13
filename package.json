@@ -27,7 +27,6 @@
     "test:watch": "jest --watch"
   },
   "devDependencies": {
-    "babel": "^6.23.0",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.7.5",
     "babel-eslint": "^7.2.3",

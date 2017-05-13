@@ -25,7 +25,9 @@ export const zeroPad = (value, length = 2) => {
 export const getTimeDifference = (date, now = Date.now, precision = 0, controlled = false) => {
   const startDate = typeof date === 'string' ? new Date(date) : date;
   const total = parseInt(
-    (Math.max(0, controlled ? startDate : startDate - now()) / 1000).toFixed(precision) * 1000,
+    (Math.max(0, controlled ? startDate : startDate - now()) / 1000).toFixed(
+      Math.max(0, Math.min(20, precision))
+    ) * 1000,
     10
   );
 
@@ -38,9 +40,17 @@ export const getTimeDifference = (date, now = Date.now, precision = 0, controlle
     minutes: Math.floor(seconds / 60 % 60),
     seconds: Math.floor(seconds % 60),
     milliseconds: Number((seconds % 1 * 1000).toFixed()),
+    completed: total <= 0,
   };
 };
 
+/**
+ * A customizable countdown component for React.
+ *
+ * @export
+ * @class Countdown
+ * @extends {React.Component}
+ */
 export default class Countdown extends React.Component {
   constructor(props) {
     super(props);
@@ -66,7 +76,7 @@ export default class Countdown extends React.Component {
   }
 
   setDeltaState(delta) {
-    if (this.state.total > 0 && delta.total <= 0) {
+    if (!this.state.completed && delta.completed) {
       this.clearInterval();
 
       if (this.props.onComplete) {
@@ -83,15 +93,15 @@ export default class Countdown extends React.Component {
     const { daysInHours, zeroPadLength } = this.props;
 
     if (daysInHours) {
-      hours += days * 24;
+      hours = zeroPad(hours + days * 24, zeroPadLength);
       days = null;
     } else {
-      days = zeroPad(days, zeroPadLength);
+      hours = zeroPad(hours, Math.min(2, zeroPadLength));
     }
 
     return {
       days,
-      hours: zeroPad(hours, zeroPadLength),
+      hours,
       minutes: zeroPad(minutes, Math.min(2, zeroPadLength)),
       seconds: zeroPad(seconds, Math.min(2, zeroPadLength)),
     };
@@ -123,8 +133,16 @@ export default class Countdown extends React.Component {
       return this.props.renderer({ ...this.props, ...this.state });
     }
 
-    const { days, hours, minutes, seconds } = this.getFormattedDelta();
-    return <span>{days}{days ? ':' : ''}{hours}:{minutes}:{seconds}</span>;
+    if (this.state.completed && this.props.children) {
+      const computedProps = { ...this.props, ...this.state };
+      delete computedProps.children;
+      return React.cloneElement(this.props.children, {
+        countdown: computedProps,
+      });
+    } else {
+      const { days, hours, minutes, seconds } = this.getFormattedDelta();
+      return <span>{days}{days != null ? ':' : ''}{hours}:{minutes}:{seconds}</span>;
+    }
   }
 }
 
@@ -136,6 +154,7 @@ Countdown.propTypes = {
   controlled: PropTypes.bool,
   intervalDelay: PropTypes.number,
   precision: PropTypes.number,
+  children: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   renderer: PropTypes.func,
   now: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
   onTick: PropTypes.func,
@@ -148,4 +167,5 @@ Countdown.defaultProps = {
   controlled: false,
   intervalDelay: 1000,
   precision: 0,
+  children: null,
 };
