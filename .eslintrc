@@ -28,6 +28,7 @@
     "import/no-extraneous-dependencies": 0,
     "import/no-unresolved": 0,
     "react/require-extension": 0,
+    "react/require-default-props": 0,
     "import/extensions": 0,
     "arrow-body-style": 0,
     "no-mixed-operators": 0,
