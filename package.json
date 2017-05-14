@@ -20,9 +20,9 @@
   ],
   "scripts": {
     "lint": "eslint \"src/**/*.{js,jsx}\"",
-    "prebuild": "yarn lint && yarn test",
+    "prebuild": "yarn run lint && yarn run test",
     "build": "babel src --out-dir dist --ignore spec.js,test.js,spec.jsx,test.jsx",
-    "build:watch": "yarn build -- --watch",
+    "build:watch": "yarn run build -- --watch",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
