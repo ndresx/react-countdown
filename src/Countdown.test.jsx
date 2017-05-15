@@ -93,7 +93,7 @@ describe('<Countdown />', () => {
 
   it('should trigger onTick and onComplete callbacks', () => {
     const onTick = jest.fn(stats => {
-      expect(stats).toEqual(getTimeDifference(wrapperDate, Date.now));
+      expect(stats).toEqual(getTimeDifference(wrapperDate));
     });
 
     const onComplete = jest.fn(stats => {
@@ -184,11 +184,11 @@ describe('getTimeDifference', () => {
   });
 
   it('should return a time difference of 0s if values for start and current date are the same', () => {
-    expect(getTimeDifference(Date.now(), Date.now)).toEqual({
+    expect(getTimeDifference(Date.now())).toEqual({
       ...defaultStats,
       completed: true,
     });
-    expect(getTimeDifference(Date.now() + 10, () => Date.now() + 10)).toEqual({
+    expect(getTimeDifference(Date.now() + 10, { now: () => Date.now() + 10 })).toEqual({
       ...defaultStats,
       completed: true,
     });
@@ -207,7 +207,7 @@ describe('getTimeDifference', () => {
   });
 
   it('should calculate the time difference with a precision of 3', () => {
-    expect(getTimeDifference(Date.now() + timeDiff, undefined, 3)).toEqual({
+    expect(getTimeDifference(Date.now() + timeDiff, { precision: 3 })).toEqual({
       total: timeDiff,
       days: 1,
       hours: 1,
@@ -220,7 +220,7 @@ describe('getTimeDifference', () => {
 
   it('should calculate the time difference by passing a date string', () => {
     Date.now = jest.fn(() => new Date('Thu Dec 22 2016 00:36:07').getTime());
-    expect(getTimeDifference('Thu Dec 23 2017 01:38:10:456', undefined, 3)).toEqual({
+    expect(getTimeDifference('Thu Dec 23 2017 01:38:10:456', { precision: 3 })).toEqual({
       total: 31626123456,
       days: 366,
       hours: 1,
@@ -233,7 +233,7 @@ describe('getTimeDifference', () => {
 
   it('should calculate the time difference when controlled is true', () => {
     const total = 91120003;
-    expect(getTimeDifference(total, undefined, undefined, true)).toEqual({
+    expect(getTimeDifference(total, { controlled: true })).toEqual({
       total: total - 3,
       days: 1,
       hours: 1,
@@ -243,7 +243,7 @@ describe('getTimeDifference', () => {
       completed: false,
     });
 
-    expect(getTimeDifference(total, undefined, 3, true)).toEqual({
+    expect(getTimeDifference(total, { precision: 3, controlled: true })).toEqual({
       total,
       days: 1,
       hours: 1,

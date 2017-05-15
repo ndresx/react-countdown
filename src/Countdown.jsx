@@ -16,13 +16,19 @@ export const zeroPad = (value, length = 2) => {
 /**
  * Calculates the time difference between a given end date and the current date.
  *
- * @param {any} date Date or timestamp representation of the end date.
- * @param {any} [now=Date.now] Alternative function for returning the current date.
+ * @param {Date|string|number} date Date or timestamp representation of the end date.
+ * @param {Object} [{ now = Date.now, precision = 0, controlled = false }={}]
+ *  {function} [date=Date.now] Alternative function for returning the current date.
+ *  {number} [precision=0] The precision on a millisecond basis.
+ *  {boolean} [controlled=false] Defines whether the calculated value is already provided as the time difference or not.
  * @param {number} [precision=0] The precision on a millisecond basis.
  * @param {boolean} [controlled=false] Defines whether the calculated value is already provided as the time difference or not.
  * @returns Object that includes details about the time difference.
  */
-export const getTimeDifference = (date, now = Date.now, precision = 0, controlled = false) => {
+export const getTimeDifference = (
+  date,
+  { now = Date.now, precision = 0, controlled = false } = {}
+) => {
   const startDate = typeof date === 'string' ? new Date(date) : date;
   const total = parseInt(
     (Math.max(0, controlled ? startDate : startDate - now()) / 1000).toFixed(
@@ -54,8 +60,13 @@ export const getTimeDifference = (date, now = Date.now, precision = 0, controlle
 export default class Countdown extends React.Component {
   constructor(props) {
     super(props);
+    const { date, now, precision, controlled } = this.props;
     this.state = {
-      ...getTimeDifference(props.date, props.now, props.precision, this.props.controlled),
+      ...getTimeDifference(date, {
+        now,
+        precision,
+        controlled,
+      }),
     };
   }
 
@@ -66,8 +77,13 @@ export default class Countdown extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const { date, now, precision, controlled } = nextProps;
     this.setDeltaState(
-      getTimeDifference(nextProps.date, nextProps.now, nextProps.precision, nextProps.controlled)
+      getTimeDifference(date, {
+        now,
+        precision,
+        controlled,
+      })
     );
   }
 
@@ -113,18 +129,18 @@ export default class Countdown extends React.Component {
   }
 
   tick = () => {
-    const delta = getTimeDifference(
-      this.props.date,
-      this.props.now,
-      this.props.precision,
-      this.props.controlled
-    );
+    const { date, now, precision, controlled, onTick } = this.props;
+    const delta = getTimeDifference(date, {
+      now,
+      precision,
+      controlled,
+    });
     this.setDeltaState({
       ...delta,
     });
 
-    if (this.props.onTick && delta.total > 0) {
-      this.props.onTick(delta);
+    if (onTick && delta.total > 0) {
+      onTick(delta);
     }
   };
 

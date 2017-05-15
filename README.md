@@ -159,7 +159,7 @@ However, if it needs to be more precise, the `intervalDelay` can be set to somet
 In certain cases you might want to base off the calculations on a millisecond basis. The `precision` prop, which defaults to `0`, can be used to refine this calculation. While the default value simply strips the milliseconds part (e.g.: `10123`ms => `10000`ms), a precision of `3` leads to `10123`ms.
 
 ### `children`
-This component also considers the child that may live within the `<Countdown></Countdown>` element, which, in case it's available, replaces the countdown's component state once it's complete. Here's an [example](#using-a-react-child-for-the-completed-state) that showcases its usage.
+This component also considers the child that may live within the `<Countdown></Countdown>` element, which, in case it's available, replaces the countdown's component state once it's complete. Moreover, an additional prop called `countdown` is set and contains data similar to what the [`renderer`](#renderer) callback would receive. Here's an [example](#using-a-react-child-for-the-completed-state) that showcases its usage.
 
 <a name="renderer"></a>
 ### `renderer(props)`
