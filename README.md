@@ -187,20 +187,22 @@ This module also exports 2 simple helper functions which can be utilized to buil
 import Countdown, { zeroPad, getTimeDifference } from 'react-countdown-now';
 ```
 
-### `zeroPad(value, length = 2)`
+### `zeroPad(value, [length = 2])`
 The `zeroPad` function works similar to other well-known pad-functions and takes 2 arguments into account. A `value` which can be a `string` or `number`, as well as a `length` parameter which defaults to `2` as you are most likely only going to use this function if you actually want to pad one of your values.
 
-### `getTimeDifference(date, now = Date.now, precision = 0, controlled = false)`
-`getTimeDifference` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similiar to the [`renderer`](#renderer) callback, a custom object which contains some time related data.
+### `getTimeDifference(date, [{ now = Date.now, precision = 0, controlled = false }])`
+`getTimeDifference` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similiar to the [`renderer`](#renderer) callback, a custom object which contains some time related data:
 
 ```js
 { total, days, hours, minutes, seconds, milliseconds, completed }
 ```
 
-This function accepts 4 arguments in total, only the first one is required.
+This function accepts 2 arguments in total, only the first one is required.
 
 **`date`**
 Date or timestamp representation of the end date. See [`date`](#date) prop for more details.
+
+The second argument could be an optional object consisting of the following 3 optional keys.
 
 **`now = Date.now`**
 Alternative function for returning the current date, also see [`now`](#now).
