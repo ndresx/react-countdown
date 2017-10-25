@@ -13,11 +13,11 @@ A customizable countdown component for React.
 You can either install the module via `npm` or `yarn`:
 
 ```
-npm install --save-dev react-countdown-now
+npm install react-countdown-now --save
 ```
 
 ```
-yarn add --dev react-countdown-now
+yarn add react-countdown-now --save
 ```
 
 ## Motivation
