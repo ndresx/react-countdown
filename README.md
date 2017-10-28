@@ -171,7 +171,7 @@ If this doesn't fit your needs, a custom `renderer` callback can be defined to r
 _Please note that once a custom `renderer` is defined, the [`children`](#children) prop will be ignored._
 
 ### `now`
-If the current datetime (determined via `Date.now`) is not the right thing to compare with for you, a custom function which returns a similar value could be provided as an alternative.
+If the current datetime (determined via a reference to `Date.now`) is not the right thing to compare with for you, a reference to a custom function which returns a similar dynamic value could be provided as an alternative.
 
 ### `onTick`
 `onTick` is one of two supported callbacks. It gets called every time a new period is started, based on what the [`intervalDelay`](#intervaldelay)'s value is. It only gets triggered when the countdown's [`controlled`](#controlled) prop is set to `false`, meaning that the countdown has full control over its interval.
