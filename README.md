@@ -17,7 +17,7 @@ npm install react-countdown-now --save
 ```
 
 ```
-yarn add react-countdown-now --save
+yarn add react-countdown-now
 ```
 
 ## Motivation
