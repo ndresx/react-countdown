@@ -104,7 +104,9 @@ export default class Countdown extends React.Component {
       }
     }
 
-    this.setState({ ...delta });
+    if (this.mounted) {
+      this.setState({ ...delta });
+    }
   }
 
   getFormattedDelta() {
@@ -140,11 +142,9 @@ export default class Countdown extends React.Component {
       controlled,
     });
 
-    if (this.mounted) {
-      this.setDeltaState({
-        ...delta,
-      });
-    }
+    this.setDeltaState({
+      ...delta,
+    });
 
     if (onTick && delta.total > 0) {
       onTick(delta);

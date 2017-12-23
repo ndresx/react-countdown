@@ -106,7 +106,7 @@ describe('<Countdown />', () => {
     wrapper = mount(<Countdown date={date} />, { attachTo: root });
   });
 
-  it.only('should trigger onTick and onComplete callbacks', () => {
+  it('should trigger onTick and onComplete callbacks', () => {
     const onTick = jest.fn(stats => {
       expect(stats).toEqual(getTimeDifference(wrapperDate));
     });
