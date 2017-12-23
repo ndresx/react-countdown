@@ -70,9 +70,9 @@ exports[`<Countdown /> compares snapshots and correct mounting of React children
     name="master"
   >
     <div>
-      Completed! 
+      Completed!
       master
-       
+
       Another child
     </div>
   </Completionist>
@@ -85,8 +85,79 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
   date={1482363377071}
   daysInHours={false}
   intervalDelay={1000}
-  onComplete={[Function]}
-  onTick={[Function]}
+  onComplete={[MockFunction]}
+  onTick={
+    [MockFunction] {
+      "calls": Array [
+        Array [
+          Object {
+            "completed": false,
+            "days": 0,
+            "hours": 0,
+            "milliseconds": 0,
+            "minutes": 0,
+            "seconds": 6,
+            "total": 6000,
+          },
+        ],
+        Array [
+          Object {
+            "completed": false,
+            "days": 0,
+            "hours": 0,
+            "milliseconds": 0,
+            "minutes": 0,
+            "seconds": 6,
+            "total": 6000,
+          },
+        ],
+        Array [
+          Object {
+            "completed": false,
+            "days": 0,
+            "hours": 0,
+            "milliseconds": 0,
+            "minutes": 0,
+            "seconds": 6,
+            "total": 6000,
+          },
+        ],
+        Array [
+          Object {
+            "completed": false,
+            "days": 0,
+            "hours": 0,
+            "milliseconds": 0,
+            "minutes": 0,
+            "seconds": 6,
+            "total": 6000,
+          },
+        ],
+        Array [
+          Object {
+            "completed": false,
+            "days": 0,
+            "hours": 0,
+            "milliseconds": 0,
+            "minutes": 0,
+            "seconds": 6,
+            "total": 6000,
+          },
+        ],
+        Array [
+          Object {
+            "completed": false,
+            "days": 0,
+            "hours": 0,
+            "milliseconds": 0,
+            "minutes": 0,
+            "seconds": 6,
+            "total": 6000,
+          },
+        ],
+      ],
+    }
+  }
   precision={0}
   zeroPadLength={2}
 >

@@ -42,10 +42,10 @@ export const getTimeDifference = (
   return {
     total,
     days: Math.floor(seconds / (3600 * 24)),
-    hours: Math.floor(seconds / 3600 % 24),
-    minutes: Math.floor(seconds / 60 % 60),
+    hours: Math.floor((seconds / 3600) % 24),
+    minutes: Math.floor((seconds / 60) % 60),
     seconds: Math.floor(seconds % 60),
-    milliseconds: Number((seconds % 1 * 1000).toFixed()),
+    milliseconds: Number(((seconds % 1) * 1000).toFixed()),
     completed: total <= 0,
   };
 };
@@ -61,6 +61,7 @@ export default class Countdown extends React.Component {
   constructor(props) {
     super(props);
     const { date, now, precision, controlled } = this.props;
+    this.mounted = false;
     this.state = {
       ...getTimeDifference(date, {
         now,
@@ -71,6 +72,8 @@ export default class Countdown extends React.Component {
   }
 
   componentDidMount() {
+    this.mounted = true;
+
     if (!this.props.controlled) {
       this.interval = setInterval(this.tick, this.props.intervalDelay);
     }
@@ -88,6 +91,7 @@ export default class Countdown extends React.Component {
   }
 
   componentWillUnmount() {
+    this.mounted = false;
     this.clearInterval();
   }
 
@@ -135,9 +139,12 @@ export default class Countdown extends React.Component {
       precision,
       controlled,
     });
-    this.setDeltaState({
-      ...delta,
-    });
+
+    if (this.mounted) {
+      this.setDeltaState({
+        ...delta,
+      });
+    }
 
     if (onTick && delta.total > 0) {
       onTick(delta);
@@ -157,7 +164,13 @@ export default class Countdown extends React.Component {
       });
     } else {
       const { days, hours, minutes, seconds } = this.getFormattedDelta();
-      return <span>{days}{days != null ? ':' : ''}{hours}:{minutes}:{seconds}</span>;
+      return (
+        <span>
+          {days}
+          {days != null ? ':' : ''}
+          {hours}:{minutes}:{seconds}
+        </span>
+      );
     }
   }
 }

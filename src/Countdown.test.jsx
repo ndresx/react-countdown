@@ -1,7 +1,11 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
-import { mount, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import Enzyme, { mount, shallow } from 'enzyme';
 
 import Countdown, { zeroPad, getTimeDifference } from './Countdown';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const timeDiff = 90110456;
 const now = jest.fn(() => 1482363367071);
@@ -24,7 +28,14 @@ describe('<Countdown />', () => {
     const wrapper = shallow(
       <Countdown
         date={Date.now() + timeDiff}
-        renderer={props => <div>{props.days}{props.hours}{props.minutes}{props.seconds}</div>}
+        renderer={props => (
+          <div>
+            {props.days}
+            {props.hours}
+            {props.minutes}
+            {props.seconds}
+          </div>
+        )}
       />
     );
     expect(wrapper).toMatchSnapshot();
@@ -35,7 +46,11 @@ describe('<Countdown />', () => {
       componentDidMount() {}
 
       render() {
-        return <div>Completed! {this.props.name} {this.props.children}</div>; // eslint-disable-line react/prop-types
+        return (
+          <div>
+            Completed! {this.props.name} {this.props.children}
+          </div>
+        );
       }
     }
 
@@ -91,7 +106,7 @@ describe('<Countdown />', () => {
     wrapper = mount(<Countdown date={date} />, { attachTo: root });
   });
 
-  it('should trigger onTick and onComplete callbacks', () => {
+  it.only('should trigger onTick and onComplete callbacks', () => {
     const onTick = jest.fn(stats => {
       expect(stats).toEqual(getTimeDifference(wrapperDate));
     });
@@ -107,6 +122,7 @@ describe('<Countdown />', () => {
     Date.now = jest.fn(() => wrapperDate - 6000);
     jest.runTimersToTime(6000);
     expect(onTick.mock.calls.length).toBe(6);
+    expect(wrapper.state().seconds).toBe(6);
     expect(wrapper).toMatchSnapshot();
 
     // Forward 3 more seconds
