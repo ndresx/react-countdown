@@ -58,7 +58,7 @@ describe('<Countdown />', () => {
     Completionist.prototype.componentDidMount = jest.fn();
 
     const wrapper = mount(
-      <Countdown date={Date.now() + timeDiff}>
+      <Countdown date={Date.now() + timeDiff} zeroPadLength={0}>
         <Completionist
           ref={el => {
             completionist = el;

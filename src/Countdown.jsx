@@ -152,18 +152,20 @@ export default class Countdown extends React.Component {
   };
 
   render() {
+    const formattedDelta = this.getFormattedDelta();
+
     if (this.props.renderer) {
-      return this.props.renderer({ ...this.props, ...this.state });
+      return this.props.renderer({ ...this.props, ...this.state, ...formattedDelta });
     }
 
     if (this.state.completed && this.props.children) {
-      const computedProps = { ...this.props, ...this.state };
+      const computedProps = { ...this.props, ...this.state, ...formattedDelta };
       delete computedProps.children;
       return React.cloneElement(this.props.children, {
         countdown: computedProps,
       });
     } else {
-      const { days, hours, minutes, seconds } = this.getFormattedDelta();
+      const { days, hours, minutes, seconds } = formattedDelta;
       return (
         <span>
           {days}
