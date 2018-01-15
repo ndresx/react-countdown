@@ -6,9 +6,10 @@ import PropTypes from 'prop-types';
  *
  * @param {any} value Value to zero-pad.
  * @param {number} [length=2] Amount of characters to pad.
- * @returns Left-padded string.
+ * @returns Left-padded number/string.
  */
 export const zeroPad = (value, length = 2) => {
+  if (length === 0) return value;
   const strValue = String(value);
   return strValue.length >= length ? strValue : ('0'.repeat(length) + strValue).slice(length * -1);
 };

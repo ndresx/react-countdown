@@ -3,8 +3,8 @@
 exports[`<Countdown /> compares snapshot of countdown with custom renderer 1`] = `
 <div>
   1
-  1
-  1
+  01
+  01
   50
 </div>
 `;
@@ -26,14 +26,14 @@ exports[`<Countdown /> compares snapshots and correct mounting of React children
   daysInHours={false}
   intervalDelay={1000}
   precision={0}
-  zeroPadLength={2}
+  zeroPadLength={0}
 >
   <span>
     1
     :
-    01
+    1
     :
-    01
+    1
     :
     50
   </span>
@@ -47,7 +47,7 @@ exports[`<Countdown /> compares snapshots and correct mounting of React children
   daysInHours={false}
   intervalDelay={1000}
   precision={0}
-  zeroPadLength={2}
+  zeroPadLength={0}
 >
   <Completionist
     countdown={
@@ -64,15 +64,15 @@ exports[`<Countdown /> compares snapshots and correct mounting of React children
         "precision": 0,
         "seconds": 0,
         "total": 0,
-        "zeroPadLength": 2,
+        "zeroPadLength": 0,
       }
     }
     name="master"
   >
     <div>
-      Completed!
+      Completed! 
       master
-
+       
       Another child
     </div>
   </Completionist>
