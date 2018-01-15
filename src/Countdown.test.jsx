@@ -1,7 +1,11 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
-import { mount, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import Enzyme, { mount, shallow } from 'enzyme';
 
 import Countdown, { zeroPad, getTimeDifference } from './Countdown';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const timeDiff = 90110456;
 const now = jest.fn(() => 1482363367071);
@@ -20,11 +24,29 @@ const defaultStats = {
 describe('<Countdown />', () => {
   jest.useFakeTimers();
 
+  let wrapper = null;
+  let wrapperDate = null;
+
+  beforeEach(() => {
+    Date.now = now;
+    const date = Date.now() + 10000;
+    const root = document.createElement('div');
+    wrapperDate = date;
+    wrapper = mount(<Countdown date={date} />, { attachTo: root });
+  });
+
   it('compares snapshot of countdown with custom renderer', () => {
-    const wrapper = shallow(
+    wrapper = shallow(
       <Countdown
         date={Date.now() + timeDiff}
-        renderer={props => <div>{props.days}{props.hours}{props.minutes}{props.seconds}</div>}
+        renderer={props => (
+          <div>
+            {props.days}
+            {props.hours}
+            {props.minutes}
+            {props.seconds}
+          </div>
+        )}
       />
     );
     expect(wrapper).toMatchSnapshot();
@@ -35,15 +57,19 @@ describe('<Countdown />', () => {
       componentDidMount() {}
 
       render() {
-        return <div>Completed! {this.props.name} {this.props.children}</div>; // eslint-disable-line react/prop-types
+        return (
+          <div>
+            Completed! {this.props.name} {this.props.children}
+          </div>
+        );
       }
     }
 
     let completionist = null;
     Completionist.prototype.componentDidMount = jest.fn();
 
-    const wrapper = mount(
-      <Countdown date={Date.now() + timeDiff}>
+    wrapper = mount(
+      <Countdown date={Date.now() + timeDiff} zeroPadLength={0}>
         <Completionist
           ref={el => {
             completionist = el;
@@ -77,18 +103,8 @@ describe('<Countdown />', () => {
   });
 
   it('compares snapshot of countdown with daysInHours => true', () => {
-    const wrapper = shallow(<Countdown date={Date.now() + timeDiff} daysInHours />);
+    wrapper = shallow(<Countdown date={Date.now() + timeDiff} daysInHours />);
     expect(wrapper).toMatchSnapshot();
-  });
-
-  let wrapper = null;
-  let wrapperDate = null;
-
-  beforeEach(() => {
-    const date = Date.now() + 10000;
-    const root = document.createElement('div');
-    wrapperDate = date;
-    wrapper = mount(<Countdown date={date} />, { attachTo: root });
   });
 
   it('should trigger onTick and onComplete callbacks', () => {
@@ -107,6 +123,9 @@ describe('<Countdown />', () => {
     Date.now = jest.fn(() => wrapperDate - 6000);
     jest.runTimersToTime(6000);
     expect(onTick.mock.calls.length).toBe(6);
+    expect(wrapper.state().seconds).toBe(6);
+
+    wrapper.update();
     expect(wrapper).toMatchSnapshot();
 
     // Forward 3 more seconds
@@ -142,8 +161,23 @@ describe('<Countdown />', () => {
     expect(wrapper.state().completed).toBe(true);
   });
 
+  it('should not (try to) set state after component unmount', () => {
+    expect(wrapper.state().completed).toBe(false);
+
+    Date.now = jest.fn(() => wrapperDate - 6000);
+    jest.runTimersToTime(6000);
+    expect(wrapper.state().seconds).toBe(6);
+
+    wrapper.instance().mounted = false;
+    Date.now = jest.fn(() => wrapperDate - 3000);
+    jest.runTimersToTime(3000);
+    expect(wrapper.state().seconds).toBe(6);
+  });
+
   afterEach(() => {
-    wrapper.detach();
+    try {
+      wrapper.detach();
+    } catch (e) {}
   });
 });
 
@@ -165,7 +199,7 @@ describe('zeroPad', () => {
   });
 
   it('should not zero-pad 1 if length is 0 or 1', () => {
-    expect(zeroPad(1, 0)).toBe('1');
+    expect(zeroPad(1, 0)).toBe(1);
     expect(zeroPad(1, 1)).toBe('1');
   });
 

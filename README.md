@@ -188,7 +188,7 @@ import Countdown, { zeroPad, getTimeDifference } from 'react-countdown-now';
 ```
 
 ### `zeroPad(value, [length = 2])`
-The `zeroPad` function works similar to other well-known pad-functions and takes 2 arguments into account. A `value` which can be a `string` or `number`, as well as a `length` parameter which defaults to `2` as you are most likely only going to use this function if you actually want to pad one of your values.
+The `zeroPad` function works similar to other well-known pad-functions and takes 2 arguments into account. A `value` which can be a `string` or `number`, as well as a `length` parameter which defaults to `2` as you are most likely only going to use this function if you actually want to pad one of your values. Either returns a number if `length` equals `0`, or the zero-padded string.
 
 ### `getTimeDifference(date, [{ now = Date.now, precision = 0, controlled = false }])`
 `getTimeDifference` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similiar to the [`renderer`](#renderer) callback, a custom object which contains some time related data:
