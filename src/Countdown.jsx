@@ -89,6 +89,9 @@ export default class Countdown extends React.Component {
         controlled,
       })
     );
+    if (!this.props.controlled) {
+      this.interval = setInterval(this.tick, this.props.intervalDelay);
+    }
   }
 
   componentWillUnmount() {
