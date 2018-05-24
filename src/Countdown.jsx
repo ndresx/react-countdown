@@ -97,12 +97,13 @@ export default class Countdown extends React.Component {
   }
 
   setDeltaState(delta) {
+    let continueCount = false;
     if (!this.state.completed && delta.completed) {
-      this.clearInterval();
-
+      
       if (this.props.onComplete) {
-        this.props.onComplete(delta);
+        continueCount = this.props.onComplete(delta)
       }
+      if(!continueCount){ this.clearInterval(); }
     }
 
     if (this.mounted) {
