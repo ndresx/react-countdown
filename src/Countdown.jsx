@@ -10,8 +10,15 @@ import PropTypes from 'prop-types';
  */
 export const zeroPad = (value, length = 2) => {
   if (length === 0) return value;
-  const strValue = String(value);
-  return strValue.length >= length ? strValue : ('0'.repeat(length) + strValue).slice(length * -1);
+  let strValue = String(value);
+  let prefix = '';
+  if (value < 0) {
+    prefix = '-';
+    strValue = strValue.slice(1);
+  }
+  return strValue.length >= length
+    ? strValue
+    : prefix + '0'.repeat(length - strValue.length) + strValue;
 };
 
 /**
