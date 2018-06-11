@@ -54,6 +54,12 @@ export const getTimeDifference = (
   };
 };
 
+
+/**
+ * Finds and returns the next valid value within the date array given.
+ * 
+ * @param {array} array of valid acceptable values for the date prop passed into the react countdown component
+ */
 export const availableMultiDate = (date) => {
   if(!Array.isArray(date)){ return false }
 
