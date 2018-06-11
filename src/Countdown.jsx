@@ -30,7 +30,9 @@ export const getTimeDifference = (
   date,
   { now = Date.now, precision = 0, controlled = false } = {}
 ) => {
-  const startDate = typeof date === 'string' ? new Date(date) : date;
+  const multiDates = Array.isArray(date);
+  const date_i = multiDates ? (availableMultiDate(date) ? availableMultiDate(date) : date[date.length - 1]) : date;
+  const startDate = typeof date_i === 'string' ? new Date(date_i) : date_i;
   const total = parseInt(
     (Math.max(0, controlled ? startDate : startDate - now()) / 1000).toFixed(
       Math.max(0, Math.min(20, precision))
@@ -48,8 +50,18 @@ export const getTimeDifference = (
     seconds: Math.floor(seconds % 60),
     milliseconds: Number(((seconds % 1) * 1000).toFixed()),
     completed: total <= 0,
+    multiDates,
   };
 };
+
+export const availableMultiDate = (date) => {
+  if(!Array.isArray(date)){ return false }
+
+  return date.find((date_i) => {
+    if(typeof date_i !== 'number' && typeof date_i !== 'string'){ return false; }
+    return typeof date_i === 'number' ? date_i >= Date.now() : new Date(date_i).getTime() >= Date.now()
+  })
+}
 
 /**
  * A customizable countdown component for React.
@@ -97,13 +109,19 @@ export default class Countdown extends React.Component {
   }
 
   setDeltaState(delta) {
-    let continueCount = false;
+
     if (!this.state.completed && delta.completed) {
-      
+      this.clearInterval();
+    
       if (this.props.onComplete) {
-        continueCount = this.props.onComplete(delta)
+        this.props.onComplete(delta)
       }
-      if(!continueCount){ this.clearInterval(); }
+    }
+
+    if(delta.multiDates && delta.total > this.state.total){
+      if(this.props.onMultiSwitch){
+        this.props.onMultiSwitch(delta);
+      }
     }
 
     if (this.mounted) {
@@ -180,7 +198,7 @@ export default class Countdown extends React.Component {
 }
 
 Countdown.propTypes = {
-  date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string, PropTypes.number])
+  date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string, PropTypes.number, PropTypes.array])
     .isRequired, // eslint-disable-line react/no-unused-prop-types
   daysInHours: PropTypes.bool,
   zeroPadLength: PropTypes.number,
@@ -192,6 +210,7 @@ Countdown.propTypes = {
   now: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
   onTick: PropTypes.func,
   onComplete: PropTypes.func,
+  onMultiSwitch: PropTypes.func,
 };
 
 Countdown.defaultProps = {
