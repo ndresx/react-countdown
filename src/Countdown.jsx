@@ -15,6 +15,26 @@ export const zeroPad = (value, length = 2) => {
 };
 
 /**
+ * Finds and returns the next valid value within the date array given.
+ *
+ * @param {array} array of valid acceptable values for the date prop passed into the react countdown component
+ */
+export const availableMultiDate = date => {
+  if (!Array.isArray(date)) {
+    return false;
+  }
+
+  return date.find(dateIter => {
+    if (typeof dateIter !== 'number' && typeof dateIter !== 'string') {
+      return false;
+    }
+    return typeof dateIter === 'number'
+      ? dateIter >= Date.now()
+      : new Date(dateIter).getTime() >= Date.now();
+  });
+};
+
+/**
  * Calculates the time difference between a given end date and the current date.
  *
  * @param {Date|string|number} date Date or timestamp representation of the end date.
@@ -31,8 +51,13 @@ export const getTimeDifference = (
   { now = Date.now, precision = 0, controlled = false } = {}
 ) => {
   const multiDates = Array.isArray(date);
-  const date_i = multiDates ? (availableMultiDate(date) ? availableMultiDate(date) : date[date.length - 1]) : date;
-  const startDate = typeof date_i === 'string' ? new Date(date_i) : date_i;
+  let dateIter;
+  if (multiDates) {
+    dateIter = availableMultiDate(date) ? availableMultiDate(date) : date[date.length - 1];
+  } else {
+    dateIter = date;
+  }
+  const startDate = typeof dateIter === 'string' ? new Date(dateIter) : dateIter;
   const total = parseInt(
     (Math.max(0, controlled ? startDate : startDate - now()) / 1000).toFixed(
       Math.max(0, Math.min(20, precision))
@@ -53,21 +78,6 @@ export const getTimeDifference = (
     multiDates,
   };
 };
-
-
-/**
- * Finds and returns the next valid value within the date array given.
- * 
- * @param {array} array of valid acceptable values for the date prop passed into the react countdown component
- */
-export const availableMultiDate = (date) => {
-  if(!Array.isArray(date)){ return false }
-
-  return date.find((date_i) => {
-    if(typeof date_i !== 'number' && typeof date_i !== 'string'){ return false; }
-    return typeof date_i === 'number' ? date_i >= Date.now() : new Date(date_i).getTime() >= Date.now()
-  })
-}
 
 /**
  * A customizable countdown component for React.
@@ -115,17 +125,16 @@ export default class Countdown extends React.Component {
   }
 
   setDeltaState(delta) {
-
     if (!this.state.completed && delta.completed) {
       this.clearInterval();
-    
+
       if (this.props.onComplete) {
-        this.props.onComplete(delta)
+        this.props.onComplete(delta);
       }
     }
 
-    if(delta.multiDates && delta.total > this.state.total){
-      if(this.props.onMultiSwitch){
+    if (delta.multiDates && delta.total > this.state.total) {
+      if (this.props.onMultiSwitch) {
         this.props.onMultiSwitch(delta);
       }
     }
@@ -204,8 +213,12 @@ export default class Countdown extends React.Component {
 }
 
 Countdown.propTypes = {
-  date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string, PropTypes.number, PropTypes.array])
-    .isRequired, // eslint-disable-line react/no-unused-prop-types
+  date: PropTypes.oneOfType([
+    PropTypes.instanceOf(Date),
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.array,
+  ]).isRequired, // eslint-disable-line react/no-unused-prop-types
   daysInHours: PropTypes.bool,
   zeroPadLength: PropTypes.number,
   controlled: PropTypes.bool,
