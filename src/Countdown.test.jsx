@@ -19,6 +19,7 @@ const defaultStats = {
   seconds: 0,
   milliseconds: 0,
   completed: false,
+  multiDates: false,
 };
 
 describe('<Countdown />', () => {
@@ -237,6 +238,7 @@ describe('getTimeDifference', () => {
       seconds: 50,
       milliseconds: 0,
       completed: false,
+      multiDates: false,
     });
   });
 
@@ -249,6 +251,7 @@ describe('getTimeDifference', () => {
       seconds: 50,
       milliseconds: 456,
       completed: false,
+      multiDates: false,
     });
   });
 
@@ -262,6 +265,7 @@ describe('getTimeDifference', () => {
       seconds: 3,
       milliseconds: 456,
       completed: false,
+      multiDates: false,
     });
   });
 
@@ -275,6 +279,7 @@ describe('getTimeDifference', () => {
       seconds: 40,
       milliseconds: 0,
       completed: false,
+      multiDates: false,
     });
 
     expect(getTimeDifference(total, { precision: 3, controlled: true })).toEqual({
@@ -285,6 +290,7 @@ describe('getTimeDifference', () => {
       seconds: 40,
       milliseconds: 3,
       completed: false,
+      multiDates: false,
     });
   });
 });
