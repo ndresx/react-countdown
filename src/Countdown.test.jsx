@@ -3,7 +3,7 @@ import React from 'react';
 import Adapter from 'enzyme-adapter-react-16';
 import Enzyme, { mount, shallow } from 'enzyme';
 
-import Countdown, { zeroPad, getTimeDifference } from './Countdown';
+import Countdown, { zeroPad, getTimeDifference, availableMultiDate } from './Countdown';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -151,6 +151,34 @@ describe('<Countdown />', () => {
     expect(wrapper.state().completed).toBe(true);
   });
 
+  it('should execute onMultiSwitch callback function', () => {
+    const elevenSeconds = Date.now() + 11000;
+    const multiDatesDate = [Date.now() + 10000, Date.now() + 30000];
+    const onMultiSwitch = jest.fn(stats => {
+      expect(stats).toEqual(getTimeDifference(multiDatesDate));
+    });
+
+    wrapper = shallow(<Countdown date={multiDatesDate} onMultiSwitch={onMultiSwitch} />);
+
+    Date.now = jest.fn(() => elevenSeconds);
+    jest.runTimersToTime(11000);
+    expect(onMultiSwitch.mock.calls.length).toBe(1);
+  });
+
+  it('should not execute onMultiSwitch callback function if no onMultiSwitch prop given', () => {
+    const elevenSeconds = Date.now() + 11000;
+    const multiDatesDate = [Date.now() + 10000, Date.now() + 30000];
+    const onMultiSwitch = jest.fn(stats => {
+      expect(stats).toEqual(getTimeDifference(multiDatesDate));
+    });
+
+    wrapper = shallow(<Countdown date={multiDatesDate} />);
+
+    Date.now = jest.fn(() => elevenSeconds);
+    jest.runTimersToTime(11000);
+    expect(onMultiSwitch.mock.calls.length).toBe(0);
+  });
+
   it('should run through the controlled component by updating the date prop', () => {
     const root = document.createElement('div');
     wrapper = mount(<Countdown date={1000} controlled />, { attachTo: root });
@@ -292,5 +320,63 @@ describe('getTimeDifference', () => {
       completed: false,
       multiDates: false,
     });
+  });
+
+  it('should handle arrays when given them as args for the date prop', () => {
+    const dateArr = [Date.now() + 10000];
+    expect(getTimeDifference(dateArr)).toEqual({
+      total: 10000,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 10,
+      milliseconds: 0,
+      completed: false,
+      multiDates: true,
+    });
+  });
+  it('should handle string within date prop array', () => {
+    Date.now = jest.fn(() => new Date('Thu Dec 22 2016 00:36:07').getTime());
+    expect(getTimeDifference(['Thu Dec 23 2017 01:38:10:456'], { precision: 3 })).toEqual({
+      total: 31626123456,
+      days: 366,
+      hours: 1,
+      minutes: 2,
+      seconds: 3,
+      milliseconds: 456,
+      completed: false,
+      multiDates: true,
+    });
+  });
+  it('should pass over any values in the date prop array that are not a string or a number', () => {
+    const dateArr = [{ time: 10000 }, Date.now() + 20000];
+    expect(getTimeDifference(dateArr)).toEqual({
+      total: 20000,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 20,
+      milliseconds: 0,
+      completed: false,
+      multiDates: true,
+    });
+  });
+
+  it('should default to zero countdown if given array as date prop, but all dates have passed', () => {
+    const dateArr = [Date.now() - 20000, Date.now() - 10000];
+    expect(getTimeDifference(dateArr)).toEqual({
+      total: 0,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 0,
+      completed: true,
+      multiDates: true,
+    });
+  });
+
+  it('availableMulitDate function should return false if not passed an array', () => {
+    expect(availableMultiDate(10000)).toEqual(false);
   });
 });
