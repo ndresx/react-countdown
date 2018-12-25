@@ -105,10 +105,14 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   getRenderProps(): CountdownRenderProps {
-    const { daysInHours, zeroPadLength } = this.props;
+    const { daysInHours, zeroPadLength, zeroPadDaysLength } = this.props;
     return {
       ...this.state,
-      formatted: formatTimeDelta(this.state, { daysInHours, zeroPadLength }),
+      formatted: formatTimeDelta(this.state, {
+        daysInHours,
+        zeroPadLength,
+        zeroPadDaysLength,
+      }),
     };
   }
 

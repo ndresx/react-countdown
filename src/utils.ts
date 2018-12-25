@@ -24,6 +24,7 @@ export interface CountdownTimeDeltaFormatted {
 export interface CountdownTimeDeltaFormatOptions {
   readonly daysInHours?: boolean;
   readonly zeroPadLength?: number;
+  readonly zeroPadDaysLength?: number;
 }
 
 /**
@@ -40,7 +41,7 @@ export function zeroPad(value: number | string, length: number = 2): string {
   return strValue.length >= length ? strValue : ('0'.repeat(length) + strValue).slice(length * -1);
 }
 
-export const timeDeltaFormatOptionsDefaults: Required<CountdownTimeDeltaFormatOptions> = {
+export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {
   daysInHours: false,
   zeroPadLength: 2,
 };
@@ -106,7 +107,7 @@ export function formatTimeDelta(
   options?: CountdownTimeDeltaFormatOptions
 ): CountdownTimeDeltaFormatted {
   const { days, hours, minutes, seconds } = delta;
-  const { daysInHours, zeroPadLength } = {
+  const { daysInHours, zeroPadLength, zeroPadDaysLength = zeroPadLength } = {
     ...timeDeltaFormatOptionsDefaults,
     ...options,
   };
@@ -115,7 +116,7 @@ export function formatTimeDelta(
     : zeroPad(hours, Math.min(2, zeroPadLength));
 
   return {
-    days: daysInHours ? '' : String(days),
+    days: daysInHours ? '' : zeroPad(days, zeroPadDaysLength),
     hours: formattedHours,
     minutes: zeroPad(minutes, Math.min(2, zeroPadLength)),
     seconds: zeroPad(seconds, Math.min(2, zeroPadLength)),

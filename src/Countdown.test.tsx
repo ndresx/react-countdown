@@ -109,6 +109,11 @@ describe('<Countdown />', () => {
     expect(wrapper).toMatchSnapshot();
   });
 
+  it('should render with zeroPadDaysLength => 3', () => {
+    wrapper = mount(<Countdown date={Date.now() + 10 * 86400 * 1000} zeroPadDaysLength={3} />);
+    expect(wrapper).toMatchSnapshot();
+  });
+
   it('should trigger onTick and onComplete callbacks', () => {
     const onTick = jest.fn(stats => {
       expect(stats).toEqual(calcTimeDelta(wrapperDate));

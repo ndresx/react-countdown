@@ -80,6 +80,28 @@ exports[`<Countdown /> should render with daysInHours => true 1`] = `
 </Countdown>
 `;
 
+exports[`<Countdown /> should render with zeroPadDaysLength => 3 1`] = `
+<Countdown
+  controlled={false}
+  date={1483227367071}
+  daysInHours={false}
+  intervalDelay={1000}
+  precision={0}
+  zeroPadDaysLength={3}
+  zeroPadLength={2}
+>
+  <span>
+    010
+    :
+    00
+    :
+    00
+    :
+    00
+  </span>
+</Countdown>
+`;
+
 exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
 <Countdown
   controlled={false}
@@ -189,7 +211,7 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
   zeroPadLength={2}
 >
   <span>
-    0
+    00
     :
     00
     :

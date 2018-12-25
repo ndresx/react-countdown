@@ -123,6 +123,7 @@ ReactDOM.render(
 |[**date**](#date)|<code>Date&#124;string&#124;number</code>|`required`|Date or timestamp in the future|
 |[**daysInHours**](#daysinhours)|`boolean`|`false`|Days are calculated as hours|
 |[**zeroPadLength**](#zeropadlength)|`number`|`2`|Length of zero-padded output, e.g.: `00:01:02`|
+|[**zeroPadDaysLength**](#zeropaddayslength)|`number`|`zeroPadLength`|Length of zero-padded days output, e.g.: `01`|
 |[**controlled**](#controlled) |`boolean`|`false`|Hands over the control to its parent(s)|
 |[**intervalDelay**](#intervaldelay)|`number`|`1000`|Interval delay in milliseconds|
 |[**precision**](#precision)|`number`|`0`|The precision on a millisecond basis|
@@ -148,7 +149,10 @@ Can be useful if the countdown's interval and/or date control should be handed o
 provided [`date`](#date) will be treated as the countdown's actual time difference and not be compared to [`now`](#now) anymore.
 
 ### `zeroPadLength`
-This option defaults to `2` in order to display the common format `00:00:00` instead of `0:0:0`. If the value is higher than `2`, only the hour part _(never days)_ will be zero-padded while it stays at `2` for minutes as well as seconds. If the value is lower, the output won't be zero-padded like the example before is showing.
+This option defaults to `2` in order to display the common format `00:00:00` instead of `0:0:0`. If the value is higher than `2`, only the hours part _(see [`zeroPadDaysLength`](#zeropaddayslength) for days)_ will be zero-padded while it stays at `2` for minutes as well as seconds. If the value is lower, the output won't be zero-padded like the example before is showing.
+
+### `zeroPadDaysLength`
+Defaults to `zeroPadLength`. Works the same way as [`zeroPadLength`](#zeropadlength) does, just for days.
 
 ### `intervalDelay`
 Since this countdown is based on date comparisons, the default value of `1000` milliseconds is probably enough for most scenarios and doesn't need to be changed.
