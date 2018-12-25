@@ -168,7 +168,7 @@ This component also considers the child that may live within the `<Countdown></C
 <a name="renderer"></a>
 ### `renderer(props)`
 The component's render output is very simple and depends on [`daysInHours`](#daysinhours): _{days}:{hours}:{minutes}:{seconds}_.
-If this doesn't fit your needs, a custom `renderer` callback can be defined to return a new React element. It retrieves an argument which consists of all the countdown's props and the following time data to help building your own representation of the countdown.
+If this doesn't fit your needs, a custom `renderer` callback can be defined to return a new React element. It receives an argument which consists of a time delta object (incl. `formatted` values) to help building your own representation of the countdown.
 ```js
 { total, days, hours, minutes, seconds, milliseconds, completed }
 ```
@@ -185,17 +185,18 @@ If the current datetime (determined via a reference to `Date.now`) is not the ri
 
 ## Helpers
 
-This module also exports 2 simple helper functions which can be utilized to build your own countdown custom [`renderer`](#renderer).
+This module also exports 3 simple helper functions which can be utilized to build your own countdown custom [`renderer`](#renderer).
 
 ```js
-import Countdown, { zeroPad, getTimeDifference } from 'react-countdown-now';
+import Countdown, { zeroPad, calcTimeDelta, formatTimeDelta } from 'react-countdown-now';
 ```
 
 ### `zeroPad(value, [length = 2])`
 The `zeroPad` function works similar to other well-known pad-functions and takes 2 arguments into account. A `value` which can be a `string` or `number`, as well as a `length` parameter which defaults to `2` as you are most likely only going to use this function if you actually want to pad one of your values. Either returns a `number` if `length` equals `0`, or the zero-padded `string`.
 
-### `getTimeDifference(date, [{ now = Date.now, precision = 0, controlled = false }])`
-`getTimeDifference` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similiar to the [`renderer`](#renderer) callback, a custom object which contains some time related data:
+<a name="calctimedelta"></a>
+### `calcTimeDelta(date, [{ now = Date.now, precision = 0, controlled = false }])`
+`calcTimeDelta` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similiar to the [`renderer`](#renderer) callback, a custom object (also referred to as **countdown time delta object**) with the following time related data:
 
 ```js
 { total, days, hours, minutes, seconds, milliseconds, completed }
@@ -216,6 +217,24 @@ The [`precision`](#precision) on a millisecond basis.
 
 **`controlled = false`**
 Defines whether the calculated value is already provided as the time difference or not.
+
+### `formatTimeDelta(delta, [options])`
+`formatTimeDelta` formats a given countdown time delta object. It returns the formatted portion of it, equivalent to:
+
+```js
+{ days, hours, minutes, seconds }
+```
+
+This function accepts 2 arguments in total, only the first one is required.
+
+**`delta`**
+Time delta object, e.g.: returned by [`calcTimeDelta`](#calctimedelta).
+
+**`options`**
+The `options` object consists of the following three component props and is used to customize the formatting of the delta object:
+* [`daysInHours`](#daysinhours)
+* [`zeroPadLength`](#zeropadlength)
+* [`zeroPadDaysLength`](#zeropaddayslength)
 
 ## License
 

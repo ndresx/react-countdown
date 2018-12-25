@@ -95,7 +95,7 @@ export function calcTimeDelta(
 }
 
 /**
- * Formats a given countdown time delta object
+ * Formats a given countdown time delta object.
  *
  * @export
  * @param {CountdownTimeDelta} delta
