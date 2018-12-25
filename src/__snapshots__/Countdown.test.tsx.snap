@@ -1,25 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<Countdown /> compares snapshot of countdown with custom renderer 1`] = `
-<div>
-  1
-  01
-  01
-  50
-</div>
-`;
-
-exports[`<Countdown /> compares snapshot of countdown with daysInHours => true 1`] = `
-<span>
-  25
-  :
-  01
-  :
-  50
-</span>
-`;
-
-exports[`<Countdown /> compares snapshots and correct mounting of React children on countdown end 1`] = `
+exports[`<Countdown /> should render and unmount component on countdown end 1`] = `
 <Countdown
   controlled={false}
   date={1482453477527}
@@ -40,7 +21,7 @@ exports[`<Countdown /> compares snapshots and correct mounting of React children
 </Countdown>
 `;
 
-exports[`<Countdown /> compares snapshots and correct mounting of React children on countdown end 2`] = `
+exports[`<Countdown /> should render and unmount component on countdown end 2`] = `
 <Countdown
   controlled={false}
   date={0}
@@ -49,33 +30,53 @@ exports[`<Countdown /> compares snapshots and correct mounting of React children
   precision={0}
   zeroPadLength={0}
 >
-  <Completionist
-    countdown={
-      Object {
-        "completed": true,
-        "controlled": false,
-        "date": 0,
-        "days": 0,
-        "daysInHours": false,
-        "hours": 0,
-        "intervalDelay": 1000,
-        "milliseconds": 0,
-        "minutes": 0,
-        "precision": 0,
-        "seconds": 0,
-        "total": 0,
-        "zeroPadLength": 0,
-      }
-    }
-    name="master"
-  >
-    <div>
-      Completed! 
-      master
-       
-      Another child
-    </div>
-  </Completionist>
+  <span>
+    1
+    :
+    1
+    :
+    1
+    :
+    50
+  </span>
+</Countdown>
+`;
+
+exports[`<Countdown /> should render custom renderer output 1`] = `
+<Countdown
+  controlled={false}
+  date={1482453477527}
+  daysInHours={false}
+  intervalDelay={1000}
+  precision={0}
+  renderer={[Function]}
+  zeroPadLength={2}
+>
+  <div>
+    1
+    1
+    1
+    50
+  </div>
+</Countdown>
+`;
+
+exports[`<Countdown /> should render with daysInHours => true 1`] = `
+<Countdown
+  controlled={false}
+  date={1482453477527}
+  daysInHours={true}
+  intervalDelay={1000}
+  precision={0}
+  zeroPadLength={2}
+>
+  <span>
+    25
+    :
+    01
+    :
+    50
+  </span>
 </Countdown>
 `;
 
@@ -155,6 +156,32 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
             "total": 6000,
           },
         ],
+      ],
+      "results": Array [
+        Object {
+          "isThrow": false,
+          "value": undefined,
+        },
+        Object {
+          "isThrow": false,
+          "value": undefined,
+        },
+        Object {
+          "isThrow": false,
+          "value": undefined,
+        },
+        Object {
+          "isThrow": false,
+          "value": undefined,
+        },
+        Object {
+          "isThrow": false,
+          "value": undefined,
+        },
+        Object {
+          "isThrow": false,
+          "value": undefined,
+        },
       ],
     }
   }

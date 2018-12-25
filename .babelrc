@@ -1,7 +1,3 @@
 {
-  "presets": [
-    "es2015",
-    "stage-2",
-    "react"
-  ]
+  "presets": ["@babel/preset-env", "@babel/preset-typescript", "@babel/preset-react"]
 }
