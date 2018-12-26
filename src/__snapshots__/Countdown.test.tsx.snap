@@ -7,7 +7,7 @@ exports[`<Countdown /> should render and unmount component on countdown end 1`] 
   daysInHours={false}
   intervalDelay={1000}
   precision={0}
-  zeroPadLength={0}
+  zeroPadTime={0}
 >
   <span>
     1
@@ -28,7 +28,7 @@ exports[`<Countdown /> should render and unmount component on countdown end 2`] 
   daysInHours={false}
   intervalDelay={1000}
   precision={0}
-  zeroPadLength={0}
+  zeroPadTime={0}
 >
   <span>
     1
@@ -50,7 +50,7 @@ exports[`<Countdown /> should render custom renderer output 1`] = `
   intervalDelay={1000}
   precision={0}
   renderer={[Function]}
-  zeroPadLength={2}
+  zeroPadTime={2}
 >
   <div>
     1
@@ -68,7 +68,7 @@ exports[`<Countdown /> should render with daysInHours => true 1`] = `
   daysInHours={true}
   intervalDelay={1000}
   precision={0}
-  zeroPadLength={2}
+  zeroPadTime={2}
 >
   <span>
     25
@@ -80,15 +80,15 @@ exports[`<Countdown /> should render with daysInHours => true 1`] = `
 </Countdown>
 `;
 
-exports[`<Countdown /> should render with zeroPadDaysLength => 3 1`] = `
+exports[`<Countdown /> should render with zeroPadDays => 3 1`] = `
 <Countdown
   controlled={false}
   date={1483227367071}
   daysInHours={false}
   intervalDelay={1000}
   precision={0}
-  zeroPadDaysLength={3}
-  zeroPadLength={2}
+  zeroPadDays={3}
+  zeroPadTime={2}
 >
   <span>
     010
@@ -208,7 +208,7 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
     }
   }
   precision={0}
-  zeroPadLength={2}
+  zeroPadTime={2}
 >
   <span>
     00

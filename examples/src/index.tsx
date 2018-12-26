@@ -51,7 +51,7 @@ class App extends Component {
           date={Date.now() + 10000}
           intervalDelay={0}
           precision={3}
-          zeroPadLength={2}
+          zeroPadTime={2}
           renderer={props => <pre>{JSON.stringify(props, null, 2)}</pre>}
         />
       </>

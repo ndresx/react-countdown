@@ -23,8 +23,8 @@ export interface CountdownTimeDeltaFormatted {
 
 export interface CountdownTimeDeltaFormatOptions {
   readonly daysInHours?: boolean;
-  readonly zeroPadLength?: number;
-  readonly zeroPadDaysLength?: number;
+  readonly zeroPadTime?: number;
+  readonly zeroPadDays?: number;
 }
 
 /**
@@ -43,7 +43,7 @@ export function zeroPad(value: number | string, length: number = 2): string {
 
 export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {
   daysInHours: false,
-  zeroPadLength: 2,
+  zeroPadTime: 2,
 };
 
 /**
@@ -107,18 +107,18 @@ export function formatTimeDelta(
   options?: CountdownTimeDeltaFormatOptions
 ): CountdownTimeDeltaFormatted {
   const { days, hours, minutes, seconds } = delta;
-  const { daysInHours, zeroPadLength, zeroPadDaysLength = zeroPadLength } = {
+  const { daysInHours, zeroPadTime, zeroPadDays = zeroPadTime } = {
     ...timeDeltaFormatOptionsDefaults,
     ...options,
   };
   const formattedHours = daysInHours
-    ? zeroPad(hours + days * 24, zeroPadLength)
-    : zeroPad(hours, Math.min(2, zeroPadLength));
+    ? zeroPad(hours + days * 24, zeroPadTime)
+    : zeroPad(hours, Math.min(2, zeroPadTime));
 
   return {
-    days: daysInHours ? '' : zeroPad(days, zeroPadDaysLength),
+    days: daysInHours ? '' : zeroPad(days, zeroPadDays),
     hours: formattedHours,
-    minutes: zeroPad(minutes, Math.min(2, zeroPadLength)),
-    seconds: zeroPad(seconds, Math.min(2, zeroPadLength)),
+    minutes: zeroPad(minutes, Math.min(2, zeroPadTime)),
+    seconds: zeroPad(seconds, Math.min(2, zeroPadTime)),
   };
 }

@@ -51,7 +51,7 @@ describe('<Countdown />', () => {
   });
 
   it('should render and unmount component on countdown end', () => {
-    const zeroPadLength = 0;
+    const zeroPadTime = 0;
 
     class Completionist extends React.Component<any> {
       componentDidMount() {}
@@ -69,7 +69,7 @@ describe('<Countdown />', () => {
     Completionist.prototype.componentDidMount = jest.fn();
 
     wrapper = mount(
-      <Countdown date={Date.now() + timeDiff} zeroPadLength={zeroPadLength}>
+      <Countdown date={Date.now() + timeDiff} zeroPadTime={zeroPadTime}>
         <Completionist
           ref={el => {
             completionist = el;
@@ -96,7 +96,7 @@ describe('<Countdown />', () => {
     expect(completionist.props).toEqual({
       countdown: {
         ...delta,
-        formatted: formatTimeDelta(delta, { zeroPadLength }),
+        formatted: formatTimeDelta(delta, { zeroPadTime }),
       },
       name: 'master',
       children: 'Another child',
@@ -109,8 +109,8 @@ describe('<Countdown />', () => {
     expect(wrapper).toMatchSnapshot();
   });
 
-  it('should render with zeroPadDaysLength => 3', () => {
-    wrapper = mount(<Countdown date={Date.now() + 10 * 86400 * 1000} zeroPadDaysLength={3} />);
+  it('should render with zeroPadDays => 3', () => {
+    wrapper = mount(<Countdown date={Date.now() + 10 * 86400 * 1000} zeroPadDays={3} />);
     expect(wrapper).toMatchSnapshot();
   });
 

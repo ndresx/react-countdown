@@ -50,7 +50,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string, PropTypes.number])
       .isRequired, // eslint-disable-line react/no-unused-prop-types
     daysInHours: PropTypes.bool,
-    zeroPadLength: PropTypes.number,
+    zeroPadTime: PropTypes.number,
     controlled: PropTypes.bool,
     intervalDelay: PropTypes.number,
     precision: PropTypes.number,
@@ -105,13 +105,13 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   getRenderProps(): CountdownRenderProps {
-    const { daysInHours, zeroPadLength, zeroPadDaysLength } = this.props;
+    const { daysInHours, zeroPadTime, zeroPadDays } = this.props;
     return {
       ...this.state,
       formatted: formatTimeDelta(this.state, {
         daysInHours,
-        zeroPadLength,
-        zeroPadDaysLength,
+        zeroPadTime,
+        zeroPadDays,
       }),
     };
   }
