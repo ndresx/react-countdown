@@ -121,6 +121,7 @@ ReactDOM.render(
 |Name|Type|Default|Description|
 |:--|:--:|:-----:|:----------|
 |[**date**](#date)|<code>Date&#124;string&#124;number</code>|`required`|Date or timestamp in the future|
+|[**key**](#key)|<code>string&#124;number&#124;undefined</code>|`undefined`|React  [**key**](https://reactjs.org/docs/lists-and-keys.html#keys); can be used to restart the countdown|
 |[**daysInHours**](#daysinhours)|`boolean`|`false`|Days are calculated as hours|
 |[**zeroPadLength**](#zeropadlength)|`number`|`2`|Length of zero-padded output, e.g.: `00:01:02`|
 |[**controlled**](#controlled) |`boolean`|`false`|Hands over the control to its parent(s)|
@@ -139,6 +140,12 @@ Valid values can be _(and more)_:
 * `'Sat, 01 Feb 2020 01:02:03'` // Any by `Date` parseable format
 * `new Date(1580518923000)` // `Date` object
 * `1580518923000` // Timestamp in milliseconds
+
+### `key`
+This is one of React's internal component props and is used to identify the component. However, we can leverage this behavior and use it to, for example,  restart the countdown by
+passing in a new `string` or `number`.
+
+Please see [official React docs](https://reactjs.org/docs/lists-and-keys.html#keys) for more information about keys.
 
 ### `daysInHours`
 Defines whether the time of day should be calculated as hours rather than separated days.
