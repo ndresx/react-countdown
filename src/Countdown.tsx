@@ -4,7 +4,6 @@ import * as PropTypes from 'prop-types';
 const isEqual = require('lodash.isequal');
 
 import {
-  zeroPad,
   calcTimeDelta,
   CountdownTimeDelta,
   CountdownTimeDeltaFormatted,
@@ -135,14 +134,14 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   calcOffsetStart(): number {
-    return new Date().getTime();
+    return Date.now();
   }
 
-  start(): void {
+  start = (): void => {
     this.setState(
       ({ offsetStart, offsetTime }: CountdownState) => ({
         offsetStart: 0,
-        offsetTime: offsetTime + (offsetStart ? new Date().getTime() - offsetStart : 0),
+        offsetTime: offsetTime + (offsetStart ? Date.now() - offsetStart : 0),
       }),
       () => {
         const timeDelta = this.calcTimeDelta();
@@ -155,26 +154,26 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
         }
       }
     );
-  }
+  };
 
-  pause(): void {
+  pause = (): void => {
     this.setState({ offsetStart: this.calcOffsetStart() }, () => {
       this.clearInterval();
       this.props.onPause && this.props.onPause(this.calcTimeDelta());
     });
-  }
+  };
 
   clearInterval(): void {
     window.clearInterval(this.interval);
   }
 
-  isPaused(): boolean {
+  isPaused = (): boolean => {
     return this.state.offsetStart > 0;
-  }
+  };
 
-  isCompleted(): boolean {
+  isCompleted = (): boolean => {
     return this.state.timeDelta.completed;
-  }
+  };
 
   setTimeDeltaState(delta: CountdownTimeDelta): void {
     let callback;

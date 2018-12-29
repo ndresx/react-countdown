@@ -12,9 +12,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
