@@ -2,6 +2,7 @@
 
 exports[`<Countdown /> should render and unmount component on countdown end 1`] = `
 <Countdown
+  autoStart={true}
   controlled={false}
   date={1482453477527}
   daysInHours={false}
@@ -23,6 +24,7 @@ exports[`<Countdown /> should render and unmount component on countdown end 1`] 
 
 exports[`<Countdown /> should render and unmount component on countdown end 2`] = `
 <Countdown
+  autoStart={true}
   controlled={false}
   date={0}
   daysInHours={false}
@@ -44,6 +46,7 @@ exports[`<Countdown /> should render and unmount component on countdown end 2`] 
 
 exports[`<Countdown /> should render custom renderer output 1`] = `
 <Countdown
+  autoStart={true}
   controlled={false}
   date={1482453477527}
   daysInHours={false}
@@ -63,6 +66,7 @@ exports[`<Countdown /> should render custom renderer output 1`] = `
 
 exports[`<Countdown /> should render with daysInHours => true 1`] = `
 <Countdown
+  autoStart={true}
   controlled={false}
   date={1482453477527}
   daysInHours={true}
@@ -82,6 +86,7 @@ exports[`<Countdown /> should render with daysInHours => true 1`] = `
 
 exports[`<Countdown /> should render with zeroPadDays => 3 1`] = `
 <Countdown
+  autoStart={true}
   controlled={false}
   date={1483227367071}
   daysInHours={false}
@@ -104,6 +109,7 @@ exports[`<Countdown /> should render with zeroPadDays => 3 1`] = `
 
 exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
 <Countdown
+  autoStart={true}
   controlled={false}
   date={1482363377071}
   daysInHours={false}

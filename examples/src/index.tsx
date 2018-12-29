@@ -21,6 +21,76 @@ const renderer = ({ hours, minutes, seconds, completed }: CountdownRenderProps) 
   );
 };
 
+class CountdownApiExample extends Component {
+  countdownApi: any = React.createRef<Countdown>();
+  state = { date: Date.now() + 10000 };
+
+  handleStartClick = (): void => {
+    const { current } = this.countdownApi;
+    current.start();
+  };
+
+  handlePauseClick = (): void => {
+    const { current } = this.countdownApi;
+    current.pause();
+  };
+
+  handleResetClick = (): void => {
+    this.setState({ date: Date.now() + 10000 });
+  };
+
+  handleUpdate = (): void => {
+    this.forceUpdate();
+  };
+
+  isPaused(): boolean {
+    const { current } = this.countdownApi;
+    return current && current.isPaused();
+  }
+
+  isCompleted(): boolean {
+    const { current } = this.countdownApi;
+    return current && current.isCompleted();
+  }
+
+  render() {
+    return (
+      <>
+        <h3>Countdown with Start, Pause and Reset controls</h3>
+        <Countdown
+          key={this.state.date}
+          date={this.state.date}
+          ref={this.countdownApi}
+          onMount={this.handleUpdate}
+          onStart={this.handleUpdate}
+          onPause={this.handleUpdate}
+          onComplete={this.handleUpdate}
+          autoStart={false}
+        />
+        <div>
+          <button
+            type="button"
+            onClick={this.handleStartClick}
+            disabled={!this.isPaused() || this.isCompleted()}
+          >
+            Start
+          </button>{' '}
+          <button
+            type="button"
+            onClick={this.handlePauseClick}
+            disabled={this.isPaused() || this.isCompleted()}
+          >
+            Pause
+          </button>{' '}
+          <button type="button" onClick={this.handleResetClick}>
+            Reset
+          </button>
+        </div>
+      </>
+    );
+  }
+}
+
 class App extends Component {
   render() {
     return (
@@ -54,6 +124,8 @@ class App extends Component {
           zeroPadTime={2}
           renderer={props => <pre>{JSON.stringify(props, null, 2)}</pre>}
         />
+        <hr />
+        <CountdownApiExample />
       </>
     );
   }

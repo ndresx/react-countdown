@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import * as React from 'react';
 import { mount, shallow } from 'enzyme';
 
@@ -85,17 +84,19 @@ describe('<Countdown />', () => {
 
     // Forward in time
     wrapper.setProps({ date: 0 });
-    expect(wrapper.state().completed).toBe(true);
+    expect(wrapper.state().timeDelta.completed).toBe(true);
     expect(wrapper.props().children.type).toBe(Completionist);
     expect(Completionist.prototype.componentDidMount).toBeCalled();
 
     const computedProps = { ...wrapper.props() };
     delete computedProps.children;
 
-    const delta = wrapper.state();
+    const obj = wrapper.instance();
+    const delta = wrapper.state().timeDelta;
     expect(completionist.props).toEqual({
       countdown: {
         ...delta,
+        api: obj.getApi(),
         formatted: formatTimeDelta(delta, { zeroPadTime }),
       },
       name: 'master',
@@ -130,7 +131,7 @@ describe('<Countdown />', () => {
     Date.now = jest.fn(() => wrapperDate - 6000);
     jest.runTimersToTime(6000);
     expect(onTick.mock.calls.length).toBe(6);
-    expect(wrapper.state().seconds).toBe(6);
+    expect(wrapper.state().timeDelta.seconds).toBe(6);
 
     wrapper.update();
     expect(wrapper).toMatchSnapshot();
@@ -139,8 +140,8 @@ describe('<Countdown />', () => {
     Date.now = jest.fn(() => wrapperDate - 1000);
     jest.runTimersToTime(3000);
     expect(onTick.mock.calls.length).toBe(9);
-    expect(wrapper.state().seconds).toBe(1);
-    expect(wrapper.state().completed).toBe(false);
+    expect(wrapper.state().timeDelta.seconds).toBe(1);
+    expect(wrapper.state().timeDelta.completed).toBe(false);
 
     // The End: onComplete callback gets triggered instead of onTick
     Date.now = jest.fn(() => wrapperDate);
@@ -154,31 +155,31 @@ describe('<Countdown />', () => {
 
     expect(onComplete.mock.calls.length).toBe(1);
     expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true });
-    expect(wrapper.state().completed).toBe(true);
+    expect(wrapper.state().timeDelta.completed).toBe(true);
   });
 
   it('should run through the controlled component by updating the date prop', () => {
     const root = document.createElement('div');
     wrapper = mount(<Countdown date={1000} controlled />, { attachTo: root });
     expect(wrapper.instance().interval).toBeUndefined();
-    expect(wrapper.state().completed).toBe(false);
+    expect(wrapper.state().timeDelta.completed).toBe(false);
 
     wrapper.setProps({ date: 0 });
-    expect(wrapper.state().total).toBe(0);
-    expect(wrapper.state().completed).toBe(true);
+    expect(wrapper.state().timeDelta.total).toBe(0);
+    expect(wrapper.state().timeDelta.completed).toBe(true);
   });
 
   it('should not (try to) set state after component unmount', () => {
-    expect(wrapper.state().completed).toBe(false);
+    expect(wrapper.state().timeDelta.completed).toBe(false);
 
     Date.now = jest.fn(() => wrapperDate - 6000);
     jest.runTimersToTime(6000);
-    expect(wrapper.state().seconds).toBe(6);
+    expect(wrapper.state().timeDelta.seconds).toBe(6);
 
     wrapper.instance().mounted = false;
     Date.now = jest.fn(() => wrapperDate - 3000);
     jest.runTimersToTime(3000);
-    expect(wrapper.state().seconds).toBe(6);
+    expect(wrapper.state().timeDelta.seconds).toBe(6);
   });
 
   afterEach(() => {

@@ -2,6 +2,7 @@ export interface CountdownTimeDeltaOptions {
   readonly now?: () => number;
   readonly precision?: number;
   readonly controlled?: boolean;
+  readonly offsetTime?: number;
 }
 
 export interface CountdownTimeDelta {
@@ -61,7 +62,12 @@ export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {
  */
 export function calcTimeDelta(
   date: Date | string | number,
-  { now = Date.now, precision = 0, controlled = false }: CountdownTimeDeltaOptions = {}
+  {
+    now = Date.now,
+    precision = 0,
+    controlled = false,
+    offsetTime = 0,
+  }: CountdownTimeDeltaOptions = {}
 ): CountdownTimeDelta {
   let startTimestamp: number;
 
@@ -71,6 +77,10 @@ export function calcTimeDelta(
     startTimestamp = date.getTime();
   } else {
     startTimestamp = date;
+  }
+
+  if (!controlled) {
+    startTimestamp += offsetTime;
   }
 
   const total = Math.round(

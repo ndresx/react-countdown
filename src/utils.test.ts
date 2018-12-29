@@ -135,5 +135,19 @@ describe('utils', () => {
         completed: false,
       });
     });
+
+    it('should calc time difference with custom offset', () => {
+      const date = new Date();
+      date.getTime = jest.fn(() => Date.now() + 1000);
+      expect(calcTimeDelta(date, { offsetTime: 1000 })).toEqual({
+        total: 2000,
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 2,
+        milliseconds: 0,
+        completed: false,
+      });
+    });
   });
 });
