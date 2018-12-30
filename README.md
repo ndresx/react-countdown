@@ -190,7 +190,7 @@ If this doesn't fit your needs, a custom `renderer` callback can be defined to r
 { total, days, hours, minutes, seconds, milliseconds, completed }
 ```
 
-The render props also contain the countdown's [`API`](#api) as `api` prop.
+The render props also contain the countdown's [`API`](#api-reference) as `api` prop.
 
 _Please note that once a custom `renderer` is defined, the [`children`](#children) prop will be ignored._
 
