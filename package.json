@@ -1,6 +1,6 @@
 {
   "name": "react-countdown-now",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A customizable countdown component for React.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -55,6 +55,10 @@
       }
     }
   },
+  "dependencies": {
+    "lodash.isequal": "^4.5.0",
+    "prop-types": "^15.6.2"
+  },
   "devDependencies": {
     "@babel/core": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
@@ -71,7 +75,6 @@
     "enzyme-adapter-react-16": "^1.7.0",
     "enzyme-to-json": "^3.3.4",
     "jest": "^23.6.0",
-    "lodash.isequal": "^4.5.0",
     "prettier": "^1.15.2",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
@@ -84,7 +87,7 @@
     "typescript": "^3.1.6"
   },
   "peerDependencies": {
-    "react": ">= 15.0.0",
-    "react-dom": ">= 15.0.0"
+    "react": ">= 15",
+    "react-dom": ">= 15"
   }
 }
