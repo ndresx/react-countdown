@@ -39,11 +39,11 @@ interface CountdownState {
   readonly offsetTime: number;
 }
 
-interface CountdownApi {
+export interface CountdownApi {
   readonly start: () => void;
   readonly pause: () => void;
-  readonly isPaused: () => void;
-  readonly isCompleted: () => void;
+  readonly isPaused: () => boolean;
+  readonly isCompleted: () => boolean;
 }
 
 /**
