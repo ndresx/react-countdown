@@ -41,6 +41,15 @@ describe('utils', () => {
       expect(zeroPad(123, 3)).toBe('123');
       expect(zeroPad(123, 4)).toBe('0123');
     });
+
+    it('should zero-pad prefixed numbers', () => {
+      expect(zeroPad(-1, 1)).toBe('-1');
+      expect(zeroPad(-1, 2)).toBe('-01');
+      expect(zeroPad(-1, 3)).toBe('-001');
+      expect(zeroPad('+12.34', 1)).toBe('+12.34');
+      expect(zeroPad('+12.34', 2)).toBe('+12.34');
+      expect(zeroPad('+12.34', 3)).toBe('+012.34');
+    });
   });
 
   describe('calcTimeDelta', () => {
@@ -136,7 +145,7 @@ describe('utils', () => {
       });
     });
 
-    it('should calc time difference with custom offset', () => {
+    it('should calculate time difference with custom offset', () => {
       const date = new Date();
       date.getTime = jest.fn(() => Date.now() + 1000);
       expect(calcTimeDelta(date, { offsetTime: 1000 })).toEqual({
