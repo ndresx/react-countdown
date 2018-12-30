@@ -124,7 +124,7 @@ ReactDOM.render(
 |Name|Type|Default|Description|
 |:--|:--:|:-----:|:----------|
 |[**date**](#date)|<code>Date&#124;string&#124;number</code>|`required`|Date or timestamp in the future|
-|[**key**](#key)|<code>string&#124;number&#124;undefined</code>|`undefined`|React  [**key**](https://reactjs.org/docs/lists-and-keys.html#keys); can be used to restart the countdown|
+|[**key**](#key)|<code>string&#124;number</code>|`undefined`|React  [**key**](https://reactjs.org/docs/lists-and-keys.html#keys); can be used to restart the countdown|
 |[**daysInHours**](#daysinhours)|`boolean`|`false`|Days are calculated as hours|
 |[**zeroPadTime**](#zeropadtime)|`number`|`2`|Length of zero-padded output, e.g.: `00:01:02`|
 |[**zeroPadDays**](#zeropaddays)|`number`|`zeroPadTime`|Length of zero-padded days output, e.g.: `01`|
@@ -133,13 +133,13 @@ ReactDOM.render(
 |[**precision**](#precision)|`number`|`0`|The precision on a millisecond basis|
 |[**autoStart**](#autostart)|`boolean`|`true`|Countdown auto-start option|
 |[**children**](#children)|`any`|`null`|A React child for the countdown's completed state|
-|[**renderer**](#renderer)|`function`|`null`|Custom renderer callback|
+|[**renderer**](#renderer)|`function`|`undefined`|Custom renderer callback|
 |[**now**](#now)|`function`|`Date.now`|Alternative handler for the current date|
-|[**onMount**](#onmount)|`function`|`null`|Callback when component mounts|
-|[**onStart**](#onstart)|`function`|`null`|Callback when countdown starts|
-|[**onPause**](#onpause)|`function`|`null`|Callback when countdown pauses|
-|[**onTick**](#ontick)|`function`|`null`|Callback on every interval tick (`controlled` = `false`)|
-|[**onComplete**](#oncomplete)|`function`|`null`|Callback when countdown ends|
+|[**onMount**](#onmount)|`function`|`undefined`|Callback when component mounts|
+|[**onStart**](#onstart)|`function`|`undefined`|Callback when countdown starts|
+|[**onPause**](#onpause)|`function`|`undefined`|Callback when countdown pauses|
+|[**onTick**](#ontick)|`function`|`undefined`|Callback on every interval tick (`controlled` = `false`)|
+|[**onComplete**](#oncomplete)|`function`|`undefined`|Callback when countdown ends|
 
 ### `date`
 The `date` prop is the only required one and can be a `Date` object, `string`, or timestamp in the future. By default, this date value gets compared with the current date, or a custom handler defined via [`now`](#now).
