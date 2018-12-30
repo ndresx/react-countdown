@@ -131,7 +131,7 @@ ReactDOM.render(
 |[**controlled**](#controlled) |`boolean`|`false`|Hands over the control to its parent(s)|
 |[**intervalDelay**](#intervaldelay)|`number`|`1000`|Interval delay in milliseconds|
 |[**precision**](#precision)|`number`|`0`|The precision on a millisecond basis|
-|[**autoStart**](#autostart)|`boolean`|`true`|Countdown auto start option|
+|[**autoStart**](#autostart)|`boolean`|`true`|Countdown auto-start option|
 |[**children**](#children)|`any`|`null`|A React child for the countdown's completed state|
 |[**renderer**](#renderer)|`function`|`null`|Custom renderer callback|
 |[**now**](#now)|`function`|`Date.now`|Alternative handler for the current date|
@@ -171,10 +171,10 @@ Defaults to `zeroPadTime`. Works the same way as [`zeroPadTime`](#zeropadtime) d
 ### `intervalDelay`
 Since this countdown is based on date comparisons, the default value of `1000` milliseconds is probably enough for most scenarios and doesn't need to be changed.
 
-However, if it needs to be more precise, the `intervalDelay` can be set to something lower - down to `0`, which would for example allow to show the milliseconds in a more fancy way (_currently_ only possible through a custom [`renderer`](#renderer)).
+However, if it needs to be more precise, the `intervalDelay` can be set to something lower - down to `0`, which would, for example, allow showing the milliseconds in a more fancy way (_currently_ only possible through a custom [`renderer`](#renderer)).
 
 ### `precision`
-In certain cases you might want to base off the calculations on a millisecond basis. The `precision` prop, which defaults to `0`, can be used to refine this calculation. While the default value simply strips the milliseconds part (e.g.: `10123`ms => `10000`ms), a precision of `3` leads to `10123`ms.
+In certain cases, you might want to base off the calculations on a millisecond basis. The `precision` prop, which defaults to `0`, can be used to refine this calculation. While the default value simply strips the milliseconds part (e.g.: `10123`ms => `10000`ms), a precision of `3` leads to `10123`ms.
 
 ### `autoStart`
 Defines whether the countdown should start automatically or not. Defaults to `true`.
@@ -241,7 +241,7 @@ The `zeroPad` function works similar to other well-known pad-functions and takes
 
 <a name="calctimedelta"></a>
 ### `calcTimeDelta(date, [options])`
-`calcTimeDelta` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similiar to the [`renderer`](#renderer) callback, a custom object (also referred to as **countdown time delta object**) with the following time related data:
+`calcTimeDelta` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similar to the [`renderer`](#renderer) callback, a custom object (also referred to as **countdown time delta object**) with the following time related data:
 
 ```js
 { total, days, hours, minutes, seconds, milliseconds, completed }
