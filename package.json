@@ -1,8 +1,9 @@
 {
   "name": "react-countdown-now",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "A customizable countdown component for React.",
-  "main": "dist/Countdown.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ndresx/react-countdown.git"
@@ -19,43 +20,71 @@
     "react"
   ],
   "scripts": {
-    "lint": "eslint \"src/**/*.{js,jsx}\"",
-    "prebuild": "yarn run lint && yarn run test",
-    "build": "babel src --out-dir dist --ignore spec.js,test.js,spec.jsx,test.jsx",
-    "build:watch": "yarn run build -- --watch",
+    "build": "yarn build:clean && yarn tsc && yarn build:types",
+    "build:clean": "rm -rf ./dist mkdir dist",
+    "build:watch": "yarn build:clean && yarn tsc-watch --onSuccess \"yarn build:types\"",
+    "build:types": "cp ./src/index.d.ts ./dist",
+    "clean": "rm -rf ./node_modules && rm -rf ./coverage && yarn build:clean",
+    "lint": "yarn prettier-check && tslint --config tslint.json --project tsconfig.json ./src/**/*.{ts,tsx} && tsc --noEmit",
+    "prebuild": "yarn lint && yarn test",
+    "prepublish": "yarn build",
+    "prettier-check": "prettier --list-different ./src/**/*.{ts,tsx}",
+    "prettier": "prettier --write ./src/**/*.{ts,tsx}",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
-  "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.7.5",
-    "babel-eslint": "^8.0.3",
-    "babel-jest": "^22.0.4",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "coveralls": "^3.0.0",
-    "enzyme": "^3.3.0",
-    "enzyme-adapter-react-16": "^1.1.1",
-    "enzyme-to-json": "^3.3.0",
-    "eslint": "^4.13.1",
-    "eslint-config-airbnb": "^16.1.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jest": "^21.5.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-prettier": "^2.0.1",
-    "eslint-plugin-react": "^7.5.1",
-    "jest": "^22.0.4",
-    "prettier": "^1.9.2",
-    "prop-types": "^15.6.0",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "react-test-renderer": "^16.2.0"
-  },
   "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
     "snapshotSerializers": [
-      "<rootDir>/node_modules/enzyme-to-json/serializer"
-    ]
+      "enzyme-to-json/serializer"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testMatch": [
+      "<rootDir>/**/?(*.)+(spec|test).ts?(x)"
+    ],
+    "setupTestFrameworkScriptFile": "<rootDir>/config/enzyme.ts",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/config"
+    ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.1.0",
+    "@types/enzyme": "^3.1.15",
+    "@types/enzyme-adapter-react-16": "^1.0.3",
+    "@types/enzyme-to-json": "^1.5.2",
+    "@types/jest": "^23.3.9",
+    "@types/lodash.isequal": "^4.5.3",
+    "@types/react": "^16.7.18",
+    "coveralls": "^3.0.2",
+    "enzyme": "^3.7.0",
+    "enzyme-adapter-react-16": "^1.7.0",
+    "enzyme-to-json": "^3.3.4",
+    "jest": "^23.6.0",
+    "lodash.isequal": "^4.5.0",
+    "prettier": "^1.15.2",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-test-renderer": "^16.6.3",
+    "ts-jest": "^23.10.4",
+    "tsc-watch": "^1.0.31",
+    "tslint": "^5.11.0",
+    "tslint-config-airbnb": "^5.11.1",
+    "tslint-config-prettier": "^1.16.0",
+    "typescript": "^3.1.6"
+  },
+  "peerDependencies": {
+    "react": ">= 15.0.0",
+    "react-dom": ">= 15.0.0"
   }
 }
