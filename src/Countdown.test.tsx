@@ -207,6 +207,7 @@ describe('<Countdown />', () => {
     );
     expect(api.isPaused()).toBe(false);
     expect(spies.onMount).toHaveBeenCalledTimes(1);
+    expect(spies.onMount).toHaveBeenCalledWith(obj.calcTimeDelta());
     expect(spies.onStart).toHaveBeenCalledTimes(1);
     expect(spies.onPause).toHaveBeenCalledTimes(0);
 

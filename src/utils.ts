@@ -56,6 +56,7 @@ export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {
  *  {function} [date=Date.now] Alternative function for returning the current date.
  *  {number} [precision=0] The precision on a millisecond basis.
  *  {boolean} [controlled=false] Defines whether the calculated value is already provided as the time difference or not.
+ *  {number} [offsetTime=0] Defines the offset time that gets added to the start time; only considered if controlled is false.
  * @param {number} [precision=0] The precision on a millisecond basis.
  * @param {boolean} [controlled=false] Defines whether the calculated value is already provided as the time difference or not.
  * @returns Object that includes details about the time difference.
