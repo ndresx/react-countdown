@@ -1,5 +1,5 @@
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const isEqual = require('lodash.isequal');
 
@@ -84,7 +84,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
 
   mounted = false;
   interval: number | undefined;
-  api: CountdownApi;
+  api: CountdownApi | undefined;
 
   constructor(props: CountdownProps) {
     super(props);

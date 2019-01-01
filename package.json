@@ -1,9 +1,13 @@
 {
   "name": "react-countdown-now",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A customizable countdown component for React.",
   "main": "./dist/index.js",
+  "module": "./dist/index.es.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ndresx/react-countdown.git"
@@ -20,10 +24,9 @@
     "react"
   ],
   "scripts": {
-    "build": "yarn build:clean && yarn tsc && yarn build:types",
+    "build": "yarn build:clean && yarn rollup --config",
     "build:clean": "rm -rf ./dist mkdir dist",
-    "build:watch": "yarn build:clean && yarn tsc-watch --onSuccess \"yarn build:types\"",
-    "build:types": "cp ./src/index.d.ts ./dist",
+    "build:watch": "yarn build:clean && yarn rollup --config --watch",
     "clean": "rm -rf ./node_modules && rm -rf ./coverage && yarn build:clean",
     "lint": "yarn prettier-check && tslint --config tslint.json --project tsconfig.json ./src/**/*.{ts,tsx} && tsc --noEmit",
     "prebuild": "yarn lint && yarn test",
@@ -32,28 +35,6 @@
     "prettier": "prettier --write ./src/**/*.{ts,tsx}",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "jsdom",
-    "snapshotSerializers": [
-      "enzyme-to-json/serializer"
-    ],
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testMatch": [
-      "<rootDir>/**/?(*.)+(spec|test).ts?(x)"
-    ],
-    "setupTestFrameworkScriptFile": "<rootDir>/config/enzyme.ts",
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/config"
-    ],
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false
-      }
-    }
   },
   "dependencies": {
     "lodash.isequal": "^4.5.0",
@@ -79,12 +60,13 @@
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-test-renderer": "^16.6.3",
+    "rollup": "^1.0.0",
+    "rollup-plugin-typescript2": "^0.18.1",
     "ts-jest": "^23.10.4",
-    "tsc-watch": "^1.0.31",
     "tslint": "^5.11.0",
     "tslint-config-airbnb": "^5.11.1",
     "tslint-config-prettier": "^1.16.0",
-    "typescript": "^3.1.6"
+    "typescript": "^3.2.2"
   },
   "peerDependencies": {
     "react": ">= 15",
