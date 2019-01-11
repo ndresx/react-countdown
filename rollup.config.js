@@ -1,4 +1,5 @@
 const pkg = require('./package.json');
+const babel = require('rollup-plugin-babel');
 const typescript = require('rollup-plugin-typescript2');
 
 module.exports = {
@@ -21,6 +22,9 @@ module.exports = {
       typescript: require('typescript'),
       exclude: ['**/*.test.ts?(x)'],
       clean: true,
+    }),
+    babel({
+      exclude: 'node_modules/**',
     }),
   ],
 };
