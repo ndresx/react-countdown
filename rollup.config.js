@@ -25,6 +25,7 @@ module.exports = {
     }),
     babel({
       exclude: 'node_modules/**',
+      extensions: ['.ts', '.tsx'],
     }),
   ],
 };
