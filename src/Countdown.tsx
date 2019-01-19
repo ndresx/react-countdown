@@ -30,6 +30,7 @@ export interface CountdownProps extends React.Props<Countdown>, CountdownTimeDel
 
 export interface CountdownRenderProps extends CountdownTimeDelta {
   readonly api: CountdownApi;
+  readonly props: CountdownProps;
   readonly formatted: CountdownTimeDeltaFormatted;
 }
 
@@ -73,7 +74,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     precision: PropTypes.number,
     autoStart: PropTypes.bool,
     children: PropTypes.element,
-    render: PropTypes.func,
+    renderer: PropTypes.func,
     now: PropTypes.func,
     onMount: PropTypes.func,
     onStart: PropTypes.func,
@@ -204,6 +205,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     return {
       ...timeDelta,
       api: this.getApi(),
+      props: this.props,
       formatted: formatTimeDelta(timeDelta, {
         daysInHours,
         zeroPadTime,

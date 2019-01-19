@@ -99,6 +99,7 @@ describe('<Countdown />', () => {
       countdown: {
         ...delta,
         api: obj.getApi(),
+        props: wrapper.props(),
         formatted: formatTimeDelta(delta, { zeroPadTime }),
       },
       name: 'master',

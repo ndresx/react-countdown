@@ -45,7 +45,7 @@ ReactDOM.render(
 
 ### Custom & Conditional Rendering
 In case you want to change the output of the component, or want to signal that the countdown's work is done, you can do this by either using the [`onComplete`](#oncomplete) callback, a
-custom [`renderer`](#renderer), or by specifying another React child within `<Countdown></Countdown>` like the following examples show.
+custom [`renderer`](#renderer), or by specifying a React child within `<Countdown></Countdown>`, which will only be shown once the countdown is complete.
 
 #### Using a React Child for the Completed State
 
@@ -182,6 +182,8 @@ Defines whether the countdown should start automatically or not. Defaults to `tr
 ### `children`
 This component also considers the child that may live within the `<Countdown></Countdown>` element, which, in case it's available, replaces the countdown's component state once it's complete. Moreover, an additional prop called `countdown` is set and contains data similar to what the [`renderer`](#renderer) callback would receive. Here's an [example](#using-a-react-child-for-the-completed-state) that showcases its usage.
 
+_Please note that once a custom `renderer` is defined, the [`children`](#children) prop will be ignored._
+
 <a name="renderer"></a>
 ### `renderer(props)`
 The component's render output is very simple and depends on [`daysInHours`](#daysinhours): _{days}:{hours}:{minutes}:{seconds}_.
@@ -190,7 +192,7 @@ If this doesn't fit your needs, a custom `renderer` callback can be defined to r
 { total, days, hours, minutes, seconds, milliseconds, completed }
 ```
 
-The render props also contain the countdown's [`API`](#api-reference) as `api` prop.
+The render props also contain the countdown's [`API`](#api-reference) as `api` prop as well as the passed in component [`props`](#props).
 
 _Please note that once a custom `renderer` is defined, the [`children`](#children) prop will be ignored._
 

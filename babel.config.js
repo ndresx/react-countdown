@@ -2,6 +2,10 @@ module.exports = function(api) {
   api.cache(true);
   return {
     comments: false,
-    presets: [['@babel/env', { targets: { node: '4.0.0' } }], '@babel/react', '@babel/typescript'],
+    presets: [
+      ['@babel/env', { targets: { browsers: 'last 2 versions' } }],
+      '@babel/react',
+      '@babel/typescript',
+    ],
   };
 };
