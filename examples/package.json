@@ -1,6 +1,6 @@
 {
   "name": "examples",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "start": "react-scripts start",
@@ -15,12 +15,12 @@
     "not op_mini all"
   ],
   "dependencies": {
-    "@types/react": "^16.7.18",
-    "@types/react-dom": "16.0.9",
-    "react": "^16.7.0",
-    "react-countdown-now": "^2.0.2",
-    "react-dom": "^16.7.0",
-    "react-scripts": "2.1.1",
-    "typescript": "3.1.6"
+    "@types/react": "^16.8.15",
+    "@types/react-dom": "16.8.4",
+    "react": "^16.8.6",
+    "react-countdown-now": "^2.1.0",
+    "react-dom": "^16.8.6",
+    "react-scripts": "3.0.0",
+    "typescript": "3.4.5"
   }
 }

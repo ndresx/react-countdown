@@ -13,7 +13,14 @@
     "noEmit": true,
     "jsx": "preserve",
     "forceConsistentCasingInFileNames": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ]
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }
