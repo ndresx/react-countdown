@@ -9,7 +9,9 @@ branches:
 jobs:
   include:
     - stage: 'Build'
+      name: "Package"
       script: yarn build
+      name: "Examples"
       script: cd ./examples && yarn && yarn build
     - stage: 'Coverage'
       script: cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose

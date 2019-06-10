@@ -3,8 +3,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   snapshotSerializers: ['enzyme-to-json/serializer'],
   coveragePathIgnorePatterns: ['<rootDir>/config'],
-  setupTestFrameworkScriptFile: '<rootDir>/config/setupTests.ts',
-  testMatch: ['<rootDir>/src/**/?(*.)+(spec|test).ts?(x)'],
+  setupFilesAfterEnv: ['<rootDir>/config/setupTests.ts'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
