@@ -6,8 +6,10 @@ branches:
   only:
     - master
 
-script: yarn run build
-
-after_success:
-  - cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose
-  - rm -rf ./coverage
+jobs:
+  include:
+    - stage: "Build"
+      script: yarn run build
+    - stage: "Coverage"
+      script: cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose
+      script: rm -rf ./coverage
