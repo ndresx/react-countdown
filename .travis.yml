@@ -8,6 +8,8 @@ branches:
 
 jobs:
   include:
+    - stage: 'Lint'
+      script: yarn lint
     - stage: 'Build'
       name: "Package"
       script: yarn build

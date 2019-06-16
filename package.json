@@ -29,7 +29,6 @@
     "build:watch": "yarn build:clean && yarn rollup --config --watch",
     "clean": "rm -rf ./node_modules && rm -rf ./coverage && yarn build:clean",
     "lint": "yarn prettier-check && tslint --config tslint.json --project tsconfig.json ./src/**/*.{ts,tsx} && tsc --noEmit",
-    "prebuild": "yarn lint && yarn test",
     "prettier-check": "prettier --list-different ./src/**/*.{ts,tsx}",
     "prettier": "prettier --write ./src/**/*.{ts,tsx}",
     "test": "jest --coverage",
