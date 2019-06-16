@@ -12,7 +12,7 @@ jobs:
       name: 'Prettier'
       script: yarn lint:prettier
     - script: yarn lint:tslint && yarn lint:tsc
-      name: 'TypeScript Lint & Compiler'
+      name: 'TypeScript'
     - stage: 'Tests'
       name: 'Unit Tests'
       script: yarn test && cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose
