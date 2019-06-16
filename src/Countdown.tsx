@@ -19,13 +19,13 @@ export interface CountdownProps extends React.Props<Countdown>, CountdownTimeDel
   readonly precision?: number;
   readonly autoStart?: boolean;
   readonly children?: React.ReactElement<any>;
-  readonly renderer?: ((props: CountdownRenderProps) => React.ReactNode);
+  readonly renderer?: (props: CountdownRenderProps) => React.ReactNode;
   readonly now?: () => number;
-  readonly onMount?: (delta: CountdownTimeDelta) => void;
-  readonly onStart?: (delta: CountdownTimeDelta) => void;
-  readonly onPause?: (delta: CountdownTimeDelta) => void;
-  readonly onTick?: (delta: CountdownTimeDelta) => void;
-  readonly onComplete?: (delta: CountdownTimeDelta) => void;
+  readonly onMount?: CountdownTimeDeltaFn;
+  readonly onStart?: CountdownTimeDeltaFn;
+  readonly onPause?: CountdownTimeDeltaFn;
+  readonly onTick?: CountdownTimeDeltaFn;
+  readonly onComplete?: CountdownTimeDeltaFn;
 }
 
 export interface CountdownRenderProps extends CountdownTimeDelta {
@@ -33,6 +33,8 @@ export interface CountdownRenderProps extends CountdownTimeDelta {
   readonly props: CountdownProps;
   readonly formatted: CountdownTimeDeltaFormatted;
 }
+
+export type CountdownTimeDeltaFn = (delta: CountdownTimeDelta) => void;
 
 interface CountdownState {
   readonly timeDelta: CountdownTimeDelta;
