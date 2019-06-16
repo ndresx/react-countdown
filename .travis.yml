@@ -8,11 +8,12 @@ branches:
 
 jobs:
   include:
-    - stage: 'Linting & Tests'
+    - stage: 'Lint'
       script: yarn lint
+    - stage: 'Tests'
       script: yarn test && cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose
     - stage: 'Build'
       name: "Package"
       script: yarn build
+    - script: cd ./examples && yarn && yarn build
       name: "Examples"
-      script: cd ./examples && yarn && yarn build
