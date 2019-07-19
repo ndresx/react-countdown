@@ -41,7 +41,7 @@ ReactDOM.render(
   document.getElementById('root')
 );
 ```
-[Live Demo](https://codesandbox.io/s/zmP5vGEOm)
+[Live Demo](https://codesandbox.io/s/silent-forest-orfbe)
 
 ### Custom & Conditional Rendering
 In case you want to change the output of the component, or want to signal that the countdown's work is done, you can do this by either using the [`onComplete`](#oncomplete) callback, a
@@ -66,7 +66,7 @@ ReactDOM.render(
   document.getElementById('root')
 );
 ```
-[Live Demo](https://codesandbox.io/s/QWoK01R7M)
+[Live Demo](https://codesandbox.io/s/sweet-villani-gvrm9)
 
 #### Custom Renderer with Completed Condition
 
@@ -97,7 +97,7 @@ ReactDOM.render(
   document.getElementById('root')
 );
 ```
-[Live Demo](https://codesandbox.io/s/gL4RoLo2r)
+[Live Demo](https://codesandbox.io/s/infallible-zhukovsky-ydfrf)
 
 ### Countdown in Milliseconds
 Here is an example with a countdown of 10 seconds that displays the total time difference in milliseconds. In order to display the milliseconds appropriately, the [`intervalDelay`](#intervaldelay) value needs to be lower than `1000`ms and a [`precision`](#precision) of `1` to `3` should be used. Last but not least, a simple [`renderer`](#renderer) callback needs to be set up.
@@ -117,7 +117,7 @@ ReactDOM.render(
   document.getElementById('root')
 );
 ```
-[Live Demo](https://codesandbox.io/s/kyLRX0yX)
+[Live Demo](https://codesandbox.io/s/affectionate-sunset-2677h)
 
 ## Props
 
