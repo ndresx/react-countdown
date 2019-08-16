@@ -142,12 +142,12 @@ ReactDOM.render(
 |[**onComplete**](#oncomplete)|`function`|`undefined`|Callback when countdown ends|
 
 ### `date`
-The `date` prop is the only required one and can be a `Date` object, `string`, or timestamp in the future. By default, this date value gets compared with the current date, or a custom handler defined via [`now`](#now).
+The `date` prop is the only required one and can be a [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object, `string`, or timestamp in the future. By default, this date value gets compared with the current date, or a custom handler defined via [`now`](#now).
 
 Valid values can be _(and more)_:
-* `'Sat, 01 Feb 2020 01:02:03'` // Any by `Date` parseable format
-* `new Date(1580518923000)` // `Date` object
+* `'2020-02-01T01:02:03'` // [`Date` time string format](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse#Date_Time_String_Format)
 * `1580518923000` // Timestamp in milliseconds
+* `new Date(1580518923000)` // [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object
 
 ### `key`
 This is one of React's internal component props and is used to identify the component. However, we can leverage this behavior and use it to, for example,  restart the countdown by
