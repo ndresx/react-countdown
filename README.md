@@ -123,8 +123,8 @@ ReactDOM.render(
 
 |Name|Type|Default|Description|
 |:--|:--:|:-----:|:----------|
-|[**date**](#date)|<code>Date&#124;string&#124;number</code>|`required`|Date or timestamp in the future|
-|[**key**](#key)|<code>string&#124;number</code>|`undefined`|React  [**key**](https://reactjs.org/docs/lists-and-keys.html#keys); can be used to restart the countdown|
+|[**date**](#date)|<code>Date&#124;string&#124;number</code>|`required`|[`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) or timestamp in the future|
+|[**key**](#key)|<code>string&#124;number</code>|`undefined`|React  [`key`](https://reactjs.org/docs/lists-and-keys.html#keys); can be used to restart the countdown|
 |[**daysInHours**](#daysinhours)|`boolean`|`false`|Days are calculated as hours|
 |[**zeroPadTime**](#zeropadtime)|`number`|`2`|Length of zero-padded output, e.g.: `00:01:02`|
 |[**zeroPadDays**](#zeropaddays)|`number`|`zeroPadTime`|Length of zero-padded days output, e.g.: `01`|
@@ -150,8 +150,8 @@ Valid values can be _(and more)_:
 * `new Date(1580518923000)` // [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object
 
 ### `key`
-This is one of React's internal component props and is used to identify the component. However, we can leverage this behavior and use it to, for example,  restart the countdown by
-passing in a new `string` or `number`.
+This is one of React's internal component props to help identifying elements throughout the reconciliation process. It can be used to restart the countdown by
+passing in a new `string` or `number` value.
 
 Please see [official React docs](https://reactjs.org/docs/lists-and-keys.html#keys) for more information about keys.
 

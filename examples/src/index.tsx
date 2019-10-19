@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 import Countdown, { CountdownRenderProps } from 'react-countdown';
 import ControlledCountdown from './ControlledCountdown';
+import CountdownHook from './CountdownHook';
 import CountdownApi from './CountdownApi';
 
 // Random component
@@ -49,6 +50,9 @@ class App extends Component {
         />
         <hr />
         <ControlledCountdown />
+        <hr />
+        <h3>Countdown Hook</h3>
+        <CountdownHook date={Date.now() + 10000} />
         <hr />
         <h3>Custom Renderer with Stringified Props</h3>
         <Countdown
