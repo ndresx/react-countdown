@@ -241,6 +241,14 @@ import Countdown, { zeroPad, calcTimeDelta, formatTimeDelta } from 'react-countd
 ### `zeroPad(value, [length = 2])`
 The `zeroPad` function works similar to other well-known pad-functions and takes 2 arguments into account. A `value` which can be a `string` or `number`, as well as a `length` parameter which defaults to `2` as you are most likely only going to use this function if you actually want to pad one of your values. Either returns a `number` if `length` equals `0`, or the zero-padded `string`.
 
+```js
+const renderer = ({ hours, minutes, seconds }) => (
+  <span>
+    {zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}
+  </span>
+);
+```
+
 <a name="calctimedelta"></a>
 ### `calcTimeDelta(date, [options])`
 `calcTimeDelta` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similar to the [`renderer`](#renderer) callback, a custom object (also referred to as **countdown time delta object**) with the following time related data:
