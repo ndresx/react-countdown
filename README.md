@@ -242,31 +242,10 @@ import Countdown, { zeroPad, calcTimeDelta, formatTimeDelta } from 'react-countd
 The `zeroPad` function works similar to other well-known pad-functions and takes 2 arguments into account. A `value` which can be a `string` or `number`, as well as a `length` parameter which defaults to `2` as you are most likely only going to use this function if you actually want to pad one of your values. Either returns a `number` if `length` equals `0`, or the zero-padded `string`.
 
 ```js
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Countdown, { zeroPad } from 'react-countdown-now';
-
-// Renderer callback with condition
-const renderer = ({ hours, minutes, seconds, completed }) => {
-  if (completed) {
-    // Render a completed state
-    return <span>You are good to go!</span>;
-  } else {
-    // Render a countdown
-    return (
-      <span>
-        {zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}
-      </span>
-    );
-  }
-};
-
-ReactDOM.render(
-  <Countdown
-    date={Date.now() + 5000}
-    renderer={renderer}
-  />,
-  document.getElementById('root')
+const renderer = ({ hours, minutes, seconds }) => (
+  <span>
+    {zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}
+  </span>
 );
 ```
 
