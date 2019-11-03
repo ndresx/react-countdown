@@ -1,38 +1,46 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-import CountdownJs, { CountdownProps, CountdownApi, CountdownRenderProps } from './CountdownJs';
+import CountdownJs, { CountdownProps, CountdownRenderProps, CountdownState } from './CountdownJs';
 
 export interface UseCountdownProps extends Omit<CountdownProps, 'children' | 'renderer'> {}
 
-export interface UseCountdownResult {
-  readonly countdown: CountdownJs;
-  readonly api: CountdownApi;
-  readonly renderProps: CountdownRenderProps;
-}
+export interface UseCountdownResult extends CountdownRenderProps {}
 
 export default function useCountdown(props: UseCountdownProps): UseCountdownResult {
-  const [, forceUpdate] = useState({});
-  const countdown = useMemo(
-    () =>
-      new CountdownJs(props, callback => {
-        forceUpdate({});
-        callback && callback();
-      }),
-    []
-  );
+  const [, setState] = useState<Partial<CountdownState>>({});
+  const countdownObj = useRef<CountdownJs | null>(null);
+  const firstRun = useRef(false);
+  const key = useRef(props.key);
+
+  if (!countdownObj.current || key.current !== props.key) {
+    if (countdownObj.current) {
+      key.current = props.key;
+      firstRun.current = false;
+    }
+
+    countdownObj.current = new CountdownJs({ ...props }, (state, callback) => {
+      setState(state);
+      callback && callback();
+    });
+  }
+
+  const countdown = countdownObj.current as CountdownJs;
 
   useEffect(() => {
     countdown.mount();
-    return countdown.unmount;
-  }, []);
+
+    return () => {
+      countdown.unmount();
+    };
+  }, [countdown]);
 
   useEffect(() => {
-    countdown.update(props);
+    if (firstRun.current) {
+      countdown.update(props);
+    } else {
+      firstRun.current = true;
+    }
   }, [props]);
 
-  return {
-    countdown,
-    api: countdown.getApi(),
-    renderProps: countdown.getRenderProps(),
-  };
+  return countdown.getRenderProps();
 }

@@ -12,6 +12,7 @@ import {
 
 export interface CountdownProps extends React.Props<Countdown>, CountdownTimeDeltaFormatOptions {
   readonly date: Date | number | string;
+  readonly key?: React.Key;
   readonly controlled?: boolean;
   readonly intervalDelay?: number;
   readonly precision?: number;
@@ -19,6 +20,7 @@ export interface CountdownProps extends React.Props<Countdown>, CountdownTimeDel
   readonly children?: React.ReactElement<any>;
   readonly renderer?: (props: CountdownRenderProps) => React.ReactNode;
   readonly now?: () => number;
+  readonly pure?: boolean;
   readonly onMount?: CountdownTimeDeltaFn;
   readonly onStart?: CountdownTimeDeltaFn;
   readonly onPause?: CountdownTimeDeltaFn;
@@ -47,6 +49,8 @@ export interface CountdownApi {
   readonly isCompleted: () => boolean;
 }
 
+export type StateUpdaterFn = (state: CountdownState, callback?: () => void) => void;
+
 /**
  * A customizable countdown component for React.
  *
@@ -55,30 +59,22 @@ export interface CountdownApi {
  * @extends {React.Component}
  */
 export default class CountdownJs {
-  static defaultProps: Partial<CountdownProps> = {
-    ...timeDeltaFormatOptionsDefaults,
-    controlled: false,
-    intervalDelay: 1000,
-    precision: 0,
-    autoStart: true,
-  };
-
   props: CountdownProps;
   state: CountdownState;
-  updater: (callback?: () => void) => void;
+  stateUpdater: StateUpdaterFn;
 
   mounted = false;
   interval: number | undefined;
   api: CountdownApi | undefined;
 
-  constructor(props: CountdownProps, updater: (callback?: () => void) => void) {
+  constructor(props: CountdownProps, stateUpdater: StateUpdaterFn) {
     this.props = this.computeProps(props);
     this.state = {
       timeDelta: this.calcTimeDelta(),
       offsetStart: props.autoStart ? 0 : this.calcOffsetStart(),
       offsetTime: 0,
     };
-    this.updater = updater;
+    this.stateUpdater = stateUpdater;
   }
 
   mount = (): void => {
@@ -87,13 +83,16 @@ export default class CountdownJs {
     this.props.onMount && this.props.onMount(this.calcTimeDelta());
   };
 
-  update = (props: CountdownProps): void => {
+  update = (props: CountdownProps): boolean => {
     const nextProps = this.computeProps(props);
 
-    if (!isEqual(nextProps, this.computeProps(this.props))) {
+    if (nextProps.pure && !isEqual(nextProps, this.computeProps(this.props))) {
       this.setProps(nextProps);
       this.setTimeDeltaState(this.calcTimeDelta());
+      return true;
     }
+
+    return false;
   };
 
   unmount = (): void => {
@@ -130,7 +129,7 @@ export default class CountdownJs {
     this.setState(
       ({ offsetStart, offsetTime }: CountdownState) => ({
         offsetStart: 0,
-        offsetTime: offsetTime + (offsetStart ? Date.now() - offsetStart : 0),
+        offsetTime: offsetTime + (offsetStart ? this.calcOffsetStart() - offsetStart : 0),
       }),
       () => {
         const timeDelta = this.calcTimeDelta();
@@ -165,6 +164,7 @@ export default class CountdownJs {
       intervalDelay: 1000,
       precision: 0,
       autoStart: true,
+      pure: true,
       ...props,
     };
   }
@@ -234,7 +234,8 @@ export default class CountdownJs {
     this.state = {
       ...this.state,
       ...(typeof state === 'function' ? state(this.state) : state),
-    } as CountdownState;
-    this.updater(callback);
+    };
+
+    this.stateUpdater(this.state, callback);
   }
 }

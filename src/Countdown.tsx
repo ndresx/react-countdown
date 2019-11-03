@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import CountdownJs, { CountdownProps, CountdownApi } from './CountdownJs';
+import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './CountdownJs';
 
 /**
  * A customizable countdown component for React.
@@ -10,7 +10,7 @@ import CountdownJs, { CountdownProps, CountdownApi } from './CountdownJs';
  * @class Countdown
  * @extends {React.Component}
  */
-export default class Countdown extends React.Component<CountdownProps> {
+export default class Countdown extends React.Component<CountdownProps, CountdownState> {
   static propTypes = {
     date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string, PropTypes.number])
       .isRequired,
@@ -24,6 +24,7 @@ export default class Countdown extends React.Component<CountdownProps> {
     children: PropTypes.element,
     renderer: PropTypes.func,
     now: PropTypes.func,
+    pure: PropTypes.bool,
     onMount: PropTypes.func,
     onStart: PropTypes.func,
     onPause: PropTypes.func,
@@ -35,7 +36,9 @@ export default class Countdown extends React.Component<CountdownProps> {
 
   constructor(props: CountdownProps) {
     super(props);
-    this.countdown = new CountdownJs(this.props, this.updater);
+    this.countdown = new CountdownJs(this.props, (state, callback) =>
+      this.setState(state, callback)
+    );
   }
 
   componentDidMount(): void {
@@ -50,10 +53,6 @@ export default class Countdown extends React.Component<CountdownProps> {
     this.countdown.unmount();
   }
 
-  updater = (callback?: () => void): void => {
-    this.forceUpdate(callback);
-  };
-
   getApi(): CountdownApi {
     return this.countdown.getApi();
   }
@@ -66,7 +65,7 @@ export default class Countdown extends React.Component<CountdownProps> {
       return renderer(renderProps);
     }
 
-    if (children && this.countdown.getState().timeDelta.completed) {
+    if (children && renderProps.completed) {
       return React.cloneElement(children, { countdown: renderProps });
     }
 

@@ -5,22 +5,20 @@ export interface CountdownTimeDeltaOptions {
   readonly offsetTime?: number;
 }
 
-export interface CountdownTimeDelta {
+export interface CountdownTimeDelta extends CountdownTimeUnits {
   readonly total: number;
-  readonly days: number;
-  readonly hours: number;
-  readonly minutes: number;
-  readonly seconds: number;
-  readonly milliseconds: number;
   readonly completed: boolean;
 }
 
-export interface CountdownTimeDeltaFormatted {
-  readonly days: string;
-  readonly hours: string;
-  readonly minutes: string;
-  readonly seconds: string;
+export interface CountdownTimeUnits<T = number> {
+  readonly days: T;
+  readonly hours: T;
+  readonly minutes: T;
+  readonly seconds: T;
+  readonly milliseconds: T;
 }
+
+export interface CountdownTimeDeltaFormatted extends CountdownTimeUnits<string> {}
 
 export interface CountdownTimeDeltaFormatOptions {
   readonly daysInHours?: boolean;
@@ -67,7 +65,7 @@ export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {
  *  {number} [offsetTime=0] Defines the offset time that gets added to the start time; only considered if controlled is false.
  * @param {number} [precision=0] The precision on a millisecond basis.
  * @param {boolean} [controlled=false] Defines whether the calculated value is already provided as the time difference or not.
- * @returns Object that includes details about the time difference.
+ * @returns {CountdownTimeDelta} Object that includes details about the time difference.
  */
 export function calcTimeDelta(
   date: Date | string | number,
@@ -80,10 +78,10 @@ export function calcTimeDelta(
 ): CountdownTimeDelta {
   let startTimestamp: number;
 
-  if (typeof date === 'string') {
-    startTimestamp = new Date(date).getTime();
-  } else if (date instanceof Date) {
+  if (date instanceof Date) {
     startTimestamp = date.getTime();
+  } else if (typeof date === 'string') {
+    startTimestamp = new Date(date).getTime();
   } else {
     startTimestamp = date;
   }
@@ -100,16 +98,29 @@ export function calcTimeDelta(
     ) * 1000
   );
 
-  const seconds = total / 1000;
+  return {
+    ...calcTimeUnits(total),
+    total,
+    completed: total <= 0,
+  };
+}
+
+/**
+ * Calculates each time unit of a given timestamp.
+ *
+ * @export
+ * @param {number} timestamp Timestamp of a certain point in time.
+ * @returns {CountdownTimeUnits} Object that includes details about each time unit.
+ */
+export function calcTimeUnits(timestamp: number): CountdownTimeUnits {
+  const seconds = timestamp / 1000;
 
   return {
-    total,
     days: Math.floor(seconds / (3600 * 24)),
     hours: Math.floor((seconds / 3600) % 24),
     minutes: Math.floor((seconds / 60) % 60),
     seconds: Math.floor(seconds % 60),
     milliseconds: Number(((seconds % 1) * 1000).toFixed()),
-    completed: total <= 0,
   };
 }
 
@@ -125,19 +136,22 @@ export function formatTimeDelta(
   delta: CountdownTimeDelta,
   options?: CountdownTimeDeltaFormatOptions
 ): CountdownTimeDeltaFormatted {
-  const { days, hours, minutes, seconds } = delta;
+  const { days, hours, minutes, seconds, milliseconds } = delta;
   const { daysInHours, zeroPadTime, zeroPadDays = zeroPadTime } = {
     ...timeDeltaFormatOptionsDefaults,
     ...options,
   };
+
+  const zeroPadLength = Math.min(2, zeroPadTime);
   const formattedHours = daysInHours
     ? zeroPad(hours + days * 24, zeroPadTime)
-    : zeroPad(hours, Math.min(2, zeroPadTime));
+    : zeroPad(hours, zeroPadLength);
 
   return {
     days: daysInHours ? '' : zeroPad(days, zeroPadDays),
     hours: formattedHours,
-    minutes: zeroPad(minutes, Math.min(2, zeroPadTime)),
-    seconds: zeroPad(seconds, Math.min(2, zeroPadTime)),
+    minutes: zeroPad(minutes, zeroPadLength),
+    seconds: zeroPad(seconds, zeroPadLength),
+    milliseconds: zeroPad(milliseconds, zeroPadLength),
   };
 }

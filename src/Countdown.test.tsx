@@ -1,38 +1,26 @@
 import * as React from 'react';
-import { mount } from 'enzyme';
+import { mount, ReactWrapper } from 'enzyme';
 
 import Countdown from './Countdown';
-import CountdownJs, { CountdownState } from './CountdownJs';
+import CountdownJs, { CountdownProps, CountdownState } from './CountdownJs';
 import { calcTimeDelta, formatTimeDelta } from './utils';
+import { mockDateNow, defaultStats } from './fixtures';
 
-const timeDiff = 90110456;
-const now = jest.fn(() => 1482363367071);
-Date.now = now;
-
-const defaultStats = {
-  total: 0,
-  days: 0,
-  hours: 0,
-  minutes: 0,
-  seconds: 0,
-  milliseconds: 0,
-  completed: false,
-};
+const { now, timeDiff } = mockDateNow();
 
 describe('<Countdown />', () => {
   jest.useFakeTimers();
 
-  let wrapper;
-  let obj;
-  let countdownDate;
+  let wrapper: ReactWrapper<CountdownProps, CountdownState, Countdown>;
+  let obj: Countdown;
+  let countdownDate: number;
   const countdownMs = 10000;
 
   beforeEach(() => {
     Date.now = now;
     const date = Date.now() + countdownMs;
-    const root = document.createElement('div');
     countdownDate = date;
-    wrapper = mount(<Countdown date={date} />, { attachTo: root });
+    wrapper = mount(<Countdown date={date} />);
     obj = wrapper.instance();
   });
 
@@ -102,7 +90,7 @@ describe('<Countdown />', () => {
     // Forward in time
     wrapper.setProps({ date: 0 });
     expect(getCountdownJsState().timeDelta.completed).toBe(true);
-    expect(wrapper.props().children.type).toBe(Completionist);
+    expect((wrapper.props() as any).children.type).toBe(Completionist);
     expect(Completionist.prototype.componentDidMount).toBeCalled();
 
     const computedProps = { ...wrapper.props() };
@@ -177,12 +165,12 @@ describe('<Countdown />', () => {
   });
 
   it('should run through the controlled component by updating the date prop', () => {
-    const root = document.createElement('div');
-    wrapper = mount(<Countdown date={1000} controlled />, { attachTo: root });
+    wrapper = mount(<Countdown date={1000} controlled />);
     obj = wrapper.instance();
     const api = obj.getApi();
+    const countdownJsObj = getCountdownJsInstance();
 
-    expect(obj.interval).toBeUndefined();
+    expect(countdownJsObj.interval).toBeUndefined();
     expect(getCountdownJsState().timeDelta.completed).toBe(false);
     expect(api.isCompleted()).toBe(false);
 
@@ -290,6 +278,24 @@ describe('<Countdown />', () => {
     expect(spies.onMount).toHaveBeenCalledTimes(1);
     expect(spies.onPause).toHaveBeenCalledTimes(1);
     expect(spies.onStart).toHaveBeenCalledTimes(2);
+  });
+
+  it('should update component when pure', () => {
+    wrapper = mount(<Countdown pure date={countdownDate} />);
+    const countdownJsObj = getCountdownJsInstance();
+    expect(countdownJsObj.getProps().date).toBe(countdownDate);
+
+    wrapper.setProps({ date: 0 });
+    expect(countdownJsObj.getProps().date).toBe(0);
+  });
+
+  it('should not update component when impure', () => {
+    wrapper = mount(<Countdown pure={false} date={countdownDate} />);
+    const countdownJsObj = getCountdownJsInstance();
+    expect(countdownJsObj.getProps().date).toBe(countdownDate);
+
+    wrapper.setProps({ date: 0 });
+    expect(countdownJsObj.getProps().date).not.toBe(0);
   });
 
   it('should auto start countdown', () => {

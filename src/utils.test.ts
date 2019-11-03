@@ -1,18 +1,7 @@
 import { zeroPad, calcTimeDelta } from './utils';
+import { mockDateNow, defaultStats } from './fixtures';
 
-const timeDiff = 90110456;
-const now = jest.fn(() => 1482363367071);
-Date.now = now;
-
-const defaultStats = {
-  total: 0,
-  days: 0,
-  hours: 0,
-  minutes: 0,
-  seconds: 0,
-  milliseconds: 0,
-  completed: false,
-};
+const { timeDiff } = mockDateNow();
 
 describe('utils', () => {
   describe('zeroPad', () => {

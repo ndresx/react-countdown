@@ -52,7 +52,7 @@ class App extends Component {
         <ControlledCountdown />
         <hr />
         <h3>Countdown Hook</h3>
-        <CountdownHook date={Date.now() + 10000} />
+        <CountdownHook />
         <hr />
         <h3>Custom Renderer with Stringified Props</h3>
         <Countdown

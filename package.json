@@ -35,7 +35,8 @@
     "lint:tsc": "tsc --noEmit",
     "prettier-check": "prettier --list-different ./src/**/*.{ts,tsx}",
     "prettier": "prettier --write ./src/**/*.{ts,tsx}",
-    "test": "jest --coverage",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
     "test:watch": "jest --watch"
   },
   "dependencies": {
@@ -47,23 +48,24 @@
     "@babel/preset-env": "^7.6.3",
     "@babel/preset-react": "^7.6.3",
     "@babel/preset-typescript": "^7.6.0",
-    "@testing-library/react-hooks": "^3.1.0",
+    "@testing-library/react-hooks": "^3.1.1",
     "@types/enzyme": "^3.10.3",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/enzyme-to-json": "^1.5.3",
-    "@types/jest": "^24.0.19",
+    "@types/jest": "^24.0.21",
     "@types/lodash.isequal": "^4.5.5",
-    "@types/react": "^16.9.9",
+    "@types/react": "^16.9.11",
+    "@types/testing-library__react-hooks": "^3.1.0",
     "coveralls": "^3.0.7",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1",
     "enzyme-to-json": "^3.4.3",
     "jest": "^24.9.0",
     "prettier": "^1.18.2",
-    "react": "^16.10.2",
-    "react-dom": "^16.10.2",
-    "react-test-renderer": "^16.10.2",
-    "rollup": "^1.25.0",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "react-test-renderer": "^16.11.0",
+    "rollup": "^1.26.3",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-typescript2": "^0.25.3",
     "ts-jest": "^24.1.0",
@@ -73,7 +75,7 @@
     "typescript": "^3.6.4"
   },
   "peerDependencies": {
-    "react": ">= 15",
-    "react-dom": ">= 15"
+    "react": ">= 16.8",
+    "react-dom": ">= 16.8"
   }
 }

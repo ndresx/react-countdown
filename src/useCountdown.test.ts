@@ -1,27 +1,37 @@
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act, cleanup } from '@testing-library/react-hooks';
+
+const classSpies = {
+  mount: jest.fn(),
+  update: jest.fn(),
+  unmount: jest.fn(),
+};
+
+const CountdownJs = require.requireActual('./CountdownJs').default;
+
+jest.mock('./CountdownJs', () => {
+  return jest.fn().mockImplementation((props, updater) => {
+    const countdown = new CountdownJs(props, updater);
+    Object.keys(classSpies).forEach(key => {
+      const fn = countdown[key];
+      countdown[key] = function(...args) {
+        fn(...args);
+        classSpies[key](...args);
+      };
+    });
+    return countdown;
+  });
+});
 
 import useCountdown, { UseCountdownProps } from './useCountdown';
-import CountdownJs from './CountdownJs';
 import { calcTimeDelta } from './utils';
+import { mockDateNow, defaultStats } from './fixtures';
 
-const timeDiff = 90110456;
-const now = jest.fn(() => 1482363367071);
-Date.now = now;
-
-const defaultStats = {
-  total: 0,
-  days: 0,
-  hours: 0,
-  minutes: 0,
-  seconds: 0,
-  milliseconds: 0,
-  completed: false,
-};
+const { now, timeDiff } = mockDateNow();
 
 describe('useCountdown', () => {
   jest.useFakeTimers();
 
-  let countdownDate;
+  let countdownDate: number;
   const countdownMs = 10000;
 
   beforeEach(() => {
@@ -34,49 +44,86 @@ describe('useCountdown', () => {
 
   it('should use countdown', () => {
     const { result } = renderHook(hookCallback, { initialProps: { date: countdownDate } });
-    const { countdown } = result.current;
-    expect(countdown).toBeInstanceOf(CountdownJs);
-    expect(result.current.api).toEqual(countdown.getApi());
-    expect(result.current.renderProps).toEqual(countdown.getRenderProps());
-    expect(result.current.renderProps.total).toBe(10000);
+    expect(result.current).toMatchSnapshot();
   });
 
   it('should update props', () => {
     const { result, rerender } = renderHook(hookCallback, {
       initialProps: { date: countdownDate },
     });
-    const prevProps = result.current.countdown.getProps();
-    expect(prevProps.date).toBe(1482363377071);
+    const prevDate = result.current.props.date;
+    expect(prevDate).toBe(1482363377071);
 
-    rerender({ date: countdownDate + timeDiff });
+    expect(classSpies.mount).toHaveBeenCalledTimes(1);
+    expect(classSpies.update).toHaveBeenCalledTimes(0);
+    expect(classSpies.unmount).toHaveBeenCalledTimes(0);
 
-    const nextProps = result.current.countdown.getProps();
-    expect(nextProps).not.toEqual(prevProps);
-    expect(nextProps.date).toBe(1482453487527);
+    const nextProps = { date: countdownDate + timeDiff };
+    rerender(nextProps);
+
+    const nextDate = result.current.props.date;
+    expect(nextDate).not.toEqual(prevDate);
+    expect(nextDate).toBe(1482453487527);
+
+    expect(classSpies.mount).toHaveBeenCalledTimes(1);
+    expect(classSpies.update).toHaveBeenCalledTimes(1);
+    expect(classSpies.update).toHaveBeenLastCalledWith(nextProps);
+    expect(classSpies.unmount).toHaveBeenCalledTimes(0);
   });
 
-  it.only('should not (try to) set state after component unmount', () => {
-    const { result, unmount } = renderHook(hookCallback, {
-      initialProps: { date: countdownDate },
+  it('should respect hook lifecycle', async () => {
+    const { result, rerender } = renderHook(hookCallback, {
+      initialProps: { date: countdownDate, intervalDelay: 1111 },
     });
 
+    expect(classSpies.mount).toHaveBeenCalledTimes(1);
+    expect(classSpies.update).toHaveBeenCalledTimes(0);
+    expect(classSpies.unmount).toHaveBeenCalledTimes(0);
+
+    rerender({ date: countdownDate, intervalDelay: 1111 });
+
     act(() => {
+      // Forward 6s in time
       now.mockReturnValue(countdownDate - 6000);
       jest.runTimersToTime(6000);
     });
 
-    expect(result.current.countdown.mounted).toBe(true);
-    expect(result.current.renderProps.total).toBe(6000);
+    expect(classSpies.mount).toHaveBeenCalledTimes(1);
+    expect(classSpies.update).toHaveBeenCalledTimes(1);
+    expect(classSpies.unmount).toHaveBeenCalledTimes(0);
+    expect(result.current.total).toBe(6000);
 
-    unmount();
+    // Respect key-prop change and re-instantiate countdown
+    rerender({ date: countdownDate, key: Math.random(), intervalDelay: 1111 });
 
-    act(() => {
-      now.mockReturnValue(countdownDate - 3000);
-      jest.runTimersToTime(3000);
+    expect(classSpies.mount).toHaveBeenCalledTimes(2);
+    expect(classSpies.update).toHaveBeenCalledTimes(1);
+    expect(classSpies.unmount).toHaveBeenCalledTimes(1);
+    expect(result.current.total).toBe(6000);
+  });
+
+  [true, false].forEach(shouldUnmount => {
+    it(`should update (unmount => ${shouldUnmount}) time total`, () => {
+      const { result, unmount } = renderHook(hookCallback, {
+        initialProps: { date: countdownDate, intervalDelay: 2222 },
+      });
+
+      act(() => {
+        now.mockReturnValue(countdownDate - 6000);
+        jest.runTimersToTime(6000);
+      });
+
+      expect(result.current.total).toBe(6000);
+
+      shouldUnmount && unmount();
+
+      act(() => {
+        now.mockReturnValue(countdownDate - 3000);
+        jest.runTimersToTime(3000);
+      });
+
+      expect(result.current.total).toBe(shouldUnmount ? 6000 : 3000);
     });
-
-    expect(result.current.countdown.mounted).toBe(false);
-    expect(result.current.renderProps.total).toBe(6000);
   });
 
   it('should trigger onTick and onComplete callbacks', () => {
@@ -99,7 +146,7 @@ describe('useCountdown', () => {
     });
 
     expect(onTick.mock.calls.length).toBe(6);
-    expect(result.current.renderProps.total).toBe(6000);
+    expect(result.current.total).toBe(6000);
 
     act(() => {
       // Forward 3 more seconds
@@ -108,7 +155,7 @@ describe('useCountdown', () => {
     });
 
     expect(onTick.mock.calls.length).toBe(9);
-    expect(result.current.renderProps.total).toBe(1000);
+    expect(result.current.total).toBe(1000);
 
     act(() => {
       // The End: onComplete callback gets triggered instead of onTick
@@ -125,6 +172,11 @@ describe('useCountdown', () => {
 
     expect(onComplete.mock.calls.length).toBe(1);
     expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true });
-    expect(result.current.renderProps.completed).toBe(true);
+    expect(result.current.completed).toBe(true);
+  });
+
+  afterEach(async () => {
+    await cleanup();
+    jest.clearAllMocks();
   });
 });

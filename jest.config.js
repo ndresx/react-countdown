@@ -3,7 +3,10 @@ module.exports = {
   testEnvironment: 'jsdom',
   snapshotSerializers: ['enzyme-to-json/serializer'],
   coveragePathIgnorePatterns: ['<rootDir>/config'],
-  setupFilesAfterEnv: ['<rootDir>/config/setupTests.ts'],
+  setupFilesAfterEnv: [
+    '<rootDir>/config/setupTests.ts',
+    '@testing-library/react-hooks/dont-cleanup-after-each.js',
+  ],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },

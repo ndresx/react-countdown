@@ -15,7 +15,7 @@ jobs:
       name: 'TypeScript'
     - stage: 'Tests'
       name: 'Unit Tests'
-      script: yarn test && cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose
+      script: yarn test:coverage && cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose
     - stage: 'Build'
       name: 'Package'
       script: yarn build
