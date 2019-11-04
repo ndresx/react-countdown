@@ -117,12 +117,12 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
 
   tick = (): void => {
     const { onTick } = this.props;
-    const delta = this.calcTimeDelta();
+    const timeDelta = this.calcTimeDelta();
 
-    this.setTimeDeltaState({ ...delta });
+    this.setTimeDeltaState({ ...timeDelta });
 
-    if (onTick && delta.total > 0) {
-      onTick(delta);
+    if (onTick && timeDelta.total > 0) {
+      onTick(timeDelta);
     }
   };
 
@@ -160,9 +160,11 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   };
 
   pause = (): void => {
+    this.clearInterval();
     this.setState({ offsetStart: this.calcOffsetStart() }, () => {
-      this.clearInterval();
-      this.props.onPause && this.props.onPause(this.calcTimeDelta());
+      const timeDelta = this.calcTimeDelta();
+      this.setTimeDeltaState(timeDelta);
+      this.props.onPause && this.props.onPause(timeDelta);
     });
   };
 
@@ -178,17 +180,17 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     return this.state.timeDelta.completed;
   };
 
-  setTimeDeltaState(delta: CountdownTimeDelta): void {
+  setTimeDeltaState(timeDelta: CountdownTimeDelta): void {
     let callback;
 
-    if (!this.state.timeDelta.completed && delta.completed) {
+    if (!this.state.timeDelta.completed && timeDelta.completed) {
       this.clearInterval();
 
-      callback = () => this.props.onComplete && this.props.onComplete(delta);
+      callback = () => this.props.onComplete && this.props.onComplete(timeDelta);
     }
 
     if (this.mounted) {
-      return this.setState({ timeDelta: delta }, callback);
+      return this.setState({ timeDelta }, callback);
     }
   }
 
