@@ -307,6 +307,12 @@ describe('<Countdown />', () => {
       }
     }
 
+    async function tick(): Promise<void> {
+      jest.useRealTimers();
+      await new Promise(resolve => setTimeout(resolve, 0));
+      jest.useFakeTimers();
+    }
+
     it('should render legacy countdown', () => {
       wrapper = mount(
         <Countdown count={3}>
@@ -331,14 +337,16 @@ describe('<Countdown />', () => {
       wrapper.unmount();
     });
 
-    it('should add time in seconds', () => {
-      const ref: React.Ref<Countdown> = React.createRef();
+    it('should allow adding time in seconds', async () => {
+      const ref = React.createRef<Countdown>();
 
       wrapper = mount(
         <Countdown ref={ref} count={3}>
           <LegacyCountdownOverlay />
         </Countdown>
       );
+
+      await tick();
 
       ref && ref.current && ref.current.addTime(2);
       jest.runOnlyPendingTimers();
@@ -352,8 +360,8 @@ describe('<Countdown />', () => {
       expect(initialOutput).toBe(wrapper.html());
     });
 
-    it('should trigger onComplete callback when count reaches 0', () => {
-      const ref: React.Ref<Countdown> = React.createRef();
+    it('should trigger onComplete callback when count reaches 0', async () => {
+      const ref = React.createRef<Countdown>();
       const onComplete = jest.fn();
 
       wrapper = mount(
@@ -361,6 +369,8 @@ describe('<Countdown />', () => {
           <LegacyCountdownOverlay />
         </Countdown>
       );
+
+      await tick();
 
       expect(onComplete).not.toHaveBeenCalled();
       ref && ref.current && ref.current.addTime(-2);

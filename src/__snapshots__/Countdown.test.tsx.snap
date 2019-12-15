@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<Countdown /> legacy mode should add time in seconds 1`] = `
+exports[`<Countdown /> legacy mode should allow adding time in seconds 1`] = `
 <Countdown
   autoStart={true}
   controlled={false}

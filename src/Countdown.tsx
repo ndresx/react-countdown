@@ -93,8 +93,8 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   interval: number | undefined;
   api: CountdownApi | undefined;
 
-  legacyMode: boolean = false;
-  legacyCountdownRef: React.RefObject<LegacyCountdown> = React.createRef();
+  legacyMode = false;
+  legacyCountdownRef = React.createRef<LegacyCountdown>();
 
   constructor(props: CountdownProps) {
     super(props);
