@@ -303,14 +303,8 @@ describe('<Countdown />', () => {
   describe('legacy mode', () => {
     class LegacyCountdownOverlay extends React.Component<LegacyCountdownProps> {
       render() {
-        return <div className="countdown">{this.props.count}</div>;
+        return <div>{this.props.count}</div>;
       }
-    }
-
-    async function tick(): Promise<void> {
-      jest.useRealTimers();
-      await new Promise(resolve => setTimeout(resolve, 0));
-      jest.useFakeTimers();
     }
 
     it('should render legacy countdown', () => {
@@ -319,7 +313,7 @@ describe('<Countdown />', () => {
           <LegacyCountdownOverlay />
         </Countdown>
       );
-      expect(wrapper).toMatchSnapshot();
+      expect(wrapper.find('div').text()).toBe('3');
     });
 
     it('should render legacy countdown without count prop', () => {
@@ -328,49 +322,47 @@ describe('<Countdown />', () => {
           <LegacyCountdownOverlay />
         </Countdown>
       );
-      expect(wrapper).toMatchSnapshot();
+      expect(wrapper.find('div').text()).toBe('3');
     });
 
     it('should render null without children', () => {
       wrapper = mount(<Countdown count={3}></Countdown>);
       expect(wrapper.html()).toBe('');
+      wrapper.setProps({});
       wrapper.unmount();
     });
 
-    it('should allow adding time in seconds', async () => {
+    it('should allow adding time in seconds', () => {
       const ref = React.createRef<Countdown>();
 
       wrapper = mount(
-        <Countdown ref={ref} count={3}>
-          <LegacyCountdownOverlay />
-        </Countdown>
+        <>
+          <Countdown ref={ref} count={3}>
+            <LegacyCountdownOverlay />
+          </Countdown>
+        </>
       );
 
-      await tick();
+      expect(wrapper.find('div').text()).toBe('3');
 
       ref && ref.current && ref.current.addTime(2);
       jest.runOnlyPendingTimers();
       wrapper.update();
 
-      expect(wrapper).toMatchSnapshot();
-      const initialOutput = wrapper.html();
-
-      wrapper.setProps({});
-      wrapper.update();
-      expect(initialOutput).toBe(wrapper.html());
+      expect(wrapper.find('div').text()).toBe('4');
     });
 
-    it('should trigger onComplete callback when count reaches 0', async () => {
+    it('should trigger onComplete callback when count reaches 0', () => {
       const ref = React.createRef<Countdown>();
       const onComplete = jest.fn();
 
       wrapper = mount(
-        <Countdown ref={ref} count={3} onComplete={onComplete}>
-          <LegacyCountdownOverlay />
-        </Countdown>
+        <>
+          <Countdown ref={ref} count={3} onComplete={onComplete}>
+            <LegacyCountdownOverlay />
+          </Countdown>
+        </>
       );
-
-      await tick();
 
       expect(onComplete).not.toHaveBeenCalled();
       ref && ref.current && ref.current.addTime(-2);
@@ -378,7 +370,7 @@ describe('<Countdown />', () => {
       wrapper.update();
 
       expect(onComplete).toHaveBeenCalled();
-      expect(wrapper).toMatchSnapshot();
+      expect(wrapper.find('div').text()).toBe('1');
     });
   });
 
