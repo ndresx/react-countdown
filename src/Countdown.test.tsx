@@ -4,6 +4,8 @@ import { mount } from 'enzyme';
 import Countdown from './Countdown';
 import { calcTimeDelta, formatTimeDelta } from './utils';
 
+import { CountdownProps as LegacyCountdownProps } from './LegacyCountdown';
+
 const timeDiff = 90110456;
 const now = jest.fn(() => 1482363367071);
 Date.now = now;
@@ -296,6 +298,78 @@ describe('<Countdown />', () => {
         offsetTime: 0,
       })
     );
+  });
+
+  describe('legacy mode', () => {
+    class LegacyCountdownOverlay extends React.Component<LegacyCountdownProps> {
+      render() {
+        return <div className="countdown">{this.props.count}</div>;
+      }
+    }
+
+    it('should render legacy countdown', () => {
+      wrapper = mount(
+        <Countdown count={3}>
+          <LegacyCountdownOverlay />
+        </Countdown>
+      );
+      expect(wrapper).toMatchSnapshot();
+    });
+
+    it('should render legacy countdown without count prop', () => {
+      wrapper = mount(
+        <Countdown>
+          <LegacyCountdownOverlay />
+        </Countdown>
+      );
+      expect(wrapper).toMatchSnapshot();
+    });
+
+    it('should render null without children', () => {
+      wrapper = mount(<Countdown count={3}></Countdown>);
+      expect(wrapper.html()).toBe('');
+      wrapper.unmount();
+    });
+
+    it('should add time in seconds', () => {
+      const ref: React.Ref<Countdown> = React.createRef();
+
+      wrapper = mount(
+        <Countdown ref={ref} count={3}>
+          <LegacyCountdownOverlay />
+        </Countdown>
+      );
+
+      ref && ref.current && ref.current.addTime(2);
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      expect(wrapper).toMatchSnapshot();
+      const initialOutput = wrapper.html();
+
+      wrapper.setProps({});
+      wrapper.update();
+      expect(initialOutput).toBe(wrapper.html());
+    });
+
+    it('should trigger onComplete callback when count reaches 0', () => {
+      const ref: React.Ref<Countdown> = React.createRef();
+      const onComplete = jest.fn();
+
+      wrapper = mount(
+        <Countdown ref={ref} count={3} onComplete={onComplete}>
+          <LegacyCountdownOverlay />
+        </Countdown>
+      );
+
+      expect(onComplete).not.toHaveBeenCalled();
+      ref && ref.current && ref.current.addTime(-2);
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      expect(onComplete).toHaveBeenCalled();
+      expect(wrapper).toMatchSnapshot();
+    });
   });
 
   afterEach(() => {

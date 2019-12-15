@@ -14,11 +14,11 @@ A customizable countdown component for React.
 You can either install the module via `npm` or `yarn`:
 
 ```
-npm install react-countdown-now --save
+npm install react-countdown --save
 ```
 
 ```
-yarn add react-countdown-now
+yarn add react-countdown
 ```
 
 ## Motivation
@@ -34,14 +34,14 @@ A very simple and minimal example of how to set up a countdown which counts down
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Countdown from 'react-countdown-now';
+import Countdown from 'react-countdown';
 
 ReactDOM.render(
   <Countdown date={Date.now() + 10000} />,
   document.getElementById('root')
 );
 ```
-[Live Demo](https://codesandbox.io/s/silent-forest-orfbe)
+[Live Demo](https://codesandbox.io/s/cool-fermat-uk0dq)
 
 ### Custom & Conditional Rendering
 In case you want to change the output of the component, or want to signal that the countdown's work is done, you can do this by either using the [`onComplete`](#oncomplete) callback, a
@@ -52,7 +52,7 @@ custom [`renderer`](#renderer), or by specifying a React child within `<Countdow
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Countdown from 'react-countdown-now';
+import Countdown from 'react-countdown';
 
 // Random component
 const Completionist = () => <span>You are good to go!</span>;
@@ -66,14 +66,14 @@ ReactDOM.render(
   document.getElementById('root')
 );
 ```
-[Live Demo](https://codesandbox.io/s/sweet-villani-gvrm9)
+[Live Demo](https://codesandbox.io/s/condescending-bartik-kyp2v)
 
 #### Custom Renderer with Completed Condition
 
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Countdown from 'react-countdown-now';
+import Countdown from 'react-countdown';
 
 // Random component
 const Completionist = () => <span>You are good to go!</span>;
@@ -97,7 +97,7 @@ ReactDOM.render(
   document.getElementById('root')
 );
 ```
-[Live Demo](https://codesandbox.io/s/infallible-zhukovsky-ydfrf)
+[Live Demo](https://codesandbox.io/s/sad-zhukovsky-hs7hc)
 
 ### Countdown in Milliseconds
 Here is an example with a countdown of 10 seconds that displays the total time difference in milliseconds. In order to display the milliseconds appropriately, the [`intervalDelay`](#intervaldelay) value needs to be lower than `1000`ms and a [`precision`](#precision) of `1` to `3` should be used. Last but not least, a simple [`renderer`](#renderer) callback needs to be set up.
@@ -105,7 +105,7 @@ Here is an example with a countdown of 10 seconds that displays the total time d
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Countdown from 'react-countdown-now';
+import Countdown from 'react-countdown';
 
 ReactDOM.render(
   <Countdown
@@ -117,7 +117,7 @@ ReactDOM.render(
   document.getElementById('root')
 );
 ```
-[Live Demo](https://codesandbox.io/s/affectionate-sunset-2677h)
+[Live Demo](https://codesandbox.io/s/elastic-euclid-6vnlw)
 
 ## Props
 
@@ -235,7 +235,7 @@ Returns a `boolean` for whether the countdown has been completed or not.
 This module also exports 3 simple helper functions which can be utilized to build your own countdown custom [`renderer`](#renderer).
 
 ```js
-import Countdown, { zeroPad, calcTimeDelta, formatTimeDelta } from 'react-countdown-now';
+import Countdown, { zeroPad, calcTimeDelta, formatTimeDelta } from 'react-countdown';
 ```
 
 ### `zeroPad(value, [length = 2])`
@@ -298,5 +298,5 @@ The `options` object consists of the following three component props and is used
 
 MIT
 
-[npm]: https://img.shields.io/npm/v/react-countdown-now.svg
-[npm-url]: https://npmjs.com/package/react-countdown-now
+[npm]: https://img.shields.io/npm/v/react-countdown.svg
+[npm-url]: https://npmjs.com/package/react-countdown
