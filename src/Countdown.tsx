@@ -142,8 +142,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   tick = (): void => {
     const { onTick } = this.props;
     const timeDelta = this.calcTimeDelta();
-
-    this.setTimeDeltaState({ ...timeDelta });
+    this.setTimeDeltaState(timeDelta);
 
     if (onTick && timeDelta.total > 0) {
       onTick(timeDelta);

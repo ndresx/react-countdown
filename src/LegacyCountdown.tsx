@@ -21,10 +21,13 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   state: CountdownState = { count: this.props.count || 3 };
   interval: number | undefined;
 
-  addTime = (seconds: number): void => {
-    this.stopCountdown();
-    this.setState(prevState => ({ count: prevState.count + seconds }), this.startCountdown);
-  };
+  componentDidMount(): void {
+    this.startCountdown();
+  }
+
+  componentWillUnmount(): void {
+    clearInterval(this.interval);
+  }
 
   startCountdown = (): void => {
     this.interval = window.setInterval(() => {
@@ -34,22 +37,19 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
         this.stopCountdown();
         this.props.onComplete && this.props.onComplete();
       } else {
-        this.setState({ count });
+        this.setState(prevState => ({ count: prevState.count - 1 }));
       }
     }, 1000);
   };
 
-  stopCountdown(): void {
+  stopCountdown = (): void => {
     clearInterval(this.interval);
-  }
+  };
 
-  componentDidMount(): void {
-    this.startCountdown();
-  }
-
-  componentWillUnmount(): void {
-    clearInterval(this.interval);
-  }
+  addTime = (seconds: number): void => {
+    this.stopCountdown();
+    this.setState(prevState => ({ count: prevState.count + seconds }), this.startCountdown);
+  };
 
   render(): React.ReactNode {
     return this.props.children
