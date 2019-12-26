@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 
 const isEqual = require('lodash.isequal');
 
+import LegacyCountdown, { CountdownProps as LegacyCountdownProps } from './LegacyCountdown';
+
 import {
   calcTimeDelta,
   CountdownTimeDelta,
@@ -12,8 +14,11 @@ import {
   formatTimeDelta,
 } from './utils';
 
-export interface CountdownProps extends React.Props<Countdown>, CountdownTimeDeltaFormatOptions {
-  readonly date: Date | number | string;
+export interface CountdownProps
+  extends React.Props<Countdown>,
+    CountdownTimeDeltaFormatOptions,
+    Omit<LegacyCountdownProps, 'onComplete'> {
+  readonly date?: Date | number | string;
   readonly controlled?: boolean;
   readonly intervalDelay?: number;
   readonly precision?: number;
@@ -25,7 +30,7 @@ export interface CountdownProps extends React.Props<Countdown>, CountdownTimeDel
   readonly onStart?: CountdownTimeDeltaFn;
   readonly onPause?: CountdownTimeDeltaFn;
   readonly onTick?: CountdownTimeDeltaFn;
-  readonly onComplete?: CountdownTimeDeltaFn;
+  readonly onComplete?: CountdownTimeDeltaFn | LegacyCountdownProps['onComplete'];
 }
 
 export interface CountdownRenderProps extends CountdownTimeDelta {
@@ -66,8 +71,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   };
 
   static propTypes = {
-    date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string, PropTypes.number])
-      .isRequired,
+    date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string, PropTypes.number]),
     daysInHours: PropTypes.bool,
     zeroPadTime: PropTypes.number,
     zeroPadDays: PropTypes.number,
@@ -89,28 +93,48 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   interval: number | undefined;
   api: CountdownApi | undefined;
 
+  legacyMode = false;
+  legacyCountdownRef = React.createRef<LegacyCountdown>();
+
   constructor(props: CountdownProps) {
     super(props);
-    this.state = {
-      timeDelta: this.calcTimeDelta(),
-      offsetStart: props.autoStart ? 0 : this.calcOffsetStart(),
-      offsetTime: 0,
-    };
+
+    if (props.date) {
+      this.state = {
+        timeDelta: this.calcTimeDelta(),
+        offsetStart: props.autoStart ? 0 : this.calcOffsetStart(),
+        offsetTime: 0,
+      };
+    } else {
+      this.legacyMode = true;
+    }
   }
 
   componentDidMount(): void {
+    if (this.legacyMode) {
+      return;
+    }
+
     this.mounted = true;
     this.props.autoStart && this.start();
     this.props.onMount && this.props.onMount(this.calcTimeDelta());
   }
 
   componentDidUpdate(prevProps: CountdownProps): void {
+    if (this.legacyMode) {
+      return;
+    }
+
     if (!isEqual(this.props, prevProps)) {
       this.setTimeDeltaState(this.calcTimeDelta());
     }
   }
 
   componentWillUnmount(): void {
+    if (this.legacyMode) {
+      return;
+    }
+
     this.mounted = false;
     this.clearInterval();
   }
@@ -118,8 +142,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   tick = (): void => {
     const { onTick } = this.props;
     const timeDelta = this.calcTimeDelta();
-
-    this.setTimeDeltaState({ ...timeDelta });
+    this.setTimeDeltaState(timeDelta);
 
     if (onTick && timeDelta.total > 0) {
       onTick(timeDelta);
@@ -128,7 +151,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
 
   calcTimeDelta(): CountdownTimeDelta {
     const { date, now, precision, controlled } = this.props;
-    return calcTimeDelta(date, {
+    return calcTimeDelta(date!, {
       now,
       precision,
       controlled,
@@ -167,6 +190,10 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       this.props.onPause && this.props.onPause(timeDelta);
     });
   };
+
+  addTime(seconds: number): void {
+    this.legacyCountdownRef.current!.addTime(seconds);
+  }
 
   clearInterval(): void {
     window.clearInterval(this.interval);
@@ -219,6 +246,19 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   render(): React.ReactNode {
+    if (this.legacyMode) {
+      const { count, children, onComplete } = this.props;
+      return (
+        <LegacyCountdown
+          ref={this.legacyCountdownRef}
+          count={count}
+          onComplete={onComplete as LegacyCountdownProps['onComplete']}
+        >
+          {children}
+        </LegacyCountdown>
+      );
+    }
+
     const { children, renderer } = this.props;
     const renderProps = this.getRenderProps();
 

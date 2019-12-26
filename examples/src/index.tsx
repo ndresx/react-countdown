@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import Countdown, { CountdownRenderProps } from 'react-countdown-now';
+import Countdown, { CountdownRenderProps } from 'react-countdown';
 import ControlledCountdown from './ControlledCountdown';
 import CountdownApi from './CountdownApi';
 

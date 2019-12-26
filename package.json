@@ -1,6 +1,6 @@
 {
-  "name": "react-countdown-now",
-  "version": "2.1.2",
+  "name": "react-countdown",
+  "version": "2.2.0",
   "description": "A customizable countdown component for React.",
   "main": "./dist/index.js",
   "module": "./dist/index.es.js",
@@ -19,9 +19,10 @@
   },
   "homepage": "https://github.com/ndresx/react-countdown",
   "keywords": [
+    "react",
+    "typescript",
     "countdown",
-    "component",
-    "react"
+    "component"
   ],
   "scripts": {
     "build": "yarn build:clean && yarn rollup --config",

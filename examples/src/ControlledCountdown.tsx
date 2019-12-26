@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Countdown from 'react-countdown-now';
+import Countdown from 'react-countdown';
 
 interface ControlledCountdownState {
   readonly date: number;
