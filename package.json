@@ -19,9 +19,10 @@
   },
   "homepage": "https://github.com/ndresx/react-countdown",
   "keywords": [
+    "react",
+    "typescript",
     "countdown",
-    "component",
-    "react"
+    "component"
   ],
   "scripts": {
     "build": "yarn build:clean && yarn rollup --config",
