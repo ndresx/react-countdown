@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Countdown, { CountdownApi } from 'react-countdown-now';
+import Countdown, { CountdownApi } from 'react-countdown';
 
 export default class CountdownApiExample extends Component {
   countdownApi: CountdownApi | null = null;
