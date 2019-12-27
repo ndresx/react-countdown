@@ -228,7 +228,7 @@ export default class CountdownJs {
   };
 
   setState = (
-    state: (Partial<CountdownState> | (prevState: CountdownState) => Partial<CountdownState>),
+    state: Partial<CountdownState> | ((prevState: CountdownState) => Partial<CountdownState>),
     callback?: () => void
   ): void => {
     this.state = {
@@ -237,5 +237,5 @@ export default class CountdownJs {
     };
 
     this.stateUpdater(this.state, callback);
-  }
+  };
 }

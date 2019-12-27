@@ -15,12 +15,12 @@
     "not op_mini all"
   ],
   "dependencies": {
-    "@types/react": "^16.8.15",
-    "@types/react-dom": "16.9.4",
-    "react": "^16.8.6",
+    "@types/react": "^16.9.17",
+    "@types/react-dom": "^16.9.4",
+    "react": "^16.12.0",
     "react-countdown": "^2.2.0",
-    "react-dom": "^16.8.6",
-    "react-scripts": "3.3.0",
-    "typescript": "3.7.4"
+    "react-dom": "^16.12.0",
+    "react-scripts": "^3.3.0",
+    "typescript": "^3.7.4"
   }
 }

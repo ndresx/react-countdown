@@ -6,7 +6,7 @@ const classSpies = {
   unmount: jest.fn(),
 };
 
-const CountdownJs = require.requireActual('./CountdownJs').default;
+const CountdownJs = jest.requireActual('./CountdownJs').default;
 
 jest.mock('./CountdownJs', () => {
   return jest.fn().mockImplementation((props, updater) => {
