@@ -75,5 +75,8 @@
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.7.4"
   },
-  "peerDependencies": {}
+  "peerDependencies": {
+    "react": ">= 16.8",
+    "react-dom": ">= 16.8"
+  }
 }
