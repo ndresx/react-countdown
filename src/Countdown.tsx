@@ -206,12 +206,17 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   };
 
   shallowCompareProps(propsA: CountdownProps, propsB: CountdownProps): boolean {
-    const propsAKeys = Object.keys(propsA);
+    const keysA = Object.keys(propsA);
     return (
-      propsAKeys.length === Object.keys(propsB).length &&
-      propsAKeys.every(
-        propAKey => propsB.hasOwnProperty(propAKey) && propsA[propAKey] === propsB[propAKey]
-      )
+      keysA.length === Object.keys(propsB).length &&
+      !keysA.some(keyA => {
+        const valueA = propsA[keyA];
+        const valueB = propsB[keyA];
+        return (
+          !propsB.hasOwnProperty(keyA) ||
+          !(valueA === valueB || (valueA !== valueA && valueB !== valueB)) // NaN !== NaN
+        );
+      })
     );
   }
 

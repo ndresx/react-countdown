@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { mount } from 'enzyme';
 
-import Countdown from './Countdown';
+import Countdown, { CountdownProps } from './Countdown';
 import { calcTimeDelta, formatTimeDelta } from './utils';
 
 import { CountdownProps as LegacyCountdownProps } from './LegacyCountdown';
@@ -177,6 +177,38 @@ describe('<Countdown />', () => {
     expect(wrapper.state().timeDelta.total).toBe(0);
     expect(wrapper.state().timeDelta.completed).toBe(true);
     expect(api.isCompleted()).toBe(true);
+  });
+
+  it('should only re-set time delta state when props have changed', () => {
+    const root = document.createElement('div');
+    wrapper = mount(<Countdown date={1000} />, { attachTo: root });
+    const obj = wrapper.instance();
+    obj.setTimeDeltaState = jest.fn();
+
+    function mergeProps(partialProps: Partial<CountdownProps>): CountdownProps {
+      return { ...wrapper.props(), ...partialProps };
+    }
+
+    wrapper.setProps(mergeProps({ date: 500 }));
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(1);
+
+    wrapper.setProps(mergeProps({ intervalDelay: 999 }));
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(2);
+
+    wrapper.setProps(mergeProps({ date: 500 }));
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(2);
+
+    wrapper.setProps(mergeProps({ precision: NaN }));
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(3);
+
+    wrapper.setProps(mergeProps({ precision: NaN }));
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(3);
+
+    wrapper.setProps(mergeProps({ precision: 3 }));
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(4);
+
+    wrapper.setProps(mergeProps({ date: 750 }));
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(5);
   });
 
   it('should not (try to) set state after component unmount', () => {
