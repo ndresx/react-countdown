@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const isEqual = require('lodash.isequal');
-
 import LegacyCountdown, { CountdownProps as LegacyCountdownProps } from './LegacyCountdown';
 
 import {
@@ -125,7 +123,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       return;
     }
 
-    if (!isEqual(this.props, prevProps)) {
+    if (!this.shallowCompareProps(this.props, prevProps)) {
       this.setTimeDeltaState(this.calcTimeDelta());
     }
   }
@@ -206,6 +204,21 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   isCompleted = (): boolean => {
     return this.state.timeDelta.completed;
   };
+
+  shallowCompareProps(propsA: CountdownProps, propsB: CountdownProps): boolean {
+    const keysA = Object.keys(propsA);
+    return (
+      keysA.length === Object.keys(propsB).length &&
+      !keysA.some(keyA => {
+        const valueA = propsA[keyA];
+        const valueB = propsB[keyA];
+        return (
+          !propsB.hasOwnProperty(keyA) ||
+          !(valueA === valueB || (valueA !== valueA && valueB !== valueB)) // NaN !== NaN
+        );
+      })
+    );
+  }
 
   setTimeDeltaState(timeDelta: CountdownTimeDelta): void {
     let callback;
