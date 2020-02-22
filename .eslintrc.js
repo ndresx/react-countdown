@@ -30,6 +30,7 @@ module.exports = {
     'import/extensions': OFF,
     'import/first': OFF,
     'import/newline-after-import': OFF,
+    'import/no-extraneous-dependencies': OFF,
     'import/no-unresolved': OFF,
     'no-prototype-builtins': OFF,
     'no-return-assign': OFF,
