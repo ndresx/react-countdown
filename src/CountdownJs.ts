@@ -1,5 +1,3 @@
-const isEqual = require('lodash.isequal');
-
 import Countdown from './Countdown';
 import {
   calcTimeDelta,
@@ -86,7 +84,7 @@ export default class CountdownJs {
   update = (props: CountdownProps): boolean => {
     const nextProps = this.computeProps(props);
 
-    if (nextProps.pure && !isEqual(nextProps, this.computeProps(this.props))) {
+    if (nextProps.pure && !this.shallowCompareProps(nextProps, this.computeProps(this.props))) {
       this.setProps(nextProps);
       this.setTimeDeltaState(this.calcTimeDelta());
       return true;
@@ -176,6 +174,21 @@ export default class CountdownJs {
   isCompleted = (): boolean => {
     return this.state.timeDelta.completed;
   };
+
+  shallowCompareProps(propsA: CountdownProps, propsB: CountdownProps): boolean {
+    const keysA = Object.keys(propsA);
+    return (
+      keysA.length === Object.keys(propsB).length &&
+      !keysA.some(keyA => {
+        const valueA = propsA[keyA];
+        const valueB = propsB[keyA];
+        return (
+          !propsB.hasOwnProperty(keyA) ||
+          !(valueA === valueB || (valueA !== valueA && valueB !== valueB)) // NaN !== NaN
+        );
+      })
+    );
+  }
 
   setTimeDeltaState(timeDelta: CountdownTimeDelta): void {
     let callback;
