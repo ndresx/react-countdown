@@ -15,7 +15,7 @@ export interface CountdownProps extends React.Props<Countdown>, CountdownTimeDel
   readonly intervalDelay?: number;
   readonly precision?: number;
   readonly autoStart?: boolean;
-  readonly children?: React.ReactElement<any>;
+  readonly children?: React.ReactElement<unknown>;
   readonly renderer?: (props: CountdownRenderProps) => React.ReactNode;
   readonly now?: () => number;
   readonly pure?: boolean;
@@ -196,11 +196,11 @@ export default class CountdownJs {
     if (!this.state.timeDelta.completed && timeDelta.completed) {
       this.clearInterval();
 
-      callback = () => this.props.onComplete && this.props.onComplete(timeDelta);
+      callback = (): void => this.props.onComplete && this.props.onComplete(timeDelta);
     }
 
     if (this.mounted) {
-      return this.setState({ timeDelta }, callback);
+      this.setState({ timeDelta }, callback);
     }
   }
 

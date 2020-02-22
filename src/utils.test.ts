@@ -120,7 +120,7 @@ describe('utils', () => {
       });
     });
 
-    it('should return a time difference of 0s', () => {
+    it('should return a time difference of 0s with changed time', () => {
       const date = new Date();
       date.getTime = jest.fn(() => Date.now() + 1000);
       expect(calcTimeDelta(date)).toEqual({

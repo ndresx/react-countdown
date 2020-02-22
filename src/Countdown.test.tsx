@@ -57,13 +57,15 @@ describe('<Countdown />', () => {
   it('should render and unmount component on countdown end', () => {
     const zeroPadTime = 0;
 
-    class Completionist extends React.Component<any> {
-      componentDidMount() {}
-
+    class Completionist extends React.PureComponent<{
+      readonly name: string;
+      readonly children: React.ReactNode;
+    }> {
       render() {
+        const { name, children } = this.props;
         return (
           <div>
-            Completed! {this.props.name} {this.props.children}
+            Completed! {name} {children}
           </div>
         );
       }
@@ -90,7 +92,7 @@ describe('<Countdown />', () => {
     // Forward in time
     wrapper.setProps({ date: 0 });
     expect(getCountdownJsState().timeDelta.completed).toBe(true);
-    expect((wrapper.props() as any).children.type).toBe(Completionist);
+    expect(wrapper.props().children!.type).toBe(Completionist);
     expect(Completionist.prototype.componentDidMount).toBeCalled();
 
     const computedProps = { ...wrapper.props() };
@@ -183,33 +185,33 @@ describe('<Countdown />', () => {
   it('should only re-set time delta state when props have changed', () => {
     const root = document.createElement('div');
     wrapper = mount(<Countdown date={1000} />, { attachTo: root });
-    const obj = getCountdownJsInstance();
-    obj.setTimeDeltaState = jest.fn();
+    const countdownJsObj = getCountdownJsInstance();
+    countdownJsObj.setTimeDeltaState = jest.fn();
 
     function mergeProps(partialProps: Partial<CountdownProps>): CountdownProps {
       return { ...wrapper.props(), ...partialProps };
     }
 
     wrapper.setProps(mergeProps({ date: 500 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(1);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(1);
 
     wrapper.setProps(mergeProps({ intervalDelay: 999 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(2);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(2);
 
     wrapper.setProps(mergeProps({ date: 500 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(2);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(2);
 
     wrapper.setProps(mergeProps({ precision: NaN }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(3);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(3);
 
     wrapper.setProps(mergeProps({ precision: NaN }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(3);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(3);
 
     wrapper.setProps(mergeProps({ precision: 3 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(4);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(4);
 
     wrapper.setProps(mergeProps({ date: 750 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(5);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(5);
   });
 
   it('should not (try to) set state after component unmount', () => {
@@ -392,6 +394,8 @@ describe('<Countdown />', () => {
   afterEach(() => {
     try {
       wrapper.detach();
-    } catch (e) {}
+    } catch (e) {
+      // Continue...
+    }
   });
 });

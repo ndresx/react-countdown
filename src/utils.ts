@@ -54,6 +54,57 @@ export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {
 };
 
 /**
+ * Calculates each time unit of a given timestamp.
+ *
+ * @export
+ * @param {number} timestamp Timestamp of a certain point in time.
+ * @returns {CountdownTimeUnits} Object that includes details about each time unit.
+ */
+export function calcTimeUnits(timestamp: number): CountdownTimeUnits {
+  const seconds = timestamp / 1000;
+
+  return {
+    days: Math.floor(seconds / (3600 * 24)),
+    hours: Math.floor((seconds / 3600) % 24),
+    minutes: Math.floor((seconds / 60) % 60),
+    seconds: Math.floor(seconds % 60),
+    milliseconds: Number(((seconds % 1) * 1000).toFixed()),
+  };
+}
+
+/**
+ * Formats a given countdown time delta object.
+ *
+ * @export
+ * @param {CountdownTimeDelta} delta
+ * @param {CountdownTimeDeltaFormatOptions} [options]
+ * @returns {CountdownTimeDeltaFormatted} Formatted time delta object.
+ */
+export function formatTimeDelta(
+  delta: CountdownTimeDelta,
+  options?: CountdownTimeDeltaFormatOptions
+): CountdownTimeDeltaFormatted {
+  const { days, hours, minutes, seconds, milliseconds } = delta;
+  const { daysInHours, zeroPadTime, zeroPadDays = zeroPadTime } = {
+    ...timeDeltaFormatOptionsDefaults,
+    ...options,
+  };
+
+  const zeroPadLength = Math.min(2, zeroPadTime);
+  const formattedHours = daysInHours
+    ? zeroPad(hours + days * 24, zeroPadTime)
+    : zeroPad(hours, zeroPadLength);
+
+  return {
+    days: daysInHours ? '' : zeroPad(days, zeroPadDays),
+    hours: formattedHours,
+    minutes: zeroPad(minutes, zeroPadLength),
+    seconds: zeroPad(seconds, zeroPadLength),
+    milliseconds: zeroPad(milliseconds, zeroPadLength),
+  };
+}
+
+/**
  * Calculates the time difference between a given end date and the current date.
  *
  * @export
@@ -102,56 +153,5 @@ export function calcTimeDelta(
     ...calcTimeUnits(total),
     total,
     completed: total <= 0,
-  };
-}
-
-/**
- * Calculates each time unit of a given timestamp.
- *
- * @export
- * @param {number} timestamp Timestamp of a certain point in time.
- * @returns {CountdownTimeUnits} Object that includes details about each time unit.
- */
-export function calcTimeUnits(timestamp: number): CountdownTimeUnits {
-  const seconds = timestamp / 1000;
-
-  return {
-    days: Math.floor(seconds / (3600 * 24)),
-    hours: Math.floor((seconds / 3600) % 24),
-    minutes: Math.floor((seconds / 60) % 60),
-    seconds: Math.floor(seconds % 60),
-    milliseconds: Number(((seconds % 1) * 1000).toFixed()),
-  };
-}
-
-/**
- * Formats a given countdown time delta object.
- *
- * @export
- * @param {CountdownTimeDelta} delta
- * @param {CountdownTimeDeltaFormatOptions} [options]
- * @returns {CountdownTimeDeltaFormatted} Formatted time delta object.
- */
-export function formatTimeDelta(
-  delta: CountdownTimeDelta,
-  options?: CountdownTimeDeltaFormatOptions
-): CountdownTimeDeltaFormatted {
-  const { days, hours, minutes, seconds, milliseconds } = delta;
-  const { daysInHours, zeroPadTime, zeroPadDays = zeroPadTime } = {
-    ...timeDeltaFormatOptionsDefaults,
-    ...options,
-  };
-
-  const zeroPadLength = Math.min(2, zeroPadTime);
-  const formattedHours = daysInHours
-    ? zeroPad(hours + days * 24, zeroPadTime)
-    : zeroPad(hours, zeroPadLength);
-
-  return {
-    days: daysInHours ? '' : zeroPad(days, zeroPadDays),
-    hours: formattedHours,
-    minutes: zeroPad(minutes, zeroPadLength),
-    seconds: zeroPad(seconds, zeroPadLength),
-    milliseconds: zeroPad(milliseconds, zeroPadLength),
   };
 }

@@ -11,6 +11,8 @@ import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './Cou
  * @extends {React.Component}
  */
 export default class Countdown extends React.Component<CountdownProps, CountdownState> {
+  countdown: CountdownJs;
+
   static propTypes = {
     date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string, PropTypes.number])
       .isRequired,
@@ -31,8 +33,6 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     onTick: PropTypes.func,
     onComplete: PropTypes.func,
   };
-
-  countdown: CountdownJs;
 
   constructor(props: CountdownProps) {
     super(props);

@@ -40,7 +40,7 @@ export default function useCountdown(props: UseCountdownProps): UseCountdownResu
     } else {
       firstRun.current = true;
     }
-  }, [props]);
+  }, [countdown, props]);
 
   return countdown.getRenderProps();
 }

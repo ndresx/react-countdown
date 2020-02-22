@@ -13,7 +13,7 @@ jest.mock('./CountdownJs', () => {
     const countdown = new CountdownJs(props, updater);
     Object.keys(classSpies).forEach(key => {
       const fn = countdown[key];
-      countdown[key] = function(...args) {
+      countdown[key] = function(...args): void {
         fn(...args);
         classSpies[key](...args);
       };
@@ -40,7 +40,7 @@ describe('useCountdown', () => {
     countdownDate = date;
   });
 
-  const hookCallback = (props: UseCountdownProps) => useCountdown(props);
+  const hookCallback = (props: UseCountdownProps) => useCountdown(props); // eslint-disable-line
 
   it('should use countdown', () => {
     const { result } = renderHook(hookCallback, { initialProps: { date: countdownDate } });

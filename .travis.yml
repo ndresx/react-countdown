@@ -9,9 +9,9 @@ branches:
 jobs:
   include:
     - stage: 'Lint'
-      name: 'Prettier'
-      script: yarn lint:prettier
-    - script: yarn lint:tslint && yarn lint:tsc
+      name: 'ESLint & Prettier'
+      script: yarn lint:eslint
+    - script: yarn lint:tsc
       name: 'TypeScript'
     - stage: 'Tests'
       name: 'Unit Tests'

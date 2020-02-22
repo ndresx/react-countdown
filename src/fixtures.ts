@@ -1,4 +1,9 @@
-export function mockDateNow() {
+type TMockDateNow = {
+  readonly now: jest.Mock;
+  readonly timeDiff: number;
+};
+
+export function mockDateNow(): TMockDateNow {
   const timeDiff = 90110456;
   const now = jest.fn(() => 1482363367071);
   Date.now = now;

@@ -30,6 +30,4 @@ const createConfig = ({ name, ext }) => ({
   ],
 });
 
-module.exports = [{ name: 'index', ext: 'ts' }, { name: 'Countdown', ext: 'tsx' }].map(
-  createConfig
-);
+module.exports = [{ name: 'index', ext: 'ts' }].map(createConfig);
