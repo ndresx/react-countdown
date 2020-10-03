@@ -21,6 +21,7 @@ export interface CountdownProps
   readonly intervalDelay?: number;
   readonly precision?: number;
   readonly autoStart?: boolean;
+  readonly className?: string;
   readonly children?: React.ReactElement<any>;
   readonly renderer?: (props: CountdownRenderProps) => React.ReactNode;
   readonly now?: () => number;
@@ -29,7 +30,6 @@ export interface CountdownProps
   readonly onPause?: CountdownTimeDeltaFn;
   readonly onTick?: CountdownTimeDeltaFn;
   readonly onComplete?: CountdownTimeDeltaFn | LegacyCountdownProps['onComplete'];
-  readonly className?: string;
 }
 
 export interface CountdownRenderProps extends CountdownTimeDelta {
@@ -78,6 +78,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     intervalDelay: PropTypes.number,
     precision: PropTypes.number,
     autoStart: PropTypes.bool,
+    className: PropTypes.string,
     children: PropTypes.element,
     renderer: PropTypes.func,
     now: PropTypes.func,
@@ -86,7 +87,6 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     onPause: PropTypes.func,
     onTick: PropTypes.func,
     onComplete: PropTypes.func,
-    className: PropTypes.string,
   };
 
   mounted = false;
@@ -274,7 +274,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       );
     }
 
-    const { children, renderer, className } = this.props;
+    const { className, children, renderer } = this.props;
     const renderProps = this.getRenderProps();
 
     if (renderer) {
