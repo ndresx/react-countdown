@@ -3,7 +3,7 @@ import { mount, ReactWrapper } from 'enzyme';
 
 import Countdown from './Countdown';
 import CountdownJs, { CountdownProps, CountdownState } from './CountdownJs';
-import { calcTimeDelta, formatTimeDelta } from './utils';
+import { calcTimeDelta, formatTimeUnits, CountdownTimeUnit } from './utils';
 import { mockDateNow, defaultStats } from './fixtures';
 
 const { now, timeDiff } = mockDateNow();
@@ -41,13 +41,8 @@ describe('<Countdown />', () => {
     wrapper = mount(
       <Countdown
         date={Date.now() + timeDiff}
-        renderer={props => (
-          <div>
-            {props.days}
-            {props.hours}
-            {props.minutes}
-            {props.seconds}
-          </div>
+        renderer={({ days, hours, minutes, seconds, milliseconds }) => (
+          <div>{`${days}d:${hours}h:${minutes}m:${seconds}s:${milliseconds}ms`}</div>
         )}
       />
     );
@@ -105,7 +100,7 @@ describe('<Countdown />', () => {
         ...delta,
         api: obj.getApi(),
         props: getCountdownJsInstance().getProps(),
-        formatted: formatTimeDelta(delta, { zeroPadTime }),
+        formatted: formatTimeUnits(delta, { zeroPadTime }),
       },
       name: 'master',
       children: 'Another child',
@@ -113,9 +108,21 @@ describe('<Countdown />', () => {
     expect(wrapper).toMatchSnapshot();
   });
 
-  it('should render with daysInHours => true', () => {
-    wrapper = mount(<Countdown date={Date.now() + timeDiff} daysInHours />);
-    expect(wrapper).toMatchSnapshot();
+  describe('unit', () => {
+    (['d', 'h', 'm', 's', 'ms'] as CountdownTimeUnit[]).forEach(unit =>
+      it.only(`should render with unit => "${unit}"`, () => {
+        wrapper = mount(
+          <Countdown
+            date={Date.now() + timeDiff}
+            unit={unit}
+            renderer={({ days, hours, minutes, seconds, milliseconds }) => (
+              <div>{`${days}d:${hours}h:${minutes}m:${seconds}s:${milliseconds}ms`}</div>
+            )}
+          />
+        );
+        expect(wrapper).toMatchSnapshot();
+      })
+    );
   });
 
   it('should render with zeroPadDays => 3', () => {
@@ -172,7 +179,7 @@ describe('<Countdown />', () => {
     const api = obj.getApi();
     const countdownJsObj = getCountdownJsInstance();
 
-    expect(countdownJsObj.interval).toBeUndefined();
+    expect(countdownJsObj.timer).toBeUndefined();
     expect(getCountdownJsState().timeDelta.completed).toBe(false);
     expect(api.isCompleted()).toBe(false);
 
@@ -220,14 +227,14 @@ describe('<Countdown />', () => {
 
     now.mockReturnValue(countdownDate - 6000);
     jest.runTimersToTime(6000);
-    expect(countdownJsObj.mounted).toBe(true);
+    expect(countdownJsObj.initialized).toBe(true);
     expect(getCountdownJsState().timeDelta.total).toBe(6000);
 
     wrapper.unmount();
 
     now.mockReturnValue(countdownDate - 3000);
     jest.runTimersToTime(3000);
-    expect(countdownJsObj.mounted).toBe(false);
+    expect(countdownJsObj.initialized).toBe(false);
     expect(countdownJsObj.getState().timeDelta.total).toBe(6000);
 
     countdownJsObj.setTimeDeltaState(defaultStats);

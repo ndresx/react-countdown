@@ -1,7 +1,8 @@
 export {
   zeroPad,
   calcTimeDelta,
-  formatTimeDelta,
+  calcTimeUnits,
+  formatTimeUnits,
   CountdownTimeDeltaOptions,
   CountdownTimeDelta,
   CountdownTimeDeltaFormatted,

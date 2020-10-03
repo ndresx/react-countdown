@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`utils calcTimeUnits should calculate with unit => "d" 1`] = `
+Object {
+  "days": 1,
+  "hours": 1,
+  "milliseconds": 456,
+  "minutes": 1,
+  "seconds": 50,
+}
+`;
+
+exports[`utils calcTimeUnits should calculate with unit => "h" 1`] = `
+Object {
+  "days": 0,
+  "hours": 25,
+  "milliseconds": 456,
+  "minutes": 1,
+  "seconds": 50,
+}
+`;
+
+exports[`utils calcTimeUnits should calculate with unit => "m" 1`] = `
+Object {
+  "days": 0,
+  "hours": 0,
+  "milliseconds": 456,
+  "minutes": 1501,
+  "seconds": 50,
+}
+`;
+
+exports[`utils calcTimeUnits should calculate with unit => "ms" 1`] = `
+Object {
+  "days": 0,
+  "hours": 0,
+  "milliseconds": 90110456,
+  "minutes": 0,
+  "seconds": 0,
+}
+`;
+
+exports[`utils calcTimeUnits should calculate with unit => "s" 1`] = `
+Object {
+  "days": 0,
+  "hours": 0,
+  "milliseconds": 456,
+  "minutes": 0,
+  "seconds": 90110,
+}
+`;

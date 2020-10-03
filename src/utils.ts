@@ -1,5 +1,16 @@
+export type CountdownTimeUnit = 'd' | 'h' | 'm' | 's' | 'ms';
+
+export interface CountdownTimeUnits<T = number> {
+  readonly days: T;
+  readonly hours: T;
+  readonly minutes: T;
+  readonly seconds: T;
+  readonly milliseconds: T;
+}
+
 export interface CountdownTimeDeltaOptions {
   readonly now?: () => number;
+  readonly unit?: CountdownTimeUnit;
   readonly precision?: number;
   readonly controlled?: boolean;
   readonly offsetTime?: number;
@@ -10,20 +21,11 @@ export interface CountdownTimeDelta extends CountdownTimeUnits {
   readonly completed: boolean;
 }
 
-export interface CountdownTimeUnits<T = number> {
-  readonly days: T;
-  readonly hours: T;
-  readonly minutes: T;
-  readonly seconds: T;
-  readonly milliseconds: T;
-}
-
 export interface CountdownTimeDeltaFormatted extends CountdownTimeUnits<string> {}
 
 export interface CountdownTimeDeltaFormatOptions {
-  readonly daysInHours?: boolean;
-  readonly zeroPadTime?: number;
   readonly zeroPadDays?: number;
+  readonly zeroPadTime?: number;
 }
 
 /**
@@ -49,7 +51,6 @@ export function zeroPad(value: number | string, length: number = 2): string {
 }
 
 export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {
-  daysInHours: false,
   zeroPadTime: 2,
 };
 
@@ -60,44 +61,71 @@ export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {
  * @param {number} timestamp Timestamp of a certain point in time.
  * @returns {CountdownTimeUnits} Object that includes details about each time unit.
  */
-export function calcTimeUnits(timestamp: number): CountdownTimeUnits {
-  const seconds = timestamp / 1000;
+export function calcTimeUnits(
+  timestamp: number,
+  unit: CountdownTimeUnit = 'h'
+): CountdownTimeUnits {
+  const total = timestamp / 1000;
+  let days = Math.floor(total / (3600 * 24));
+  let hours = Math.floor((total / 3600) % 24);
+  let minutes = Math.floor((total / 60) % 60);
+  let seconds = Math.floor(total % 60);
+  let milliseconds = Number(((total % 1) * 1000).toFixed());
+  console.log(unit);
+  if (unit) {
+    if (unit !== 'd') {
+      hours += days * 24;
+      days = 0;
+    }
+
+    if (unit !== 'd' && unit !== 'h') {
+      minutes += hours * 60;
+      hours = 0;
+    }
+
+    if (unit !== 'd' && unit !== 'h' && unit !== 'm') {
+      seconds += minutes * 60;
+      minutes = 0;
+    }
+
+    if (unit !== 'd' && unit !== 'h' && unit !== 'm' && unit !== 's') {
+      milliseconds += seconds * 1000;
+      seconds = 0;
+    }
+  }
 
   return {
-    days: Math.floor(seconds / (3600 * 24)),
-    hours: Math.floor((seconds / 3600) % 24),
-    minutes: Math.floor((seconds / 60) % 60),
-    seconds: Math.floor(seconds % 60),
-    milliseconds: Number(((seconds % 1) * 1000).toFixed()),
+    days,
+    hours,
+    minutes,
+    seconds,
+    milliseconds,
   };
 }
 
 /**
- * Formats a given countdown time delta object.
+ * Formats a given countdown time units object.
  *
  * @export
- * @param {CountdownTimeDelta} delta
+ * @param {CountdownTimeUnits} units
  * @param {CountdownTimeDeltaFormatOptions} [options]
- * @returns {CountdownTimeDeltaFormatted} Formatted time delta object.
+ * @returns {CountdownTimeDeltaFormatted} Formatted time units object.
  */
-export function formatTimeDelta(
-  delta: CountdownTimeDelta,
+export function formatTimeUnits(
+  delta: CountdownTimeUnits,
   options?: CountdownTimeDeltaFormatOptions
 ): CountdownTimeDeltaFormatted {
   const { days, hours, minutes, seconds, milliseconds } = delta;
-  const { daysInHours, zeroPadTime, zeroPadDays = zeroPadTime } = {
+  const { zeroPadTime, zeroPadDays = zeroPadTime } = {
     ...timeDeltaFormatOptionsDefaults,
     ...options,
   };
 
   const zeroPadLength = Math.min(2, zeroPadTime);
-  const formattedHours = daysInHours
-    ? zeroPad(hours + days * 24, zeroPadTime)
-    : zeroPad(hours, zeroPadLength);
 
   return {
-    days: daysInHours ? '' : zeroPad(days, zeroPadDays),
-    hours: formattedHours,
+    days: zeroPad(days, zeroPadDays),
+    hours: zeroPad(hours, zeroPadLength),
     minutes: zeroPad(minutes, zeroPadLength),
     seconds: zeroPad(seconds, zeroPadLength),
     milliseconds: zeroPad(milliseconds, zeroPadLength),
@@ -122,6 +150,7 @@ export function calcTimeDelta(
   date: Date | string | number,
   {
     now = Date.now,
+    unit = 'h',
     precision = 0,
     controlled = false,
     offsetTime = 0,
@@ -150,7 +179,7 @@ export function calcTimeDelta(
   );
 
   return {
-    ...calcTimeUnits(total),
+    ...calcTimeUnits(total, unit),
     total,
     completed: total <= 0,
   };

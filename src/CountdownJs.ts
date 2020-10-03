@@ -5,14 +5,16 @@ import {
   CountdownTimeDeltaFormatted,
   CountdownTimeDeltaFormatOptions,
   timeDeltaFormatOptionsDefaults,
-  formatTimeDelta,
+  formatTimeUnits,
 } from './utils';
 
 export interface CountdownProps extends React.Props<Countdown>, CountdownTimeDeltaFormatOptions {
   readonly date: Date | number | string;
   readonly key?: React.Key;
   readonly controlled?: boolean;
+  readonly raf?: boolean;
   readonly intervalDelay?: number;
+  readonly unit?: 'd' | 'h' | 'm' | 's' | 'ms';
   readonly precision?: number;
   readonly autoStart?: boolean;
   readonly children?: React.ReactElement<unknown>;
@@ -61,22 +63,22 @@ export default class CountdownJs {
   state: CountdownState;
   stateUpdater: StateUpdaterFn;
 
-  mounted = false;
-  interval: number | undefined;
+  initialized = false;
+  timer: number | undefined;
   api: CountdownApi | undefined;
 
   constructor(props: CountdownProps, stateUpdater: StateUpdaterFn) {
     this.props = this.computeProps(props);
     this.state = {
       timeDelta: this.calcTimeDelta(),
-      offsetStart: props.autoStart ? 0 : this.calcOffsetStart(),
+      offsetStart: this.props.autoStart ? 0 : this.calcOffsetStart(),
       offsetTime: 0,
     };
     this.stateUpdater = stateUpdater;
   }
 
-  mount = (): void => {
-    this.mounted = true;
+  init = (): void => {
+    this.initialized = true;
     this.props.autoStart && this.start();
     this.props.onMount && this.props.onMount(this.calcTimeDelta());
   };
@@ -93,9 +95,9 @@ export default class CountdownJs {
     return false;
   };
 
-  unmount = (): void => {
-    this.mounted = false;
-    this.clearInterval();
+  destroy = (): void => {
+    this.initialized = false;
+    this.clearTimer();
   };
 
   tick = (): void => {
@@ -109,10 +111,19 @@ export default class CountdownJs {
     }
   };
 
+  rafTick = (): void => {
+    this.tick();
+
+    if (this.timer) {
+      this.timer = requestAnimationFrame(this.rafTick);
+    }
+  };
+
   calcTimeDelta(): CountdownTimeDelta {
-    const { date, now, precision, controlled } = this.props;
+    const { date, now, unit, precision, controlled } = this.props;
     return calcTimeDelta(date, {
       now,
+      unit,
       precision,
       controlled,
       offsetTime: this.state ? this.state.offsetTime : 0,
@@ -135,15 +146,14 @@ export default class CountdownJs {
         this.props.onStart && this.props.onStart(timeDelta);
 
         if (!this.props.controlled) {
-          this.clearInterval();
-          this.interval = window.setInterval(this.tick, this.props.intervalDelay);
+          this.timer = this.startTimer();
         }
       }
     );
   };
 
   pause = (): void => {
-    this.clearInterval();
+    this.clearTimer();
     this.setState({ offsetStart: this.calcOffsetStart() }, () => {
       const timeDelta = this.calcTimeDelta();
       this.setTimeDeltaState(timeDelta);
@@ -151,14 +161,30 @@ export default class CountdownJs {
     });
   };
 
-  clearInterval(): void {
-    window.clearInterval(this.interval);
+  startTimer(): number {
+    this.clearTimer();
+    return this.props.raf
+      ? window.requestAnimationFrame(this.rafTick)
+      : window.setInterval(this.tick, this.props.intervalDelay);
+  }
+
+  clearTimer(): void {
+    if (this.timer) {
+      if (this.props.raf) {
+        window.cancelAnimationFrame(this.timer);
+      } else {
+        window.clearInterval(this.timer);
+      }
+
+      this.timer = undefined;
+    }
   }
 
   computeProps(props: CountdownProps): CountdownProps {
     return {
       ...timeDeltaFormatOptionsDefaults,
       controlled: false,
+      raf: true,
       intervalDelay: 1000,
       precision: 0,
       autoStart: true,
@@ -193,13 +219,13 @@ export default class CountdownJs {
   setTimeDeltaState(timeDelta: CountdownTimeDelta): void {
     let callback;
 
-    if (!this.state.timeDelta.completed && timeDelta.completed) {
-      this.clearInterval();
+    if (!this.isCompleted() && timeDelta.completed) {
+      this.clearTimer();
 
       callback = (): void => this.props.onComplete && this.props.onComplete(timeDelta);
     }
 
-    if (this.mounted) {
+    if (this.initialized) {
       this.setState({ timeDelta }, callback);
     }
   }
@@ -214,14 +240,13 @@ export default class CountdownJs {
   };
 
   getRenderProps = (): CountdownRenderProps => {
-    const { daysInHours, zeroPadTime, zeroPadDays } = this.props;
+    const { zeroPadTime, zeroPadDays } = this.props;
     const { timeDelta } = this.state;
     return {
       ...timeDelta,
       api: this.getApi(),
       props: this.props,
-      formatted: formatTimeDelta(timeDelta, {
-        daysInHours,
+      formatted: formatTimeUnits(timeDelta, {
         zeroPadTime,
         zeroPadDays,
       }),

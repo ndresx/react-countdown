@@ -64,21 +64,6 @@ exports[`<Countdown /> should render custom renderer output 1`] = `
 </Countdown>
 `;
 
-exports[`<Countdown /> should render with daysInHours => true 1`] = `
-<Countdown
-  date={1482453477527}
-  daysInHours={true}
->
-  <span>
-    25
-    :
-    01
-    :
-    50
-  </span>
-</Countdown>
-`;
-
 exports[`<Countdown /> should render with zeroPadDays => 3 1`] = `
 <Countdown
   date={1483227367071}
@@ -208,5 +193,65 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
     :
     06
   </span>
+</Countdown>
+`;
+
+exports[`<Countdown /> unit should render with unit => "d" 1`] = `
+<Countdown
+  date={1482453477527}
+  renderer={[Function]}
+  unit="d"
+>
+  <div>
+    1d:1h:1m:50s:0ms
+  </div>
+</Countdown>
+`;
+
+exports[`<Countdown /> unit should render with unit => "h" 1`] = `
+<Countdown
+  date={1482453477527}
+  renderer={[Function]}
+  unit="h"
+>
+  <div>
+    0d:25h:1m:50s:0ms
+  </div>
+</Countdown>
+`;
+
+exports[`<Countdown /> unit should render with unit => "m" 1`] = `
+<Countdown
+  date={1482453477527}
+  renderer={[Function]}
+  unit="m"
+>
+  <div>
+    0d:0h:1501m:50s:0ms
+  </div>
+</Countdown>
+`;
+
+exports[`<Countdown /> unit should render with unit => "ms" 1`] = `
+<Countdown
+  date={1482453477527}
+  renderer={[Function]}
+  unit="ms"
+>
+  <div>
+    0d:0h:0m:0s:90110000ms
+  </div>
+</Countdown>
+`;
+
+exports[`<Countdown /> unit should render with unit => "s" 1`] = `
+<Countdown
+  date={1482453477527}
+  renderer={[Function]}
+  unit="s"
+>
+  <div>
+    0d:0h:0m:90110s:0ms
+  </div>
 </Countdown>
 `;

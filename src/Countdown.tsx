@@ -16,10 +16,11 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   static propTypes = {
     date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string, PropTypes.number])
       .isRequired,
-    daysInHours: PropTypes.bool,
+    unit: PropTypes.oneOf(['d', 'h', 'm', 's', 'ms']),
     zeroPadTime: PropTypes.number,
     zeroPadDays: PropTypes.number,
     controlled: PropTypes.bool,
+    raf: PropTypes.bool,
     intervalDelay: PropTypes.number,
     precision: PropTypes.number,
     autoStart: PropTypes.bool,
@@ -42,7 +43,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   componentDidMount(): void {
-    this.countdown.mount();
+    this.countdown.init();
   }
 
   componentDidUpdate(): void {
@@ -50,11 +51,15 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   componentWillUnmount(): void {
-    this.countdown.unmount();
+    this.countdown.destroy();
   }
 
-  getApi(): CountdownApi {
+  getApi = (): CountdownApi => {
     return this.countdown.getApi();
+  };
+
+  renderUnit(unit: CountdownProps['unit']): React.ReactNode {
+    return null;
   }
 
   render(): React.ReactNode {
@@ -71,11 +76,11 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
 
     const { days, hours, minutes, seconds } = renderProps.formatted;
     return (
-      <span>
+      <>
         {days}
         {days ? ':' : ''}
         {hours}:{minutes}:{seconds}
-      </span>
+      </>
     );
   }
 }

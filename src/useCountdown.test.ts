@@ -1,9 +1,9 @@
 import { renderHook, act, cleanup } from '@testing-library/react-hooks';
 
 const classSpies = {
-  mount: jest.fn(),
+  init: jest.fn(),
   update: jest.fn(),
-  unmount: jest.fn(),
+  destroy: jest.fn(),
 };
 
 const CountdownJs = jest.requireActual('./CountdownJs').default;
@@ -54,9 +54,9 @@ describe('useCountdown', () => {
     const prevDate = result.current.props.date;
     expect(prevDate).toBe(1482363377071);
 
-    expect(classSpies.mount).toHaveBeenCalledTimes(1);
+    expect(classSpies.init).toHaveBeenCalledTimes(1);
     expect(classSpies.update).toHaveBeenCalledTimes(0);
-    expect(classSpies.unmount).toHaveBeenCalledTimes(0);
+    expect(classSpies.destroy).toHaveBeenCalledTimes(0);
 
     const nextProps = { date: countdownDate + timeDiff };
     rerender(nextProps);
@@ -65,10 +65,10 @@ describe('useCountdown', () => {
     expect(nextDate).not.toEqual(prevDate);
     expect(nextDate).toBe(1482453487527);
 
-    expect(classSpies.mount).toHaveBeenCalledTimes(1);
+    expect(classSpies.init).toHaveBeenCalledTimes(1);
     expect(classSpies.update).toHaveBeenCalledTimes(1);
     expect(classSpies.update).toHaveBeenLastCalledWith(nextProps);
-    expect(classSpies.unmount).toHaveBeenCalledTimes(0);
+    expect(classSpies.destroy).toHaveBeenCalledTimes(0);
   });
 
   it('should respect hook lifecycle', async () => {
@@ -76,9 +76,9 @@ describe('useCountdown', () => {
       initialProps: { date: countdownDate, intervalDelay: 1111 },
     });
 
-    expect(classSpies.mount).toHaveBeenCalledTimes(1);
+    expect(classSpies.init).toHaveBeenCalledTimes(1);
     expect(classSpies.update).toHaveBeenCalledTimes(0);
-    expect(classSpies.unmount).toHaveBeenCalledTimes(0);
+    expect(classSpies.destroy).toHaveBeenCalledTimes(0);
 
     rerender({ date: countdownDate, intervalDelay: 1111 });
 
@@ -88,17 +88,17 @@ describe('useCountdown', () => {
       jest.runTimersToTime(6000);
     });
 
-    expect(classSpies.mount).toHaveBeenCalledTimes(1);
+    expect(classSpies.init).toHaveBeenCalledTimes(1);
     expect(classSpies.update).toHaveBeenCalledTimes(1);
-    expect(classSpies.unmount).toHaveBeenCalledTimes(0);
+    expect(classSpies.destroy).toHaveBeenCalledTimes(0);
     expect(result.current.total).toBe(6000);
 
     // Respect key-prop change and re-instantiate countdown
     rerender({ date: countdownDate, key: Math.random(), intervalDelay: 1111 });
 
-    expect(classSpies.mount).toHaveBeenCalledTimes(2);
+    expect(classSpies.init).toHaveBeenCalledTimes(2);
     expect(classSpies.update).toHaveBeenCalledTimes(1);
-    expect(classSpies.unmount).toHaveBeenCalledTimes(1);
+    expect(classSpies.destroy).toHaveBeenCalledTimes(1);
     expect(result.current.total).toBe(6000);
   });
 

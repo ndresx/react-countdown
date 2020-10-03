@@ -1,6 +1,6 @@
 {
   "name": "react-countdown",
-  "version": "3.0.0-alpha",
+  "version": "3.0.0-beta",
   "description": "A customizable countdown component for React.",
   "main": "./dist/index.js",
   "module": "./dist/index.es.js",

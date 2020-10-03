@@ -1,4 +1,4 @@
-import { zeroPad, calcTimeDelta } from './utils';
+import { zeroPad, calcTimeDelta, calcTimeUnits } from './utils';
 import { mockDateNow, defaultStats } from './fixtures';
 
 const { timeDiff } = mockDateNow();
@@ -147,5 +147,13 @@ describe('utils', () => {
         completed: false,
       });
     });
+  });
+
+  describe('calcTimeUnits', () => {
+    ['d', 'h', 'm', 's', 'ms'].forEach(unit =>
+      it.only(`should calculate with unit => "${unit}"`, () => {
+        expect(calcTimeUnits(timeDiff, unit)).toMatchSnapshot();
+      })
+    );
   });
 });

@@ -27,11 +27,8 @@ export default function useCountdown(props: UseCountdownProps): UseCountdownResu
   const countdown = countdownObj.current as CountdownJs;
 
   useEffect(() => {
-    countdown.mount();
-
-    return () => {
-      countdown.unmount();
-    };
+    countdown.init();
+    return countdown.destroy;
   }, [countdown]);
 
   useEffect(() => {
