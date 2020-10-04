@@ -7,17 +7,18 @@ A customizable countdown component for React.
 * [Props](#props)
 * [API Reference](#api-reference)
 * [Helpers](#helpers)
+* [Contributing](#contributing)
 * [License](#license)
 
 ## Getting Started
 
-You can either install the module via `npm` or `yarn`:
+You can install the module via `npm` or `yarn`:
 
-```
+```sh
 npm install react-countdown --save
 ```
 
-```
+```sh
 yarn add react-countdown
 ```
 
@@ -142,7 +143,7 @@ ReactDOM.render(
 |[**onComplete**](#oncomplete)|`function`|`undefined`|Callback when countdown ends|
 
 ### `date`
-The `date` prop is the only required one and can be a [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object, `string`, or timestamp in the future. By default, this date value gets compared with the current date, or a custom handler defined via [`now`](#now).
+The `date` prop is the only required one and can be a [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object, `string`, or timestamp in the future. By default, this date is compared with the current date, or a custom handler defined via [`now`](#now).
 
 Valid values can be _(and more)_:
 * `'2020-02-01T01:02:03'` // [`Date` time string format](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse#Date_Time_String_Format)
@@ -150,7 +151,7 @@ Valid values can be _(and more)_:
 * `new Date(1580518923000)` // [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object
 
 ### `key`
-This is one of React's internal component props and is used to identify the component. However, we can leverage this behavior and use it to, for example,  restart the countdown by
+This is one of React's internal component props and is used to identify the component. However, we can leverage this behavior and use it to, for example, restart the countdown by
 passing in a new `string` or `number`.
 
 Please see [official React docs](https://reactjs.org/docs/lists-and-keys.html#keys) for more information about keys.
@@ -187,7 +188,7 @@ _Please note that once a custom `renderer` is defined, the [`children`](#childre
 <a name="renderer"></a>
 ### `renderer(props)`
 The component's render output is very simple and depends on [`daysInHours`](#daysinhours): _{days}:{hours}:{minutes}:{seconds}_.
-If this doesn't fit your needs, a custom `renderer` callback can be defined to return a new React element. It receives an argument which consists of a time delta object (incl. `formatted` values) to help building your own representation of the countdown.
+If this doesn't fit your needs, a custom `renderer` callback can be defined to return a new React element. It receives an argument that consists of a time delta object (incl. `formatted` values) to build your own representation of the countdown.
 ```js
 { total, days, hours, minutes, seconds, milliseconds, completed }
 ```
@@ -197,22 +198,22 @@ The render props also contain the countdown's [`API`](#api-reference) as `api` p
 _Please note that once a custom `renderer` is defined, the [`children`](#children) prop will be ignored._
 
 ### `now`
-If the current datetime (determined via a reference to `Date.now`) is not the right thing to compare with for you, a reference to a custom function which returns a similar dynamic value could be provided as an alternative.
+If the current date and time (determined via a reference to `Date.now`) is not the right thing to compare with for you, a reference to a custom function that returns a similar dynamic value could be provided as an alternative.
 
 ### `onMount`
-`onMount` is a callback and triggered when the countdown mounts. It receives the time delta object which is returned by [`calcTimeDelta`](#calctimedelta).
+`onMount` is a callback and triggered when the countdown mounts. It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
 
 ### `onStart`
-`onStart` is a callback and triggered whenever the countdown is started (including first-run).  It receives the time delta object which is returned by [`calcTimeDelta`](#calctimedelta).
+`onStart` is a callback and triggered whenever the countdown is started (including first-run). It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
 
 ### `onPause`
-`onPause` is a callback and triggered every time the countdown is paused. It receives the time delta object which is returned by [`calcTimeDelta`](#calctimedelta).
+`onPause` is a callback and triggered every time the countdown is paused. It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
 
 ### `onTick`
-`onTick` is a callback and triggered every time a new period is started, based on what the [`intervalDelay`](#intervaldelay)'s value is. It only gets triggered when the countdown's [`controlled`](#controlled) prop is set to `false`, meaning that the countdown has full control over its interval. It receives the time delta object which is returned by [`calcTimeDelta`](#calctimedelta).
+`onTick` is a callback and triggered every time a new period is started, based on what the [`intervalDelay`](#intervaldelay)'s value is. It only gets triggered when the countdown's [`controlled`](#controlled) prop is set to `false`, meaning that the countdown has full control over its interval. It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
 
 ### `onComplete`
-`onComplete` is a callback and triggered whenever the countdown ends. In contrast to [`onTick`](#ontick), the [`onComplete`](#oncomplete) callback gets also triggered in case [`controlled`](#controlled) is set to `true`. It receives the time delta object which is returned by [`calcTimeDelta`](#calctimedelta).
+`onComplete` is a callback and triggered whenever the countdown ends. In contrast to [`onTick`](#ontick), the [`onComplete`](#oncomplete) callback gets also triggered in case [`controlled`](#controlled) is set to `true`. It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
 
 ## API Reference
 
@@ -232,14 +233,14 @@ Returns a `boolean` for whether the countdown has been completed or not.
 
 ## Helpers
 
-This module also exports 3 simple helper functions which can be utilized to build your own countdown custom [`renderer`](#renderer).
+This module also exports three simple helper functions, which can be utilized to build your own countdown custom [`renderer`](#renderer).
 
 ```js
 import Countdown, { zeroPad, calcTimeDelta, formatTimeDelta } from 'react-countdown';
 ```
 
 ### `zeroPad(value, [length = 2])`
-The `zeroPad` function works similar to other well-known pad-functions and takes 2 arguments into account. A `value` which can be a `string` or `number`, as well as a `length` parameter which defaults to `2` as you are most likely only going to use this function if you actually want to pad one of your values. Either returns a `number` if `length` equals `0`, or the zero-padded `string`.
+The `zeroPad` function works similarly to other well-known pad-functions and takes two arguments into account. A `value` which can be a `string` or `number`, as well as a `length` parameter which defaults to `2` as you are most likely only going to use this function if you actually want to pad one of your values. Either returns a `number` if `length` equals `0`, or the zero-padded `string`.
 
 ```js
 const renderer = ({ hours, minutes, seconds }) => (
@@ -257,7 +258,7 @@ const renderer = ({ hours, minutes, seconds }) => (
 { total, days, hours, minutes, seconds, milliseconds, completed }
 ```
 
-This function accepts 2 arguments in total, only the first one is required.
+This function accepts two arguments in total; only the first one is required.
 
 **`date`**
 Date or timestamp representation of the end date. See [`date`](#date) prop for more details.
@@ -283,7 +284,7 @@ Defines the offset time that gets added to the start time; only considered if co
 { days, hours, minutes, seconds }
 ```
 
-This function accepts 2 arguments in total, only the first one is required.
+This function accepts two arguments in total; only the first one is required.
 
 **`delta`**
 Time delta object, e.g.: returned by [`calcTimeDelta`](#calctimedelta).
@@ -293,6 +294,10 @@ The `options` object consists of the following three component props and is used
 * [`daysInHours`](#daysinhours)
 * [`zeroPadTime`](#zeropadtime)
 * [`zeroPadDays`](#zeropaddays)
+
+## Contributing
+
+Contributions of any kind are very welcome. Read more in our [contributing guide](https://github.com/ndresx/react-countdown/blob/master/CONTRIBUTING.md) about how to report bugs, create pull requests, and other development-related topics.
 
 ## License
 
