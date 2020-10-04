@@ -2,17 +2,17 @@
 
 Thanks for your interest in contributing to this project!
 
-Pull requests are very welcome to either fix existing bugs or add new features. Before submitting a pull request, please consider filing an issue to discuss the change's details.
+Pull requests are very welcome to either fix existing bugs, add new features, or improve the code in general. Before submitting a pull request, please consider filing an issue to discuss the change's details.
 
 ## Bug Reports
 
-1. Please [search for any similar issues](https://github.com/ndresx/react-countdown/issues?q=is%3Aissue) before as there is a chance that someone may have reported it already.
+1. Please [search for similar issues](https://github.com/ndresx/react-countdown/issues?q=is%3Aissue) before as there is a chance that someone might have reported it already.
 
 2. Provide a demo of the bug in isolation if possible (e.g., codesandbox.io); otherwise, try to be as detailed as possible in the description.
 
 ## Feature Requests
 
-Feature requests and new suggestions are also always welcome, but please take a moment to find out whether your idea fits within the scope of this project or not.
+Feature requests, improvements, and new suggestions are also always welcome, but please take a moment to find out whether your idea fits within the scope of this project or not.
 
 ## Pull Requests
 
@@ -36,7 +36,7 @@ yarn lint
 
 ### Tests
 
-Make sure that all tests pass and that the code coverage is close to 100%.
+Make sure that all tests are passing and that the code coverage is close to 100%.
 
 ```sh
 yarn test

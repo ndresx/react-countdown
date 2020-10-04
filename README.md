@@ -151,7 +151,7 @@ Valid values can be _(and more)_:
 * `new Date(1580518923000)` // [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object
 
 ### `key`
-This is one of React's internal component props and is used to identify the component. However, we can leverage this behavior and use it to, for example,  restart the countdown by
+This is one of React's internal component props and is used to identify the component. However, we can leverage this behavior and use it to, for example, restart the countdown by
 passing in a new `string` or `number`.
 
 Please see [official React docs](https://reactjs.org/docs/lists-and-keys.html#keys) for more information about keys.
@@ -204,7 +204,7 @@ If the current date and time (determined via a reference to `Date.now`) is not t
 `onMount` is a callback and triggered when the countdown mounts. It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
 
 ### `onStart`
-`onStart` is a callback and triggered whenever the countdown is started (including first-run).  It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
+`onStart` is a callback and triggered whenever the countdown is started (including first-run). It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
 
 ### `onPause`
 `onPause` is a callback and triggered every time the countdown is paused. It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
