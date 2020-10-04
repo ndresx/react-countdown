@@ -297,7 +297,7 @@ The `options` object consists of the following three component props and is used
 
 ## Contributing
 
-Contributions are warmly welcmoe
+Contributions of any kind are very welcome. Read more in our [contributing guide](https://github.com/ndresx/react-countdown/blob/master/CONTRIBUTING.md) about how to report bugs, create pull requests, and other development-related topics.
 
 ## License
 
