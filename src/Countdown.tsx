@@ -23,11 +23,12 @@ export interface CountdownProps
   readonly autoStart?: boolean;
   readonly className?: string;
   readonly children?: React.ReactElement<any>;
-  readonly renderer?: (props: CountdownRenderProps) => React.ReactNode;
+  readonly renderer?: CountdownRendererFn;
   readonly now?: () => number;
   readonly onMount?: CountdownTimeDeltaFn;
   readonly onStart?: CountdownTimeDeltaFn;
   readonly onPause?: CountdownTimeDeltaFn;
+  readonly onStop?: CountdownTimeDeltaFn;
   readonly onTick?: CountdownTimeDeltaFn;
   readonly onComplete?: CountdownTimeDeltaFn | LegacyCountdownProps['onComplete'];
 }
@@ -38,18 +39,29 @@ export interface CountdownRenderProps extends CountdownTimeDelta {
   readonly formatted: CountdownTimeDeltaFormatted;
 }
 
+export type CountdownRendererFn = (props: CountdownRenderProps) => React.ReactNode;
+
 export type CountdownTimeDeltaFn = (delta: CountdownTimeDelta) => void;
+
+const enum CountdownStatus {
+  STARTED = 'STARTED',
+  PAUSED = 'PAUSED',
+  STOPPED = 'STOPPED',
+  COMPLETED = 'COMPLETED',
+}
 
 interface CountdownState {
   readonly timeDelta: CountdownTimeDelta;
-  readonly offsetStart: number;
-  readonly offsetTime: number;
+  readonly status: CountdownStatus;
 }
 
 export interface CountdownApi {
   readonly start: () => void;
   readonly pause: () => void;
+  readonly stop: () => void;
+  readonly isStarted: () => boolean;
   readonly isPaused: () => boolean;
+  readonly isStopped: () => boolean;
   readonly isCompleted: () => boolean;
 }
 
@@ -85,6 +97,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     onMount: PropTypes.func,
     onStart: PropTypes.func,
     onPause: PropTypes.func,
+    onStop: PropTypes.func,
     onTick: PropTypes.func,
     onComplete: PropTypes.func,
   };
@@ -93,6 +106,11 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   interval: number | undefined;
   api: CountdownApi | undefined;
 
+  initialTimestamp = this.calcOffsetStartTimestamp();
+  initialTimeDelta = this.calcTimeDelta();
+  offsetStartTimestamp = this.props.autoStart ? 0 : this.initialTimestamp;
+  offsetTime = 0;
+
   legacyMode = false;
   legacyCountdownRef = React.createRef<LegacyCountdown>();
 
@@ -100,10 +118,10 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     super(props);
 
     if (props.date) {
+      const timeDelta = this.calcTimeDelta();
       this.state = {
-        timeDelta: this.calcTimeDelta(),
-        offsetStart: props.autoStart ? 0 : this.calcOffsetStart(),
-        offsetTime: 0,
+        timeDelta,
+        status: timeDelta.completed ? CountdownStatus.COMPLETED : CountdownStatus.STOPPED,
       };
     } else {
       this.legacyMode = true;
@@ -116,8 +134,8 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     }
 
     this.mounted = true;
-    this.props.autoStart && this.start();
-    this.props.onMount && this.props.onMount(this.calcTimeDelta());
+    if (this.props.onMount) this.props.onMount(this.calcTimeDelta());
+    if (this.props.autoStart) this.start();
   }
 
   componentDidUpdate(prevProps: CountdownProps): void {
@@ -125,7 +143,14 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       return;
     }
 
-    if (!this.shallowCompareProps(this.props, prevProps)) {
+    if (!this.shallowCompare(this.props, prevProps)) {
+      if (this.props.date !== prevProps.date) {
+        this.initialTimestamp = this.calcOffsetStartTimestamp();
+        this.initialTimeDelta = this.calcTimeDelta();
+        this.offsetStartTimestamp = this.initialTimestamp;
+        this.offsetTime = 0;
+      }
+
       this.setTimeDeltaState(this.calcTimeDelta());
     }
   }
@@ -136,13 +161,14 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     }
 
     this.mounted = false;
-    this.clearInterval();
+    this.clearTimer();
   }
 
   tick = (): void => {
     const { onTick } = this.props;
     const timeDelta = this.calcTimeDelta();
-    this.setTimeDeltaState(timeDelta);
+
+    this.setTimeDeltaState(timeDelta, CountdownStatus.STARTED);
 
     if (onTick && timeDelta.total > 0) {
       onTick(timeDelta);
@@ -155,84 +181,128 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       now,
       precision,
       controlled,
-      offsetTime: this.state ? this.state.offsetTime : 0,
+      offsetTime: this.offsetTime,
     });
   }
 
-  calcOffsetStart(): number {
+  calcOffsetStartTimestamp(): number {
     return Date.now();
   }
 
   start = (): void => {
-    this.setState(
-      ({ offsetStart, offsetTime }: CountdownState) => ({
-        offsetStart: 0,
-        offsetTime: offsetTime + (offsetStart ? Date.now() - offsetStart : 0),
-      }),
-      () => {
-        const timeDelta = this.calcTimeDelta();
-        this.setTimeDeltaState(timeDelta);
-        this.props.onStart && this.props.onStart(timeDelta);
+    if (this.isStarted()) return;
 
-        if (!this.props.controlled) {
-          this.clearInterval();
-          this.interval = window.setInterval(this.tick, this.props.intervalDelay);
-        }
-      }
-    );
+    const prevOffsetStartTimestamp = this.offsetStartTimestamp;
+    this.offsetStartTimestamp = 0;
+    this.offsetTime += prevOffsetStartTimestamp
+      ? this.calcOffsetStartTimestamp() - prevOffsetStartTimestamp
+      : 0;
+
+    const timeDelta = this.calcTimeDelta();
+    this.setTimeDeltaState(timeDelta, CountdownStatus.STARTED, this.props.onStart);
+
+    if (!this.props.controlled && !timeDelta.completed) {
+      this.clearTimer();
+      this.interval = window.setInterval(this.tick, this.props.intervalDelay);
+    }
   };
 
   pause = (): void => {
-    this.clearInterval();
-    this.setState({ offsetStart: this.calcOffsetStart() }, () => {
-      const timeDelta = this.calcTimeDelta();
-      this.setTimeDeltaState(timeDelta);
-      this.props.onPause && this.props.onPause(timeDelta);
-    });
+    if (this.isPaused()) return;
+
+    this.clearTimer();
+    this.offsetStartTimestamp = this.calcOffsetStartTimestamp();
+    this.setTimeDeltaState(this.state.timeDelta, CountdownStatus.PAUSED, this.props.onPause);
+  };
+
+  stop = (): void => {
+    if (this.isStopped()) return;
+
+    this.clearTimer();
+    this.offsetStartTimestamp = this.calcOffsetStartTimestamp();
+    this.offsetTime = this.offsetStartTimestamp - this.initialTimestamp;
+    this.setTimeDeltaState(this.calcTimeDelta(), CountdownStatus.STOPPED, this.props.onStop);
   };
 
   addTime(seconds: number): void {
     this.legacyCountdownRef.current!.addTime(seconds);
   }
 
-  clearInterval(): void {
+  clearTimer(): void {
     window.clearInterval(this.interval);
   }
 
+  isStarted = (): boolean => {
+    return this.isStatus(CountdownStatus.STARTED);
+  };
+
   isPaused = (): boolean => {
-    return this.state.offsetStart > 0;
+    return this.isStatus(CountdownStatus.PAUSED);
+  };
+
+  isStopped = (): boolean => {
+    return this.isStatus(CountdownStatus.STOPPED);
   };
 
   isCompleted = (): boolean => {
-    return this.state.timeDelta.completed;
+    return this.isStatus(CountdownStatus.COMPLETED);
   };
 
-  shallowCompareProps(propsA: CountdownProps, propsB: CountdownProps): boolean {
-    const keysA = Object.keys(propsA);
+  isStatus(status: CountdownStatus): boolean {
+    return this.state.status === status;
+  }
+
+  shallowCompare(objA: object, objB: object): boolean {
+    const keysA = Object.keys(objA);
     return (
-      keysA.length === Object.keys(propsB).length &&
+      keysA.length === Object.keys(objB).length &&
       !keysA.some(keyA => {
-        const valueA = propsA[keyA];
-        const valueB = propsB[keyA];
+        const valueA = objA[keyA];
+        const valueB = objB[keyA];
         return (
-          !propsB.hasOwnProperty(keyA) ||
+          !objB.hasOwnProperty(keyA) ||
           !(valueA === valueB || (valueA !== valueA && valueB !== valueB)) // NaN !== NaN
         );
       })
     );
   }
 
-  setTimeDeltaState(timeDelta: CountdownTimeDelta): void {
-    let callback;
+  handleOnComplete = (timeDelta: CountdownTimeDelta): void => {
+    if (this.props.onComplete) this.props.onComplete(timeDelta);
+  };
+
+  setTimeDeltaState(
+    timeDelta: CountdownTimeDelta,
+    status?: CountdownStatus,
+    callback?: (timeDelta: CountdownTimeDelta) => void
+  ): void {
+    let completedCallback: this['handleOnComplete'] | undefined;
 
     if (!this.state.timeDelta.completed && timeDelta.completed) {
-      this.clearInterval();
-
-      callback = () => this.props.onComplete && this.props.onComplete(timeDelta);
+      this.clearTimer();
+      completedCallback = this.handleOnComplete;
     }
 
     if (this.mounted) {
-      return this.setState({ timeDelta }, callback);
+      const onDone = () => {
+        if (callback) callback(this.state.timeDelta);
+        if (completedCallback) completedCallback(this.state.timeDelta);
+      };
+
+      return this.setState(prevState => {
+        let newStatus = status || prevState.status;
+
+        if (timeDelta.completed) {
+          newStatus = CountdownStatus.COMPLETED;
+        } else if (!status && newStatus === CountdownStatus.COMPLETED) {
+          newStatus = CountdownStatus.STOPPED;
+        }
+
+        return {
+          timeDelta,
+          status: newStatus,
+        };
+      }, onDone);
     }
   }
 
@@ -240,7 +310,10 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     return (this.api = this.api || {
       start: this.start,
       pause: this.pause,
+      stop: this.stop,
+      isStarted: this.isStarted,
       isPaused: this.isPaused,
+      isStopped: this.isStopped,
       isCompleted: this.isCompleted,
     });
   }

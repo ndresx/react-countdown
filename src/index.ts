@@ -8,6 +8,11 @@ export {
   CountdownTimeDeltaFormatOptions,
 } from './utils';
 
-export { CountdownProps, CountdownRenderProps, CountdownApi } from './Countdown';
+export {
+  CountdownProps,
+  CountdownRenderProps,
+  CountdownRendererFn,
+  CountdownApi,
+} from './Countdown';
 import Countdown from './Countdown';
 export default Countdown;

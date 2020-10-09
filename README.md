@@ -139,6 +139,7 @@ ReactDOM.render(
 |[**onMount**](#onmount)|`function`|`undefined`|Callback when component mounts|
 |[**onStart**](#onstart)|`function`|`undefined`|Callback when countdown starts|
 |[**onPause**](#onpause)|`function`|`undefined`|Callback when countdown pauses|
+|[**onStop**](#onstop)|`function`|`undefined`|Callback when countdown stops|
 |[**onTick**](#ontick)|`function`|`undefined`|Callback on every interval tick (`controlled` = `false`)|
 |[**onComplete**](#oncomplete)|`function`|`undefined`|Callback when countdown ends|
 
@@ -209,6 +210,9 @@ If the current date and time (determined via a reference to `Date.now`) is not t
 ### `onPause`
 `onPause` is a callback and triggered every time the countdown is paused. It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
 
+### `onStop`
+`onStop` is a callback and triggered every time the countdown is stopped. It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
+
 ### `onTick`
 `onTick` is a callback and triggered every time a new period is started, based on what the [`intervalDelay`](#intervaldelay)'s value is. It only gets triggered when the countdown's [`controlled`](#controlled) prop is set to `false`, meaning that the countdown has full control over its interval. It receives the time delta object, which is returned by [`calcTimeDelta`](#calctimedelta).
 
@@ -220,13 +224,19 @@ If the current date and time (determined via a reference to `Date.now`) is not t
 The countdown component exposes a simple API through the `getApi()` function that can be accessed via component `ref`. It is also part (`api`) of the render props passed into [`renderer`](#renderer) if needed.
 
 ### `start()`
-Starts the countdown in case it is paused or needed when [`autoStart`](#autostart) is set to `false`.
+Starts the countdown in case it is paused/stopped or needed when [`autoStart`](#autostart) is set to `false`.
 
 ### `pause()`
-Pauses the running countdown. This only works as expected if the [`controlled`](#controlled) prop is set to `false` because [`calcTimeDelta`](#calctimedelta) does calculate this offset time internally.
+Pauses the running countdown. This only works as expected if the [`controlled`](#controlled) prop is set to `false` because [`calcTimeDelta`](#calctimedelta) calculates an offset time internally.
+
+### `stop()`
+Stops the countdown. This only works as expected if the [`controlled`](#controlled) prop is set to `false` because [`calcTimeDelta`](#calctimedelta) calculates an offset time internally.
 
 ### `isPaused()`
 Returns a `boolean` for whether the countdown has been paused or not.
+
+### `isStopped()`
+Returns a `boolean` for whether the countdown has been stopped or not.
 
 ### `isCompleted()`
 Returns a `boolean` for whether the countdown has been completed or not.
