@@ -145,7 +145,7 @@ describe('utils', () => {
       });
     });
 
-    it('should calculate time difference with custom offset', () => {
+    it('should calculate the time difference with custom offset', () => {
       const date = new Date();
       date.getTime = jest.fn(() => Date.now() + 1000);
       expect(calcTimeDelta(date, { offsetTime: 1000 })).toEqual({
@@ -156,6 +156,48 @@ describe('utils', () => {
         seconds: 2,
         milliseconds: 0,
         completed: false,
+      });
+    });
+
+    it('should calculate the time difference when overtime is true', () => {
+      const date = new Date();
+      date.getTime = jest.fn(() => Date.now() + 1000);
+      expect(calcTimeDelta(date, { overtime: true })).toEqual({
+        total: 1000,
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 1,
+        milliseconds: 0,
+        completed: false,
+      });
+    });
+
+    it('should calculate the time difference when completing while in overtime', () => {
+      const date = new Date();
+      date.getTime = jest.fn(() => Date.now());
+      expect(calcTimeDelta(date, { overtime: true })).toEqual({
+        total: 0,
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        milliseconds: 0,
+        completed: true,
+      });
+    });
+
+    it('should calculate the time difference when going into overtime', () => {
+      const date = new Date();
+      date.getTime = jest.fn(() => Date.now() - 1000);
+      expect(calcTimeDelta(date, { overtime: true })).toEqual({
+        total: -1000,
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 1,
+        milliseconds: 0,
+        completed: true,
       });
     });
   });

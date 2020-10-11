@@ -21,6 +21,7 @@ export interface CountdownProps
   readonly intervalDelay?: number;
   readonly precision?: number;
   readonly autoStart?: boolean;
+  readonly overtime?: boolean;
   readonly className?: string;
   readonly children?: React.ReactElement<any>;
   readonly renderer?: CountdownRendererFn;
@@ -90,6 +91,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     intervalDelay: PropTypes.number,
     precision: PropTypes.number,
     autoStart: PropTypes.bool,
+    overtime: PropTypes.bool,
     className: PropTypes.string,
     children: PropTypes.element,
     renderer: PropTypes.func,
@@ -169,12 +171,13 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   };
 
   calcTimeDelta(): CountdownTimeDelta {
-    const { date, now, precision, controlled } = this.props;
+    const { date, now, precision, controlled, overtime } = this.props;
     return calcTimeDelta(date!, {
       now,
       precision,
       controlled,
       offsetTime: this.offsetTime,
+      overtime,
     });
   }
 
@@ -194,7 +197,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     const timeDelta = this.calcTimeDelta();
     this.setTimeDeltaState(timeDelta, CountdownStatus.STARTED, this.props.onStart);
 
-    if (!this.props.controlled && !timeDelta.completed) {
+    if (!this.props.controlled && (!timeDelta.completed || this.props.overtime)) {
       this.clearTimer();
       this.interval = window.setInterval(this.tick, this.props.intervalDelay);
     }
@@ -274,7 +277,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     let completedCallback: this['handleOnComplete'] | undefined;
 
     if (!this.state.timeDelta.completed && timeDelta.completed) {
-      this.clearTimer();
+      if (!this.props.overtime) this.clearTimer();
       completedCallback = this.handleOnComplete;
     }
 
@@ -286,7 +289,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     return this.setState(prevState => {
       let newStatus = status || prevState.status;
 
-      if (timeDelta.completed) {
+      if (timeDelta.completed && !this.props.overtime) {
         newStatus = CountdownStatus.COMPLETED;
       } else if (!status && newStatus === CountdownStatus.COMPLETED) {
         newStatus = CountdownStatus.STOPPED;
@@ -340,20 +343,21 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       );
     }
 
-    const { className, children, renderer } = this.props;
+    const { className, overtime, children, renderer } = this.props;
     const renderProps = this.getRenderProps();
 
     if (renderer) {
       return renderer(renderProps);
     }
 
-    if (children && this.state.timeDelta.completed) {
+    if (children && this.state.timeDelta.completed && !overtime) {
       return React.cloneElement(children, { countdown: renderProps });
     }
 
     const { days, hours, minutes, seconds } = renderProps.formatted;
     return (
       <span className={className}>
+        {renderProps.total < 0 ? '-' : ''}
         {days}
         {days ? ':' : ''}
         {hours}:{minutes}:{seconds}

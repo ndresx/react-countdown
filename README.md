@@ -133,6 +133,7 @@ ReactDOM.render(
 |[**intervalDelay**](#intervaldelay)|`number`|`1000`|Interval delay in milliseconds|
 |[**precision**](#precision)|`number`|`0`|The precision on a millisecond basis|
 |[**autoStart**](#autostart)|`boolean`|`true`|Countdown auto-start option|
+|[**overtime**](#overtime) |`boolean`|`false`|Counts down to infinity|
 |[**children**](#children)|`any`|`null`|A React child for the countdown's completed state|
 |[**renderer**](#renderer)|`function`|`undefined`|Custom renderer callback|
 |[**now**](#now)|`function`|`Date.now`|Alternative handler for the current date|
@@ -181,10 +182,17 @@ In certain cases, you might want to base off the calculations on a millisecond b
 ### `autoStart`
 Defines whether the countdown should start automatically or not. Defaults to `true`.
 
+### `overtime`
+Defines whether the countdown can go into overtime by extending its lifetime past the targeted endpoint. Defaults to `false`.
+
+When set to `true`, the countdown timer won't stop when hitting 0, but instead becomes negative and continues to run unless paused/stopped. The [`onComplete`](#oncomplete) callback would still get triggered when the initial countdown phase completes.
+
+> Please note that the [`children`](#children) prop will be ignored if `overtime` is `true`.
+
 ### `children`
 This component also considers the child that may live within the `<Countdown></Countdown>` element, which, in case it's available, replaces the countdown's component state once it's complete. Moreover, an additional prop called `countdown` is set and contains data similar to what the [`renderer`](#renderer) callback would receive. Here's an [example](#using-a-react-child-for-the-completed-state) that showcases its usage.
 
-_Please note that once a custom `renderer` is defined, the [`children`](#children) prop will be ignored._
+> Please note that the [`children`](#children) prop will be ignored if a custom [`renderer`](#renderer) is defined.
 
 ### `renderer`
 The component's raw render output is kept very simple.
@@ -255,6 +263,8 @@ Returns a `boolean` for whether the countdown has been stopped or not.
 ### `isCompleted()`
 Returns a `boolean` for whether the countdown has been completed or not.
 
+> Please note that this will always return `false` if [`overtime`](#overtime) is `true`. Nevertheless, an into overtime running countdown's completed state can still be looking at the time delta object's `completed` value.
+
 ## Helpers
 
 This module also exports three simple helper functions, which can be utilized to build your own countdown custom [`renderer`](#renderer).
@@ -276,7 +286,7 @@ const renderer = ({ hours, minutes, seconds }) => (
 
 <a name="calctimedelta"></a>
 ### `calcTimeDelta(date, [options])`
-`calcTimeDelta` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similar to the [`renderer`](#renderer) callback, a custom object (also referred to as **countdown time delta object**) with the following time related data:
+`calcTimeDelta` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similar to the [`renderer`](#renderer) callback, a custom object (also referred to as **countdown time delta object**) with the following time-related data:
 
 ```js
 { total, days, hours, minutes, seconds, milliseconds, completed }
@@ -287,19 +297,22 @@ This function accepts two arguments in total; only the first one is required.
 **`date`**
 Date or timestamp representation of the end date. See [`date`](#date) prop for more details.
 
-The second argument (`options`) could be an optional object consisting of the following optional keys.
+**`options`** The second argument consists of the following optional keys.
 
-**`now = Date.now`**
+- **`now = Date.now`**
 Alternative function for returning the current date, also see [`now`](#now).
 
-**`precision = 0`**
+- **`precision = 0`**
 The [`precision`](#precision) on a millisecond basis.
 
-**`controlled = false`**
-Defines whether the calculated value is already provided as the time difference or not.
+- **`controlled = false`**
+Defines whether the calculated value is provided in a [`controlled`](#controlled) environment as the time difference or not.
 
-**`offsetTime = 0`**
+- **`offsetTime = 0`**
 Defines the offset time that gets added to the start time; only considered if controlled is false.
+
+- **`overtime = false`**
+Defines whether the time delta can go into [`overtime`](#overtime) and become negative or not. When set to `true`, the `total` could become negative at which point `completed` will still be set to `true`.
 
 <a name="formattimedelta"></a>
 ### `formatTimeDelta(timeDelta, [options])`

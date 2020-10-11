@@ -3,6 +3,7 @@ export interface CountdownTimeDeltaOptions {
   readonly precision?: number;
   readonly controlled?: boolean;
   readonly offsetTime?: number;
+  readonly overtime?: boolean;
 }
 
 export interface CountdownTimeDelta {
@@ -65,13 +66,14 @@ export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {
  *  {number} [precision=0] The precision on a millisecond basis.
  *  {boolean} [controlled=false] Defines whether the calculated value is already provided as the time difference or not.
  *  {number} [offsetTime=0] Defines the offset time that gets added to the start time; only considered if controlled is false.
+ *  {boolean} [overtime=false] Defines whether the time delta can go into overtime and become negative or not.
  * @returns Time delta object that includes details about the time difference.
  */
 export function calcTimeDelta(
   date: Date | string | number,
   options: CountdownTimeDeltaOptions = {}
 ): CountdownTimeDelta {
-  const { now = Date.now, precision = 0, controlled = false, offsetTime = 0 } = options;
+  const { now = Date.now, precision = 0, controlled, offsetTime = 0, overtime } = options;
   let startTimestamp: number;
 
   if (typeof date === 'string') {
@@ -86,15 +88,14 @@ export function calcTimeDelta(
     startTimestamp += offsetTime;
   }
 
+  const timeLeft = controlled ? startTimestamp : startTimestamp - now();
+  const clampedPrecision = Math.min(20, Math.max(0, precision));
   const total = Math.round(
-    parseFloat(
-      (Math.max(0, controlled ? startTimestamp : startTimestamp - now()) / 1000).toFixed(
-        Math.max(0, Math.min(20, precision))
-      )
-    ) * 1000
+    parseFloat(((overtime ? timeLeft : Math.max(0, timeLeft)) / 1000).toFixed(clampedPrecision)) *
+      1000
   );
 
-  const seconds = total / 1000;
+  const seconds = Math.abs(total) / 1000;
 
   return {
     total,

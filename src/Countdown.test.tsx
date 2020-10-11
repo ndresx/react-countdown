@@ -485,6 +485,40 @@ describe('<Countdown />', () => {
     expect(wrapper.state().timeDelta.completed).toBe(true);
   });
 
+  it('should not stop the countdown and go into overtime', () => {
+    wrapper = mount(
+      <Countdown date={countdownDate} overtime={true}>
+        <div>Completed? Overtime!</div>
+      </Countdown>
+    );
+    const obj = wrapper.instance();
+    const api = obj.getApi();
+
+    // Forward 9s
+    now.mockReturnValue(countdownDate - 1000);
+    jest.runTimersToTime(9000);
+
+    expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:01"`);
+
+    // Forward 1s
+    now.mockReturnValue(countdownDate);
+    jest.runTimersToTime(1000);
+
+    expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:00"`);
+    expect(wrapper.state().timeDelta.total).toBe(0);
+    expect(wrapper.state().timeDelta.completed).toBe(true);
+    expect(api.isCompleted()).toBe(false);
+
+    // Forward 1s (overtime)
+    now.mockReturnValue(countdownDate + 1000);
+    jest.runTimersToTime(1000);
+
+    expect(wrapper.text()).toMatchInlineSnapshot(`"-00:00:00:01"`);
+    expect(wrapper.state().timeDelta.total).toBe(-1000);
+    expect(wrapper.state().timeDelta.completed).toBe(true);
+    expect(api.isCompleted()).toBe(false);
+  });
+
   describe('legacy mode', () => {
     class LegacyCountdownOverlay extends React.Component<LegacyCountdownProps> {
       render() {
