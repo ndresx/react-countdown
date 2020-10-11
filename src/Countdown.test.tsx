@@ -95,13 +95,13 @@ describe('<Countdown />', () => {
     delete computedProps.children;
 
     const obj = wrapper.instance();
-    const delta = wrapper.state().timeDelta;
+    const { timeDelta } = wrapper.state();
     expect(completionist.props).toEqual({
       countdown: {
-        ...delta,
+        ...timeDelta,
         api: obj.getApi(),
         props: wrapper.props(),
-        formatted: formatTimeDelta(delta, { zeroPadTime }),
+        formatted: formatTimeDelta(timeDelta, { zeroPadTime }),
       },
       name: 'master',
       children: 'Another child',
@@ -147,7 +147,7 @@ describe('<Countdown />', () => {
     expect(wrapper.state().timeDelta.total).toBe(1000);
     expect(wrapper.state().timeDelta.completed).toBe(false);
 
-    // The End: onComplete callback gets triggered instead of onTick
+    // The End: onComplete callback gets triggered instead of the onTick callback
     now.mockReturnValue(countdownDate);
     jest.runTimersToTime(1000);
     expect(onTick.mock.calls.length).toBe(9);

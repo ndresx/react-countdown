@@ -41,7 +41,7 @@ export interface CountdownRenderProps extends CountdownTimeDelta {
 
 export type CountdownRendererFn = (props: CountdownRenderProps) => React.ReactNode;
 
-export type CountdownTimeDeltaFn = (delta: CountdownTimeDelta) => void;
+export type CountdownTimeDeltaFn = (timeDelta: CountdownTimeDelta) => void;
 
 const enum CountdownStatus {
   STARTED = 'STARTED',
@@ -107,7 +107,6 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   api: CountdownApi | undefined;
 
   initialTimestamp = this.calcOffsetStartTimestamp();
-  initialTimeDelta = this.calcTimeDelta();
   offsetStartTimestamp = this.props.autoStart ? 0 : this.initialTimestamp;
   offsetTime = 0;
 
@@ -146,7 +145,6 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     if (!this.shallowCompare(this.props, prevProps)) {
       if (this.props.date !== prevProps.date) {
         this.initialTimestamp = this.calcOffsetStartTimestamp();
-        this.initialTimeDelta = this.calcTimeDelta();
         this.offsetStartTimestamp = this.initialTimestamp;
         this.offsetTime = 0;
       }
@@ -165,14 +163,9 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   tick = (): void => {
-    const { onTick } = this.props;
     const timeDelta = this.calcTimeDelta();
-
-    this.setTimeDeltaState(timeDelta, CountdownStatus.STARTED);
-
-    if (onTick && timeDelta.total > 0) {
-      onTick(timeDelta);
-    }
+    const callback = timeDelta.completed ? undefined : this.props.onTick;
+    this.setTimeDeltaState(timeDelta, undefined, callback);
   };
 
   calcTimeDelta(): CountdownTimeDelta {
@@ -276,6 +269,8 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     status?: CountdownStatus,
     callback?: (timeDelta: CountdownTimeDelta) => void
   ): void {
+    if (!this.mounted) return;
+
     let completedCallback: this['handleOnComplete'] | undefined;
 
     if (!this.state.timeDelta.completed && timeDelta.completed) {
@@ -283,27 +278,25 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       completedCallback = this.handleOnComplete;
     }
 
-    if (this.mounted) {
-      const onDone = () => {
-        if (callback) callback(this.state.timeDelta);
-        if (completedCallback) completedCallback(this.state.timeDelta);
+    const onDone = () => {
+      if (callback) callback(this.state.timeDelta);
+      if (completedCallback) completedCallback(this.state.timeDelta);
+    };
+
+    return this.setState(prevState => {
+      let newStatus = status || prevState.status;
+
+      if (timeDelta.completed) {
+        newStatus = CountdownStatus.COMPLETED;
+      } else if (!status && newStatus === CountdownStatus.COMPLETED) {
+        newStatus = CountdownStatus.STOPPED;
+      }
+
+      return {
+        timeDelta,
+        status: newStatus,
       };
-
-      return this.setState(prevState => {
-        let newStatus = status || prevState.status;
-
-        if (timeDelta.completed) {
-          newStatus = CountdownStatus.COMPLETED;
-        } else if (!status && newStatus === CountdownStatus.COMPLETED) {
-          newStatus = CountdownStatus.STOPPED;
-        }
-
-        return {
-          timeDelta,
-          status: newStatus,
-        };
-      }, onDone);
-    }
+    }, onDone);
   }
 
   getApi(): CountdownApi {

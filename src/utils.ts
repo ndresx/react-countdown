@@ -60,24 +60,18 @@ export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {
  *
  * @export
  * @param {Date|number|string} date Date or timestamp representation of the end date.
- * @param {Object} [{ now = Date.now, precision = 0, controlled = false }={}]
- *  {function} [date=Date.now] Alternative function for returning the current date.
+ * @param {CountdownTimeDeltaOptions} [options]
+ *  {function} [now=Date.now] Alternative function for returning the current date.
  *  {number} [precision=0] The precision on a millisecond basis.
  *  {boolean} [controlled=false] Defines whether the calculated value is already provided as the time difference or not.
  *  {number} [offsetTime=0] Defines the offset time that gets added to the start time; only considered if controlled is false.
- * @param {number} [precision=0] The precision on a millisecond basis.
- * @param {boolean} [controlled=false] Defines whether the calculated value is already provided as the time difference or not.
- * @returns Object that includes details about the time difference.
+ * @returns Time delta object that includes details about the time difference.
  */
 export function calcTimeDelta(
   date: Date | string | number,
-  {
-    now = Date.now,
-    precision = 0,
-    controlled = false,
-    offsetTime = 0,
-  }: CountdownTimeDeltaOptions = {}
+  options: CountdownTimeDeltaOptions = {}
 ): CountdownTimeDelta {
+  const { now = Date.now, precision = 0, controlled = false, offsetTime = 0 } = options;
   let startTimestamp: number;
 
   if (typeof date === 'string') {
@@ -117,27 +111,32 @@ export function calcTimeDelta(
  * Formats a given countdown time delta object.
  *
  * @export
- * @param {CountdownTimeDelta} delta
+ * @param {CountdownTimeDelta} timeDelta The time delta object to be formatted.
  * @param {CountdownTimeDeltaFormatOptions} [options]
+ *  {boolean} [daysInHours=false] Days are calculated as hours.
+ *  {number} [zeroPadTime=2] Length of zero-padded output, e.g.: 00:01:02
+ *  {number} [zeroPadDays=zeroPadTime] Length of zero-padded days output, e.g.: 01
  * @returns {CountdownTimeDeltaFormatted} Formatted time delta object.
  */
 export function formatTimeDelta(
-  delta: CountdownTimeDelta,
+  timeDelta: CountdownTimeDelta,
   options?: CountdownTimeDeltaFormatOptions
 ): CountdownTimeDeltaFormatted {
-  const { days, hours, minutes, seconds } = delta;
+  const { days, hours, minutes, seconds } = timeDelta;
   const { daysInHours, zeroPadTime, zeroPadDays = zeroPadTime } = {
     ...timeDeltaFormatOptionsDefaults,
     ...options,
   };
+
+  const zeroPadTimeLength = Math.min(2, zeroPadTime);
   const formattedHours = daysInHours
     ? zeroPad(hours + days * 24, zeroPadTime)
-    : zeroPad(hours, Math.min(2, zeroPadTime));
+    : zeroPad(hours, zeroPadTimeLength);
 
   return {
     days: daysInHours ? '' : zeroPad(days, zeroPadDays),
     hours: formattedHours,
-    minutes: zeroPad(minutes, Math.min(2, zeroPadTime)),
-    seconds: zeroPad(seconds, Math.min(2, zeroPadTime)),
+    minutes: zeroPad(minutes, zeroPadTimeLength),
+    seconds: zeroPad(seconds, zeroPadTimeLength),
   };
 }

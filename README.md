@@ -186,17 +186,31 @@ This component also considers the child that may live within the `<Countdown></C
 
 _Please note that once a custom `renderer` is defined, the [`children`](#children) prop will be ignored._
 
-<a name="renderer"></a>
-### `renderer(props)`
-The component's render output is very simple and depends on [`daysInHours`](#daysinhours): _{days}:{hours}:{minutes}:{seconds}_.
-If this doesn't fit your needs, a custom `renderer` callback can be defined to return a new React element. It receives an argument that consists of a time delta object (incl. `formatted` values) to build your own representation of the countdown.
+### `renderer`
+The component's raw render output is kept very simple.
+
+For more advanced countdown displays, a custom `renderer` callback can be defined to return a new React element. It receives the following [render props](#render-props) as the first argument.
+
+#### Render Props
+
+The render props object consists of the current time delta object, the countdown's [`api`](#api-reference), the component [`props`](#props), and last but not least, a [`formatted`](#formattimedelta) object.
+
 ```js
-{ total, days, hours, minutes, seconds, milliseconds, completed }
+{
+  total: 0,
+  days: 0,
+  hours: 0,
+  minutes: 0,
+  seconds: 0,
+  milliseconds: 0,
+  completed: true,
+  api: { ... },
+  props: { ... },
+  formatted: { ... }
+}
 ```
 
-The render props also contain the countdown's [`API`](#api-reference) as `api` prop as well as the passed in component [`props`](#props).
-
-_Please note that once a custom `renderer` is defined, the [`children`](#children) prop will be ignored._
+> Please note that a defined custom [`renderer`](#renderer) will ignore the [`children`](#children) prop.
 
 ### `now`
 If the current date and time (determined via a reference to `Date.now`) is not the right thing to compare with for you, a reference to a custom function that returns a similar dynamic value could be provided as an alternative.
@@ -287,20 +301,26 @@ Defines whether the calculated value is already provided as the time difference 
 **`offsetTime = 0`**
 Defines the offset time that gets added to the start time; only considered if controlled is false.
 
-### `formatTimeDelta(delta, [options])`
+<a name="formattimedelta"></a>
+### `formatTimeDelta(timeDelta, [options])`
 `formatTimeDelta` formats a given countdown time delta object. It returns the formatted portion of it, equivalent to:
 
 ```js
-{ days, hours, minutes, seconds }
+{
+  days: '00',
+  hours: '00',
+  minutes: '00',
+  seconds: '00',
+}
 ```
 
 This function accepts two arguments in total; only the first one is required.
 
-**`delta`**
-Time delta object, e.g.: returned by [`calcTimeDelta`](#calctimedelta).
+**`timeDelta`**
+Time delta object, e.g., returned by [`calcTimeDelta`](#calctimedelta).
 
 **`options`**
-The `options` object consists of the following three component props and is used to customize the formatting of the delta object:
+The `options` object consists of the following three component props and is used to customize the time delta object's formatting:
 * [`daysInHours`](#daysinhours)
 * [`zeroPadTime`](#zeropadtime)
 * [`zeroPadDays`](#zeropaddays)
