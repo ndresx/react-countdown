@@ -1,8 +1,10 @@
 config/
 coverage/
+cypress/
 examples/
 node_modules/
 src/
+.cache/
 *.config.js
 *.idea
 *.lock
@@ -11,3 +13,4 @@ src/
 *.test.ts
 *.test.d.ts
 *.vscode
+cypress.json
