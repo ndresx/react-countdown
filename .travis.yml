@@ -28,10 +28,10 @@ jobs:
     - stage: 'Tests'
       name: 'Unit Tests'
       script: yarn test && cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose
-    - name: 'E2E Tests'
-      script: yarn test:e2e
     - stage: 'Build'
       name: 'Package'
       script: yarn build
+    - name: 'E2E Tests'
+      script: yarn test:e2e
     - script: rm -rf ./node_modules && cd ./examples && yarn && yarn build
       name: 'Examples'
