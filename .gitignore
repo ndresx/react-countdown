@@ -1,6 +1,7 @@
 dist/
 node_modules/
 coverage/
+.cache/
 *.DS_Store
 *.log
 *.idea
