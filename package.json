@@ -26,7 +26,7 @@
   ],
   "scripts": {
     "build": "yarn build:clean && yarn rollup --config",
-    "build:clean": "rm -rf ./dist mkdir dist",
+    "build:clean": "rm -rf ./dist && yarn test:e2e:clean && mkdir dist",
     "build:watch": "yarn build --watch",
     "clean": "rm -rf ./node_modules && rm -rf ./coverage && yarn build:clean",
     "lint": "yarn lint:prettier && yarn lint:tslint && yarn lint:tsc",
@@ -37,8 +37,9 @@
     "prettier": "prettier --write ./src/**/*.{ts,tsx}",
     "test": "jest --coverage",
     "test:e2e": "yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress run\"",
+    "test:e2e:clean": "rm -rf ./e2e/dist",
     "test:e2e:dev": "yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress open\"",
-    "test:e2e:server": "yarn build && parcel ./e2e/index.html",
+    "test:e2e:server": "yarn build && parcel ./e2e/index.html --out-dir ./e2e/dist",
     "test:watch": "jest --watch"
   },
   "dependencies": {
