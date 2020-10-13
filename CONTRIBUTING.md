@@ -41,3 +41,8 @@ Make sure that all tests are passing and that the code coverage is close to 100%
 ```sh
 yarn test
 ```
+
+For End-to-End tests, please run the following command:
+```sh
+yarn test:e2e
+```
