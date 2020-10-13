@@ -3,6 +3,7 @@ export interface CountdownTimeDeltaOptions {
   readonly precision?: number;
   readonly controlled?: boolean;
   readonly offsetTime?: number;
+  readonly overtime?: boolean;
 }
 
 export interface CountdownTimeDelta extends CountdownTimeUnits {
@@ -18,7 +19,8 @@ export interface CountdownTimeUnits<T = number> {
   readonly milliseconds: T;
 }
 
-export interface CountdownTimeDeltaFormatted extends CountdownTimeUnits<string> {}
+export interface CountdownTimeDeltaFormatted
+  extends Omit<CountdownTimeUnits<string>, 'milliseconds'> {}
 
 export interface CountdownTimeDeltaFormatOptions {
   readonly daysInHours?: boolean;
@@ -73,60 +75,23 @@ export function calcTimeUnits(timestamp: number): CountdownTimeUnits {
 }
 
 /**
- * Formats a given countdown time delta object.
- *
- * @export
- * @param {CountdownTimeDelta} delta
- * @param {CountdownTimeDeltaFormatOptions} [options]
- * @returns {CountdownTimeDeltaFormatted} Formatted time delta object.
- */
-export function formatTimeDelta(
-  delta: CountdownTimeDelta,
-  options?: CountdownTimeDeltaFormatOptions
-): CountdownTimeDeltaFormatted {
-  const { days, hours, minutes, seconds, milliseconds } = delta;
-  const { daysInHours, zeroPadTime, zeroPadDays = zeroPadTime } = {
-    ...timeDeltaFormatOptionsDefaults,
-    ...options,
-  };
-
-  const zeroPadLength = Math.min(2, zeroPadTime);
-  const formattedHours = daysInHours
-    ? zeroPad(hours + days * 24, zeroPadTime)
-    : zeroPad(hours, zeroPadLength);
-
-  return {
-    days: daysInHours ? '' : zeroPad(days, zeroPadDays),
-    hours: formattedHours,
-    minutes: zeroPad(minutes, zeroPadLength),
-    seconds: zeroPad(seconds, zeroPadLength),
-    milliseconds: zeroPad(milliseconds, zeroPadLength),
-  };
-}
-
-/**
  * Calculates the time difference between a given end date and the current date.
  *
  * @export
  * @param {Date|number|string} date Date or timestamp representation of the end date.
- * @param {Object} [{ now = Date.now, precision = 0, controlled = false }={}]
- *  {function} [date=Date.now] Alternative function for returning the current date.
+ * @param {CountdownTimeDeltaOptions} [options]
+ *  {function} [now=Date.now] Alternative function for returning the current date.
  *  {number} [precision=0] The precision on a millisecond basis.
  *  {boolean} [controlled=false] Defines whether the calculated value is already provided as the time difference or not.
  *  {number} [offsetTime=0] Defines the offset time that gets added to the start time; only considered if controlled is false.
- * @param {number} [precision=0] The precision on a millisecond basis.
- * @param {boolean} [controlled=false] Defines whether the calculated value is already provided as the time difference or not.
- * @returns {CountdownTimeDelta} Object that includes details about the time difference.
+ *  {boolean} [overtime=false] Defines whether the time delta can go into overtime and become negative or not.
+ * @returns Time delta object that includes details about the time difference.
  */
 export function calcTimeDelta(
   date: Date | string | number,
-  {
-    now = Date.now,
-    precision = 0,
-    controlled = false,
-    offsetTime = 0,
-  }: CountdownTimeDeltaOptions = {}
+  options: CountdownTimeDeltaOptions = {}
 ): CountdownTimeDelta {
+  const { now = Date.now, precision = 0, controlled, offsetTime = 0, overtime } = options;
   let startTimestamp: number;
 
   if (date instanceof Date) {
@@ -141,17 +106,50 @@ export function calcTimeDelta(
     startTimestamp += offsetTime;
   }
 
+  const timeLeft = controlled ? startTimestamp : startTimestamp - now();
+  const clampedPrecision = Math.min(20, Math.max(0, precision));
   const total = Math.round(
-    parseFloat(
-      (Math.max(0, controlled ? startTimestamp : startTimestamp - now()) / 1000).toFixed(
-        Math.max(0, Math.min(20, precision))
-      )
-    ) * 1000
+    parseFloat(((overtime ? timeLeft : Math.max(0, timeLeft)) / 1000).toFixed(clampedPrecision)) *
+      1000
   );
 
   return {
-    ...calcTimeUnits(total),
+    ...calcTimeUnits(Math.abs(total)),
     total,
     completed: total <= 0,
+  };
+}
+
+/**
+ * Formats a given countdown time delta object.
+ *
+ * @export
+ * @param {CountdownTimeDelta} timeDelta The time delta object to be formatted.
+ * @param {CountdownTimeDeltaFormatOptions} [options]
+ *  {boolean} [daysInHours=false] Days are calculated as hours.
+ *  {number} [zeroPadTime=2] Length of zero-padded output, e.g.: 00:01:02
+ *  {number} [zeroPadDays=zeroPadTime] Length of zero-padded days output, e.g.: 01
+ * @returns {CountdownTimeDeltaFormatted} Formatted time delta object.
+ */
+export function formatTimeDelta(
+  timeDelta: CountdownTimeDelta,
+  options?: CountdownTimeDeltaFormatOptions
+): CountdownTimeDeltaFormatted {
+  const { days, hours, minutes, seconds } = timeDelta;
+  const { daysInHours, zeroPadTime, zeroPadDays = zeroPadTime } = {
+    ...timeDeltaFormatOptionsDefaults,
+    ...options,
+  };
+
+  const zeroPadTimeLength = Math.min(2, zeroPadTime);
+  const formattedHours = daysInHours
+    ? zeroPad(hours + days * 24, zeroPadTime)
+    : zeroPad(hours, zeroPadTimeLength);
+
+  return {
+    days: daysInHours ? '' : zeroPad(days, zeroPadDays),
+    hours: formattedHours,
+    minutes: zeroPad(minutes, zeroPadTimeLength),
+    seconds: zeroPad(seconds, zeroPadTimeLength),
   };
 }

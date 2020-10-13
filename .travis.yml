@@ -2,9 +2,21 @@ language: node_js
 node_js:
   - 'node'
 
+addons:
+  apt:
+    packages:
+      # Ubuntu 16+ does not install this dependency by default, so we need to install it ourselves
+      - libgconf-2-4
+
 branches:
   only:
     - master
+
+cache:
+  directories:
+    - node_modules
+    # Cypress binary
+    - ~/.cache
 
 jobs:
   include:
@@ -16,6 +28,8 @@ jobs:
     - stage: 'Tests'
       name: 'Unit Tests'
       script: yarn test:coverage && cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose
+    - name: 'E2E Tests'
+      script: yarn build && yarn test:e2e
     - stage: 'Build'
       name: 'Package'
       script: yarn build

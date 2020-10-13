@@ -35,7 +35,9 @@ module.exports = {
     'no-prototype-builtins': OFF,
     'no-return-assign': OFF,
     'no-self-compare': OFF,
+    'no-shadow': OFF,
     'no-unused-expressions': [ERROR, { allowShortCircuit: true }],
+    'no-use-before-define': OFF,
     'react/jsx-boolean-value': OFF,
     'react/jsx-filename-extension': [WARN, { extensions: ['.tsx'] }],
     'react/jsx-one-expression-per-line': OFF,
@@ -47,6 +49,8 @@ module.exports = {
     '@typescript-eslint/no-empty-interface': OFF,
     '@typescript-eslint/no-inferrable-types': OFF,
     '@typescript-eslint/no-non-null-assertion': OFF,
+    '@typescript-eslint/no-shadow': ERROR,
+    '@typescript-eslint/no-use-before-define': ERROR,
   },
   settings: {
     react: {

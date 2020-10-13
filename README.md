@@ -9,17 +9,18 @@ A customizable countdown component for React.
 - [API Reference](#api-reference)
 - [Helpers](#helpers)
 - [FAQ](#faq)
+- [Contributing](#contributing)
 - [License](#license)
 
 ## Getting Started
 
-You can either install the module via `npm` or `yarn`:
+You can install the module via `npm` or `yarn`:
 
-```
+```sh
 npm install react-countdown --save
 ```
 
-```
+```sh
 yarn add react-countdown
 ```
 
@@ -157,6 +158,7 @@ ReactDOM.render(
 |[**intervalDelay**](#intervaldelay)|`number`|`1000`|Interval delay in milliseconds|
 |[**precision**](#precision)|`number`|`0`|The precision on a millisecond basis|
 |[**autoStart**](#autostart)|`boolean`|`true`|Countdown auto-start option|
+|[**overtime**](#overtime) |`boolean`|`false`|Counts down to infinity|
 |[**children**](#children)*|`any`|`null`|A React child for the countdown's completed state|
 |[**renderer**](#renderer)*|`function`|`undefined`|Custom renderer callback|
 |[**now**](#now)|`function`|`Date.now`|Alternative handler for the current date|
@@ -164,13 +166,14 @@ ReactDOM.render(
 |[**onMount**](#onmount)|`function`|`undefined`|Callback when component mounts|
 |[**onStart**](#onstart)|`function`|`undefined`|Callback when countdown starts|
 |[**onPause**](#onpause)|`function`|`undefined`|Callback when countdown pauses|
+|[**onStop**](#onstop)|`function`|`undefined`|Callback when countdown stops|
 |[**onTick**](#ontick)|`function`|`undefined`|Callback on every interval tick (`controlled` = `false`)|
 |[**onComplete**](#oncomplete)|`function`|`undefined`|Callback when countdown ends|
 
 \*Not used by the [`useCountdown`](#hook).
 
 ### `date`
-The `date` prop is the only required one and can be a [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object, `string`, or timestamp in the future. By default, this date value gets compared with the current date, or a custom handler defined via [`now`](#now).
+The `date` prop is the only required one and can be a [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object, `string`, or timestamp in the future. By default, this date is compared with the current date, or a custom handler defined via [`now`](#now).
 
 Valid values can be _(and more)_:
 * `'2020-02-01T01:02:03'` // [`Date` time string format](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse#Date_Time_String_Format)
@@ -209,20 +212,28 @@ In certain cases, you might want to base off the calculations on a millisecond b
 ### `autoStart`
 Defines whether the countdown should start automatically or not. Defaults to `true`.
 
+### `overtime`
+Defines whether the countdown can go into overtime by extending its lifetime past the targeted endpoint. Defaults to `false`.
+
+When set to `true`, the countdown timer won't stop when hitting 0, but instead becomes negative and continues to run unless paused/stopped. The [`onComplete`](#oncomplete) callback would still get triggered when the initial countdown phase completes.
+
+> Please note that the [`children`](#children) prop will be ignored if `overtime` is `true`.
+
 ### `children`
 This component also considers the child that may live within the `<Countdown></Countdown>` element, which, in case it's available, replaces the countdown's component state once it's complete. Moreover, an additional prop called `countdown` is set and contains data similar to what the [`renderer`](#renderer) callback would receive. Here's an [example](#using-a-react-child-for-the-completed-state) that showcases its usage.
 
-_Please note that once a custom `renderer` is defined, the [`children`](#children) prop will be ignored._
+> Please note that the [`children`](#children) prop will be ignored if a custom [`renderer`](#renderer) is defined.
 
-<a name="renderer"></a>
-### `renderer(props)`
-The component's render output is very simple and depends on [`daysInHours`](#daysinhours): _{days}:{hours}:{minutes}:{seconds}_.
-If this doesn't fit your needs, a custom `renderer` callback can be defined to return a new React element. It receives the following [render props](#render-props) as first argument.
+### `renderer`
+The component's raw render output is kept very simple.
+
+For more advanced countdown displays, a custom `renderer` callback can be defined to return a new React element. It receives the following [render props](#render-props) as the first argument.
 
 #### Render Props
 
-The render props object consists of the current time delta information (incl. `formatted` values) to help building your own representation of the countdown.
-```
+The render props object consists of the current time delta object, the countdown's [`api`](#api-reference), the component [`props`](#props), and last but not least, a [`formatted`](#formattimedelta) object.
+
+```js
 {
   total: 0,
   days: 0,
@@ -233,21 +244,14 @@ The render props object consists of the current time delta information (incl. `f
   completed: true,
   api: { ... },
   props: { ... },
-  formatted: {
-    days: '00',
-    hours: '00',
-    minutes: '00',
-    seconds: '00'
-  }
+  formatted: { ... }
 }
 ```
-
-It also contains the countdown's [`API`](#api-reference) as `api` prop as well as the initially passed in component [`props`](#props).
 
 > Please note that a defined custom [`renderer`](#renderer) will ignore the [`children`](#children) prop.
 
 ### `now`
-If the current datetime (determined via a reference to `Date.now`) is not the right thing to compare with for you, a reference to a custom function which returns a similar dynamic value could be provided as an alternative.
+If the current date and time (determined via a reference to `Date.now`) is not the right thing to compare with for you, a reference to a custom function that returns a similar dynamic value could be provided as an alternative.
 
 ### `pure`
 By default, the countdown component and [`useCountdown`](#hook) Hook act like pure functions with respect to their props. This means that whenever an input prop changes, the countdown will update accordingly and re-render itself based on the new conditions.
@@ -262,10 +266,13 @@ Read more about this _"issue"_ [here](#why-does-my-countdown-reset-on-every-re-r
 `onMount` is a callback and triggered when the countdown mounts. It receives a [time delta object](#calctimedelta) as first argument.
 
 ### `onStart`
-`onStart` is a callback and triggered whenever the countdown is started (including first-run).  It receives a [time delta object](#calctimedelta) as first argument.
+`onStart` is a callback and triggered whenever the countdown is started (including first-run). It receives a [time delta object](#calctimedelta) as first argument.
 
 ### `onPause`
 `onPause` is a callback and triggered every time the countdown is paused. It receives a [time delta object](#calctimedelta) as first argument.
+
+### `onStop`
+`onStop` is a callback and triggered every time the countdown is stopped. It receives a [time delta object](#calctimedelta) as first argument.
 
 ### `onTick`
 `onTick` is a callback and triggered every time a new period is started, based on what the [`intervalDelay`](#intervaldelay)'s value is. It only gets triggered when the countdown's [`controlled`](#controlled) prop is set to `false`, meaning that the countdown has full control over its interval. It receives a [time delta object](#calctimedelta) as first argument.
@@ -290,27 +297,35 @@ Using the Hook gives direct access to the countdown's [API](#api-reference), cur
 The countdown component exposes a simple API through the `getApi()` function that can be accessed via component `ref`. It is also available through the into a custom [`renderer`](#renderer) or [`useCountdown`](#hook) passed [render props](#render-props).
 
 ### `start()`
-Starts the countdown in case it is paused or needed when [`autoStart`](#autostart) is set to `false`.
+Starts the countdown in case it is paused/stopped or needed when [`autoStart`](#autostart) is set to `false`.
 
 ### `pause()`
-Pauses the running countdown. This only works as expected if the [`controlled`](#controlled) prop is set to `false` because [`calcTimeDelta`](#calctimedelta) does calculate this offset time internally.
+Pauses the running countdown. This only works as expected if the [`controlled`](#controlled) prop is set to `false` because [`calcTimeDelta`](#calctimedelta) calculates an offset time internally.
+
+### `stop()`
+Stops the countdown. This only works as expected if the [`controlled`](#controlled) prop is set to `false` because [`calcTimeDelta`](#calctimedelta) calculates an offset time internally.
 
 ### `isPaused()`
 Returns a `boolean` for whether the countdown has been paused or not.
 
+### `isStopped()`
+Returns a `boolean` for whether the countdown has been stopped or not.
+
 ### `isCompleted()`
 Returns a `boolean` for whether the countdown has been completed or not.
 
+> Please note that this will always return `false` if [`overtime`](#overtime) is `true`. Nevertheless, an into overtime running countdown's completed state can still be looking at the time delta object's `completed` value.
+
 ## Helpers
 
-This module also exports 3 simple helper functions which can be utilized to build your own countdown custom [`renderer`](#renderer).
+This module also exports three simple helper functions, which can be utilized to build your own countdown custom [`renderer`](#renderer).
 
 ```js
 import Countdown, { zeroPad, calcTimeDelta, formatTimeDelta } from 'react-countdown';
 ```
 
 ### `zeroPad(value, [length = 2])`
-The `zeroPad` function works similar to other well-known pad-functions and takes 2 arguments into account. A `value` which can be a `string` or `number`, as well as a `length` parameter which defaults to `2` as you are most likely only going to use this function if you actually want to pad one of your values. Either returns a `number` if `length` equals `0`, or the zero-padded `string`.
+The `zeroPad` function works similarly to other well-known pad-functions and takes two arguments into account. A `value` which can be a `string` or `number`, as well as a `length` parameter which defaults to `2` as you are most likely only going to use this function if you actually want to pad one of your values. Either returns a `number` if `length` equals `0`, or the zero-padded `string`.
 
 ```js
 const renderer = ({ hours, minutes, seconds }) => (
@@ -322,45 +337,53 @@ const renderer = ({ hours, minutes, seconds }) => (
 
 <a name="calctimedelta"></a>
 ### `calcTimeDelta(date, [options])`
-`calcTimeDelta` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similar to the [`renderer`](#renderer) callback, a custom object (also referred to as **countdown time delta object**) with the following time related data:
+`calcTimeDelta` calculates the time difference between a given end [`date`](#date) and the current date (`now`). It returns, similar to the [`renderer`](#renderer) callback, a custom object (also referred to as **countdown time delta object**) with the following time-related data:
 
 ```js
 { total, days, hours, minutes, seconds, milliseconds, completed }
 ```
 
-This function accepts 2 arguments in total, only the first one is required.
+This function accepts two arguments in total; only the first one is required.
 
 **`date`**
 Date or timestamp representation of the end date. See [`date`](#date) prop for more details.
 
-The second argument (`options`) could be an optional object consisting of the following optional keys.
+**`options`** The second argument consists of the following optional keys.
 
-**`now = Date.now`**
+- **`now = Date.now`**
 Alternative function for returning the current date, also see [`now`](#now).
 
-**`precision = 0`**
+- **`precision = 0`**
 The [`precision`](#precision) on a millisecond basis.
 
-**`controlled = false`**
-Defines whether the calculated value is already provided as the time difference or not.
+- **`controlled = false`**
+Defines whether the calculated value is provided in a [`controlled`](#controlled) environment as the time difference or not.
 
-**`offsetTime = 0`**
+- **`offsetTime = 0`**
 Defines the offset time that gets added to the start time; only considered if controlled is false.
+
+- **`overtime = false`**
+Defines whether the time delta can go into [`overtime`](#overtime) and become negative or not. When set to `true`, the `total` could become negative at which point `completed` will still be set to `true`.
 
 ### `formatTimeDelta(delta, [options])`
 `formatTimeDelta` formats a given countdown [time delta object](#calctimedelta). It returns the formatted portion of it, equivalent to:
 
 ```js
-{ days, hours, minutes, seconds }
+{
+  days: '00',
+  hours: '00',
+  minutes: '00',
+  seconds: '00',
+}
 ```
 
-This function accepts 2 arguments in total, only the first one is required.
+This function accepts two arguments in total; only the first one is required.
 
-**`delta`**
-Time delta object, e.g.: returned by [`calcTimeDelta`](#calctimedelta).
+**`timeDelta`**
+Time delta object, e.g., returned by [`calcTimeDelta`](#calctimedelta).
 
 **`options`**
-The `options` object consists of the following three component props and is used to customize the formatting of the delta object:
+The `options` object consists of the following three component props and is used to customize the time delta object's formatting:
 * [`daysInHours`](#daysinhours)
 * [`zeroPadTime`](#zeropadtime)
 * [`zeroPadDays`](#zeropaddays)
@@ -388,6 +411,10 @@ If you are running a React version lower than 16.8.0 (introduction of Hooks) and
 ```js
 import Countdown from 'react-countdown-now/dist/Countdown';
 ```
+
+## Contributing
+
+Contributions of any kind are very welcome. Read more in our [contributing guide](https://github.com/ndresx/react-countdown/blob/master/CONTRIBUTING.md) about how to report bugs, create pull requests, and other development-related topics.
 
 ## License
 

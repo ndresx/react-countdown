@@ -7,6 +7,7 @@ module.exports = {
     '<rootDir>/config/setupTests.ts',
     '@testing-library/react-hooks/dont-cleanup-after-each.js',
   ],
+  testPathIgnorePatterns: ['/node_modules/', '/cypress/'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },

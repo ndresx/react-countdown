@@ -1,4 +1,3 @@
-import Countdown from './Countdown';
 import {
   calcTimeDelta,
   CountdownTimeDelta,
@@ -8,20 +7,23 @@ import {
   formatTimeDelta,
 } from './utils';
 
-export interface CountdownProps extends React.Props<Countdown>, CountdownTimeDeltaFormatOptions {
+export interface CountdownProps extends CountdownTimeDeltaFormatOptions {
   readonly date: Date | number | string;
   readonly key?: React.Key;
   readonly controlled?: boolean;
   readonly intervalDelay?: number;
   readonly precision?: number;
   readonly autoStart?: boolean;
+  readonly overtime?: boolean;
+  readonly className?: string;
   readonly children?: React.ReactElement<unknown>;
-  readonly renderer?: (props: CountdownRenderProps) => React.ReactNode;
+  readonly renderer?: CountdownRendererFn;
   readonly now?: () => number;
   readonly pure?: boolean;
   readonly onMount?: CountdownTimeDeltaFn;
   readonly onStart?: CountdownTimeDeltaFn;
   readonly onPause?: CountdownTimeDeltaFn;
+  readonly onStop?: CountdownTimeDeltaFn;
   readonly onTick?: CountdownTimeDeltaFn;
   readonly onComplete?: CountdownTimeDeltaFn;
 }
@@ -32,18 +34,29 @@ export interface CountdownRenderProps extends CountdownTimeDelta {
   readonly formatted: CountdownTimeDeltaFormatted;
 }
 
+export type CountdownRendererFn = (props: CountdownRenderProps) => React.ReactNode;
+
 export type CountdownTimeDeltaFn = (timeDelta: CountdownTimeDelta) => void;
+
+const enum CountdownStatus {
+  STARTED = 'STARTED',
+  PAUSED = 'PAUSED',
+  STOPPED = 'STOPPED',
+  COMPLETED = 'COMPLETED',
+}
 
 export interface CountdownState {
   readonly timeDelta: CountdownTimeDelta;
-  readonly offsetStart: number;
-  readonly offsetTime: number;
+  readonly status: CountdownStatus;
 }
 
 export interface CountdownApi {
   readonly start: () => void;
   readonly pause: () => void;
+  readonly stop: () => void;
+  readonly isStarted: () => boolean;
   readonly isPaused: () => boolean;
+  readonly isStopped: () => boolean;
   readonly isCompleted: () => boolean;
 }
 
@@ -65,26 +78,41 @@ export default class CountdownJs {
   interval: number | undefined;
   api: CountdownApi | undefined;
 
+  initialTimestamp = 0;
+  offsetStartTimestamp = 0;
+  offsetTime = 0;
+
   constructor(props: CountdownProps, stateUpdater: StateUpdaterFn) {
     this.props = this.computeProps(props);
+
+    this.initialTimestamp = this.calcOffsetStartTimestamp();
+    this.offsetStartTimestamp = this.props.autoStart ? 0 : this.initialTimestamp;
+
+    const timeDelta = this.calcTimeDelta();
     this.state = {
-      timeDelta: this.calcTimeDelta(),
-      offsetStart: props.autoStart ? 0 : this.calcOffsetStart(),
-      offsetTime: 0,
+      timeDelta,
+      status: timeDelta.completed ? CountdownStatus.COMPLETED : CountdownStatus.STOPPED,
     };
+
     this.stateUpdater = stateUpdater;
   }
 
   mount = (): void => {
     this.mounted = true;
-    this.props.autoStart && this.start();
-    this.props.onMount && this.props.onMount(this.calcTimeDelta());
+    if (this.props.onMount) this.props.onMount(this.calcTimeDelta());
+    if (this.props.autoStart) this.start();
   };
 
   update = (props: CountdownProps): boolean => {
     const nextProps = this.computeProps(props);
 
-    if (nextProps.pure && !this.shallowCompareProps(nextProps, this.computeProps(this.props))) {
+    if (nextProps.pure && !this.shallowCompare(nextProps, this.computeProps(this.props))) {
+      if (this.props.date !== nextProps.date) {
+        this.initialTimestamp = this.calcOffsetStartTimestamp();
+        this.offsetStartTimestamp = this.initialTimestamp;
+        this.offsetTime = 0;
+      }
+
       this.setProps(nextProps);
       this.setTimeDeltaState(this.calcTimeDelta());
       return true;
@@ -95,63 +123,66 @@ export default class CountdownJs {
 
   unmount = (): void => {
     this.mounted = false;
-    this.clearInterval();
+    this.clearTimer();
   };
 
   tick = (): void => {
-    const { onTick } = this.props;
     const timeDelta = this.calcTimeDelta();
-
-    this.setTimeDeltaState(timeDelta);
-
-    if (onTick && timeDelta.total > 0) {
-      onTick(timeDelta);
-    }
+    const callback = timeDelta.completed ? undefined : this.props.onTick;
+    this.setTimeDeltaState(timeDelta, undefined, callback);
   };
 
   calcTimeDelta(): CountdownTimeDelta {
-    const { date, now, precision, controlled } = this.props;
-    return calcTimeDelta(date, {
+    const { date, now, precision, controlled, overtime } = this.props;
+    return calcTimeDelta(date!, {
       now,
       precision,
       controlled,
-      offsetTime: this.state ? this.state.offsetTime : 0,
+      offsetTime: this.offsetTime,
+      overtime,
     });
   }
 
-  calcOffsetStart(): number {
+  calcOffsetStartTimestamp(): number {
     return Date.now();
   }
 
   start = (): void => {
-    this.setState(
-      ({ offsetStart, offsetTime }: CountdownState) => ({
-        offsetStart: 0,
-        offsetTime: offsetTime + (offsetStart ? this.calcOffsetStart() - offsetStart : 0),
-      }),
-      () => {
-        const timeDelta = this.calcTimeDelta();
-        this.setTimeDeltaState(timeDelta);
-        this.props.onStart && this.props.onStart(timeDelta);
+    if (this.isStarted()) return;
 
-        if (!this.props.controlled) {
-          this.clearInterval();
-          this.interval = window.setInterval(this.tick, this.props.intervalDelay);
-        }
-      }
-    );
+    const prevOffsetStartTimestamp = this.offsetStartTimestamp;
+    this.offsetStartTimestamp = 0;
+    this.offsetTime += prevOffsetStartTimestamp
+      ? this.calcOffsetStartTimestamp() - prevOffsetStartTimestamp
+      : 0;
+
+    const timeDelta = this.calcTimeDelta();
+    this.setTimeDeltaState(timeDelta, CountdownStatus.STARTED, this.props.onStart);
+
+    if (!this.props.controlled && (!timeDelta.completed || this.props.overtime)) {
+      this.clearTimer();
+      this.interval = window.setInterval(this.tick, this.props.intervalDelay);
+    }
   };
 
   pause = (): void => {
-    this.clearInterval();
-    this.setState({ offsetStart: this.calcOffsetStart() }, () => {
-      const timeDelta = this.calcTimeDelta();
-      this.setTimeDeltaState(timeDelta);
-      this.props.onPause && this.props.onPause(timeDelta);
-    });
+    if (this.isPaused()) return;
+
+    this.clearTimer();
+    this.offsetStartTimestamp = this.calcOffsetStartTimestamp();
+    this.setTimeDeltaState(this.state.timeDelta, CountdownStatus.PAUSED, this.props.onPause);
   };
 
-  clearInterval(): void {
+  stop = (): void => {
+    if (this.isStopped()) return;
+
+    this.clearTimer();
+    this.offsetStartTimestamp = this.calcOffsetStartTimestamp();
+    this.offsetTime = this.offsetStartTimestamp - this.initialTimestamp;
+    this.setTimeDeltaState(this.calcTimeDelta(), CountdownStatus.STOPPED, this.props.onStop);
+  };
+
+  clearTimer(): void {
     window.clearInterval(this.interval);
   }
 
@@ -167,53 +198,94 @@ export default class CountdownJs {
     };
   }
 
+  isStarted = (): boolean => {
+    return this.isStatus(CountdownStatus.STARTED);
+  };
+
   isPaused = (): boolean => {
-    return this.state.offsetStart > 0;
+    return this.isStatus(CountdownStatus.PAUSED);
+  };
+
+  isStopped = (): boolean => {
+    return this.isStatus(CountdownStatus.STOPPED);
   };
 
   isCompleted = (): boolean => {
-    return this.state.timeDelta.completed;
+    return this.isStatus(CountdownStatus.COMPLETED);
   };
 
-  shallowCompareProps(propsA: CountdownProps, propsB: CountdownProps): boolean {
-    const keysA = Object.keys(propsA);
+  isStatus(status: CountdownStatus): boolean {
+    return this.state.status === status;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  shallowCompare(objA: object, objB: object): boolean {
+    const keysA = Object.keys(objA);
     return (
-      keysA.length === Object.keys(propsB).length &&
-      !keysA.some(keyA => {
-        const valueA = propsA[keyA];
-        const valueB = propsB[keyA];
+      keysA.length === Object.keys(objB).length &&
+      !keysA.some((keyA) => {
+        const valueA = objA[keyA];
+        const valueB = objB[keyA];
         return (
-          !propsB.hasOwnProperty(keyA) ||
+          !objB.hasOwnProperty(keyA) ||
           !(valueA === valueB || (valueA !== valueA && valueB !== valueB)) // NaN !== NaN
         );
       })
     );
   }
 
-  setTimeDeltaState(timeDelta: CountdownTimeDelta): void {
-    let callback;
+  handleOnComplete = (timeDelta: CountdownTimeDelta): void => {
+    if (this.props.onComplete) this.props.onComplete(timeDelta);
+  };
+
+  setTimeDeltaState(
+    timeDelta: CountdownTimeDelta,
+    status?: CountdownStatus,
+    callback?: (timeDelta: CountdownTimeDelta) => void
+  ): void {
+    if (!this.mounted) return;
+
+    let completedCallback: this['handleOnComplete'] | undefined;
 
     if (!this.state.timeDelta.completed && timeDelta.completed) {
-      this.clearInterval();
-
-      callback = (): void => this.props.onComplete && this.props.onComplete(timeDelta);
+      if (!this.props.overtime) this.clearTimer();
+      completedCallback = this.handleOnComplete;
     }
 
-    if (this.mounted) {
-      this.setState({ timeDelta }, callback);
-    }
+    const onDone = () => {
+      if (callback) callback(this.state.timeDelta);
+      if (completedCallback) completedCallback(this.state.timeDelta);
+    };
+
+    this.setState((prevState) => {
+      let newStatus = status || prevState.status;
+
+      if (timeDelta.completed && !this.props.overtime) {
+        newStatus = CountdownStatus.COMPLETED;
+      } else if (!status && newStatus === CountdownStatus.COMPLETED) {
+        newStatus = CountdownStatus.STOPPED;
+      }
+
+      return {
+        timeDelta,
+        status: newStatus,
+      };
+    }, onDone);
   }
 
-  getApi = (): CountdownApi => {
+  getApi(): CountdownApi {
     return (this.api = this.api || {
       start: this.start,
       pause: this.pause,
+      stop: this.stop,
+      isStarted: this.isStarted,
       isPaused: this.isPaused,
+      isStopped: this.isStopped,
       isCompleted: this.isCompleted,
     });
-  };
+  }
 
-  getRenderProps = (): CountdownRenderProps => {
+  getRenderProps(): CountdownRenderProps {
     const { daysInHours, zeroPadTime, zeroPadDays } = this.props;
     const { timeDelta } = this.state;
     return {
@@ -226,7 +298,7 @@ export default class CountdownJs {
         zeroPadDays,
       }),
     };
-  };
+  }
 
   getProps = (): CountdownProps => {
     return this.props;

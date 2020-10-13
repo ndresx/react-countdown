@@ -5,15 +5,17 @@ Object {
   "api": Object {
     "isCompleted": [Function],
     "isPaused": [Function],
+    "isStarted": [Function],
+    "isStopped": [Function],
     "pause": [Function],
     "start": [Function],
+    "stop": [Function],
   },
   "completed": false,
   "days": 0,
   "formatted": Object {
     "days": "00",
     "hours": "00",
-    "milliseconds": "00",
     "minutes": "00",
     "seconds": "10",
   },

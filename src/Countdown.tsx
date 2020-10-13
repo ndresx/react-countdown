@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 
 import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './CountdownJs';
 
@@ -23,6 +23,8 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     intervalDelay: PropTypes.number,
     precision: PropTypes.number,
     autoStart: PropTypes.bool,
+    overtime: PropTypes.bool,
+    className: PropTypes.string,
     children: PropTypes.element,
     renderer: PropTypes.func,
     now: PropTypes.func,
@@ -30,15 +32,14 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     onMount: PropTypes.func,
     onStart: PropTypes.func,
     onPause: PropTypes.func,
+    onStop: PropTypes.func,
     onTick: PropTypes.func,
     onComplete: PropTypes.func,
   };
 
   constructor(props: CountdownProps) {
     super(props);
-    this.countdown = new CountdownJs(this.props, (state, callback) =>
-      this.setState(state, callback)
-    );
+    this.countdown = new CountdownJs(props, (state, callback) => this.setState(state, callback));
   }
 
   componentDidMount(): void {
@@ -58,20 +59,21 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   render(): React.ReactNode {
-    const { children, renderer } = this.props;
+    const { className, overtime, children, renderer } = this.props;
     const renderProps = this.countdown.getRenderProps();
 
     if (renderer) {
       return renderer(renderProps);
     }
 
-    if (children && renderProps.completed) {
+    if (children && renderProps.completed && !overtime) {
       return React.cloneElement(children, { countdown: renderProps });
     }
 
     const { days, hours, minutes, seconds } = renderProps.formatted;
     return (
-      <span>
+      <span className={className}>
+        {renderProps.total < 0 ? '-' : ''}
         {days}
         {days ? ':' : ''}
         {hours}:{minutes}:{seconds}

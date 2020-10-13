@@ -11,9 +11,9 @@ const CountdownJs = jest.requireActual('./CountdownJs').default;
 jest.mock('./CountdownJs', () => {
   return jest.fn().mockImplementation((props, updater) => {
     const countdown = new CountdownJs(props, updater);
-    Object.keys(classSpies).forEach(key => {
+    Object.keys(classSpies).forEach((key) => {
       const fn = countdown[key];
-      countdown[key] = function(...args): void {
+      countdown[key] = function (...args): void {
         fn(...args);
         classSpies[key](...args);
       };
@@ -85,7 +85,7 @@ describe('useCountdown', () => {
     act(() => {
       // Forward 6s in time
       now.mockReturnValue(countdownDate - 6000);
-      jest.runTimersToTime(6000);
+      jest.advanceTimersByTime(6000);
     });
 
     expect(classSpies.mount).toHaveBeenCalledTimes(1);
@@ -102,7 +102,7 @@ describe('useCountdown', () => {
     expect(result.current.total).toBe(6000);
   });
 
-  [true, false].forEach(shouldUnmount => {
+  [true, false].forEach((shouldUnmount) => {
     it(`should update (unmount => ${shouldUnmount}) time total`, () => {
       const { result, unmount } = renderHook(hookCallback, {
         initialProps: { date: countdownDate, intervalDelay: 2222 },
@@ -110,7 +110,7 @@ describe('useCountdown', () => {
 
       act(() => {
         now.mockReturnValue(countdownDate - 6000);
-        jest.runTimersToTime(6000);
+        jest.advanceTimersByTime(6000);
       });
 
       expect(result.current.total).toBe(6000);
@@ -119,7 +119,7 @@ describe('useCountdown', () => {
 
       act(() => {
         now.mockReturnValue(countdownDate - 3000);
-        jest.runTimersToTime(3000);
+        jest.advanceTimersByTime(3000);
       });
 
       expect(result.current.total).toBe(shouldUnmount ? 6000 : 3000);
@@ -127,11 +127,11 @@ describe('useCountdown', () => {
   });
 
   it('should trigger onTick and onComplete callbacks', () => {
-    const onTick = jest.fn(stats => {
+    const onTick = jest.fn((stats) => {
       expect(stats).toEqual(calcTimeDelta(countdownDate));
     });
 
-    const onComplete = jest.fn(stats => {
+    const onComplete = jest.fn((stats) => {
       expect(stats.total).toEqual(0);
     });
 
@@ -142,7 +142,7 @@ describe('useCountdown', () => {
     act(() => {
       // Forward 6s in time
       now.mockReturnValue(countdownDate - 6000);
-      jest.runTimersToTime(6000);
+      jest.advanceTimersByTime(6000);
     });
 
     expect(onTick.mock.calls.length).toBe(6);
@@ -151,7 +151,7 @@ describe('useCountdown', () => {
     act(() => {
       // Forward 3 more seconds
       now.mockReturnValue(countdownDate - 1000);
-      jest.runTimersToTime(3000);
+      jest.advanceTimersByTime(3000);
     });
 
     expect(onTick.mock.calls.length).toBe(9);
@@ -160,7 +160,7 @@ describe('useCountdown', () => {
     act(() => {
       // The End: onComplete callback gets triggered instead of onTick
       now.mockReturnValue(countdownDate);
-      jest.runTimersToTime(1000);
+      jest.advanceTimersByTime(1000);
     });
 
     expect(onTick.mock.calls.length).toBe(9);
