@@ -543,13 +543,13 @@ describe('<Countdown />', () => {
     now.mockReturnValue(countdownDate - 1000);
     jest.advanceTimersByTime(9000);
 
-    expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:01"`);
+    expect(wrapper.update().text()).toMatchInlineSnapshot(`"00:00:00:01"`);
 
     // Forward 1s
     now.mockReturnValue(countdownDate);
     jest.advanceTimersByTime(1000);
 
-    expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:00"`);
+    expect(wrapper.update().text()).toMatchInlineSnapshot(`"00:00:00:00"`);
     expect(wrapper.state().timeDelta.total).toBe(0);
     expect(wrapper.state().timeDelta.completed).toBe(true);
     expect(api.isCompleted()).toBe(false);
@@ -558,7 +558,7 @@ describe('<Countdown />', () => {
     now.mockReturnValue(countdownDate + 1000);
     jest.advanceTimersByTime(1000);
 
-    expect(wrapper.text()).toMatchInlineSnapshot(`"-00:00:00:01"`);
+    expect(wrapper.update().text()).toMatchInlineSnapshot(`"-00:00:00:01"`);
     expect(wrapper.state().timeDelta.total).toBe(-1000);
     expect(wrapper.state().timeDelta.completed).toBe(true);
     expect(api.isCompleted()).toBe(false);

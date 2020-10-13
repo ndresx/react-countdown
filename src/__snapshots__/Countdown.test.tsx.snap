@@ -4,15 +4,13 @@ exports[`<Countdown /> should render a simple countdown 1`] = `
 <Countdown
   date={1482453477527}
 >
-  <span>
-    01
-    :
-    01
-    :
-    01
-    :
-    50
-  </span>
+  01
+  :
+  01
+  :
+  01
+  :
+  50
 </Countdown>
 `;
 
@@ -21,15 +19,13 @@ exports[`<Countdown /> should render and unmount component on countdown end 1`] 
   date={1482453477527}
   zeroPadTime={0}
 >
-  <span>
-    1
-    :
-    1
-    :
-    1
-    :
-    50
-  </span>
+  1
+  :
+  1
+  :
+  1
+  :
+  50
 </Countdown>
 `;
 
@@ -38,15 +34,13 @@ exports[`<Countdown /> should render and unmount component on countdown end 2`] 
   date={0}
   zeroPadTime={0}
 >
-  <span>
-    1
-    :
-    1
-    :
-    1
-    :
-    50
-  </span>
+  1
+  :
+  1
+  :
+  1
+  :
+  50
 </Countdown>
 `;
 
@@ -69,13 +63,11 @@ exports[`<Countdown /> should render with daysInHours => true 1`] = `
   date={1482453477527}
   daysInHours={true}
 >
-  <span>
-    25
-    :
-    01
-    :
-    50
-  </span>
+  25
+  :
+  01
+  :
+  50
 </Countdown>
 `;
 
@@ -84,15 +76,13 @@ exports[`<Countdown /> should render with zeroPadDays => 3 1`] = `
   date={1483227367071}
   zeroPadDays={3}
 >
-  <span>
-    010
-    :
-    00
-    :
-    00
-    :
-    00
-  </span>
+  010
+  :
+  00
+  :
+  00
+  :
+  00
 </Countdown>
 `;
 
@@ -199,14 +189,12 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
     }
   }
 >
-  <span>
-    00
-    :
-    00
-    :
-    00
-    :
-    06
-  </span>
+  00
+  :
+  00
+  :
+  00
+  :
+  06
 </Countdown>
 `;
