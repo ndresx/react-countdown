@@ -6,7 +6,10 @@ interface CountdownApiExampleState {
   readonly date: number;
 }
 
-export default class CountdownApiExample extends React.Component<{}, CountdownApiExampleState> {
+export default class CountdownApiExample extends React.Component<
+  unknown,
+  CountdownApiExampleState
+> {
   state = { date: Date.now() + 10000 };
 
   handleResetClick = (): void => {

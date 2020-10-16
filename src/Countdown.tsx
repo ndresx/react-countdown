@@ -42,7 +42,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   componentDidMount(): void {
-    this.countdown.mount();
+    this.countdown.init();
   }
 
   componentDidUpdate(): void {
@@ -50,7 +50,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   componentWillUnmount(): void {
-    this.countdown.unmount();
+    this.countdown.destroy();
   }
 
   getApi(): CountdownApi {

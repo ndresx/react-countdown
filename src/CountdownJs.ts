@@ -73,7 +73,7 @@ export default class CountdownJs {
   state: CountdownState;
   stateUpdater: StateUpdaterFn;
 
-  mounted = false;
+  initialized = false;
   interval: number | undefined;
   api: CountdownApi | undefined;
 
@@ -96,8 +96,8 @@ export default class CountdownJs {
     this.stateUpdater = stateUpdater;
   }
 
-  mount = (): void => {
-    this.mounted = true;
+  init = (): void => {
+    this.initialized = true;
     if (this.props.onMount) this.props.onMount(this.calcTimeDelta());
     if (this.props.autoStart) this.start();
   };
@@ -120,8 +120,8 @@ export default class CountdownJs {
     return false;
   };
 
-  unmount = (): void => {
-    this.mounted = false;
+  destroy = (): void => {
+    this.initialized = false;
     this.clearTimer();
   };
 
@@ -242,7 +242,7 @@ export default class CountdownJs {
     status?: CountdownStatus,
     callback?: (timeDelta: CountdownTimeDelta) => void
   ): void {
-    if (!this.mounted) return;
+    if (!this.initialized) return;
 
     let completedCallback: this['handleOnComplete'] | undefined;
 
@@ -303,9 +303,9 @@ export default class CountdownJs {
     return this.props;
   };
 
-  setProps(props: CountdownProps): void {
+  setProps = (props: CountdownProps): void => {
     this.props = this.computeProps(props);
-  }
+  };
 
   getState = (): CountdownState => {
     return this.state;

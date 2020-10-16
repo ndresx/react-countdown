@@ -220,14 +220,14 @@ describe('<Countdown />', () => {
 
     now.mockReturnValue(countdownDate - 6000);
     jest.advanceTimersByTime(6000);
-    expect(countdownJsObj.mounted).toBe(true);
+    expect(countdownJsObj.initialized).toBe(true);
     expect(getCountdownJsState().timeDelta.total).toBe(6000);
 
     wrapper.unmount();
 
     now.mockReturnValue(countdownDate - 3000);
     jest.advanceTimersByTime(3000);
-    expect(countdownJsObj.mounted).toBe(false);
+    expect(countdownJsObj.initialized).toBe(false);
     expect(countdownJsObj.getState().timeDelta.total).toBe(6000);
 
     countdownJsObj.setTimeDeltaState(defaultStats);

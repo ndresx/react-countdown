@@ -20,18 +20,15 @@ export default function useCountdown(props: UseCountdownProps): UseCountdownResu
 
     countdownObj.current = new CountdownJs({ ...props }, (state, callback) => {
       setState(state);
-      callback && callback();
+      if (callback) callback();
     });
   }
 
   const countdown = countdownObj.current as CountdownJs;
 
   useEffect(() => {
-    countdown.mount();
-
-    return () => {
-      countdown.unmount();
-    };
+    countdown.init();
+    return countdown.destroy;
   }, [countdown]);
 
   useEffect(() => {

@@ -10,6 +10,7 @@ export {
 
 export {
   CountdownProps,
+  CountdownRendererFn,
   CountdownRenderProps,
   CountdownApi,
   CountdownTimeDeltaFn,
