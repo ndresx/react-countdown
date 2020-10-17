@@ -20,7 +20,7 @@ export default function useCountdown(props: UseCountdownProps): UseCountdownResu
 
     countdownObj.current = new CountdownJs({ ...props }, (state, callback) => {
       setState(state);
-      if (callback) callback();
+      callback();
     });
   }
 

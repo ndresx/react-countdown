@@ -4,7 +4,7 @@ import { mount, ReactWrapper } from 'enzyme';
 import Countdown from './Countdown';
 import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './CountdownJs';
 import { calcTimeDelta, formatTimeDelta } from './utils';
-import { mockDateNow, mockRaf, defaultStats } from './fixtures';
+import { mockDateNow, defaultStats } from './fixtures';
 
 const { now, timeDiff } = mockDateNow();
 
@@ -30,7 +30,6 @@ describe('<Countdown />', () => {
   beforeEach(() => {
     Date.now = now;
     countdownDate = Date.now() + countdownMs;
-    mockRaf();
   });
 
   it('should render a simple countdown', () => {
@@ -172,7 +171,7 @@ describe('<Countdown />', () => {
     const api = getCountdownApi();
     const countdownJsObj = getCountdownJsInstance();
 
-    expect(countdownJsObj.timer).toBeUndefined();
+    expect(countdownJsObj.timerId).toBeUndefined();
     expect(getCountdownJsState().timeDelta.completed).toBe(false);
     expect(api.isCompleted()).toBe(false);
 
@@ -252,176 +251,174 @@ describe('<Countdown />', () => {
     expect(api.isStopped()).toBe(true);
   });
 
-  [true, false].forEach((raf) => {
-    it(`should pause => start => pause => stop and restart countdown (raf=${raf})`, () => {
-      const spies = {
-        onMount: jest.fn(),
-        onStart: jest.fn(),
-        onPause: jest.fn(),
-        onStop: jest.fn(),
-      };
-      wrapper = mount(<Countdown date={countdownDate} raf={raf} {...spies} />);
-      const obj = getCountdownJsInstance();
-      const api = getCountdownApi();
+  it(`should pause => start => pause => stop and restart countdown`, () => {
+    const spies = {
+      onMount: jest.fn(),
+      onStart: jest.fn(),
+      onPause: jest.fn(),
+      onStop: jest.fn(),
+    };
+    wrapper = mount(<Countdown date={countdownDate} {...spies} />);
+    const obj = getCountdownJsInstance();
+    const api = getCountdownApi();
 
-      expect(obj.offsetStartTimestamp).toBe(0);
-      expect(obj.offsetTime).toBe(0);
+    expect(obj.offsetStartTimestamp).toBe(0);
+    expect(obj.offsetTime).toBe(0);
 
-      expect(api.isStarted()).toBe(true);
-      expect(api.isPaused()).toBe(false);
-      expect(api.isStopped()).toBe(false);
-      expect(api.isCompleted()).toBe(false);
-      expect(spies.onMount).toHaveBeenCalledTimes(1);
-      expect(spies.onMount).toHaveBeenCalledWith({
-        completed: false,
-        total: 10000,
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 10,
-        milliseconds: 0,
-      });
-      expect(spies.onStart).toHaveBeenCalledTimes(1);
-      expect(spies.onPause).toHaveBeenCalledTimes(0);
-      expect(spies.onStop).toHaveBeenCalledTimes(0);
-
-      let runMs = 2000;
-      const nowBeforePause = countdownDate - (countdownMs - runMs);
-      now.mockReturnValue(nowBeforePause);
-      jest.advanceTimersByTime(runMs);
-      expect(getCountdownJsState().timeDelta.total).toBe(countdownMs - runMs);
-
-      api.pause();
-      expect(api.isStarted()).toBe(false);
-      expect(api.isPaused()).toBe(true);
-      expect(api.isStopped()).toBe(false);
-      expect(api.isCompleted()).toBe(false);
-      expect(spies.onMount).toHaveBeenCalledTimes(1);
-      expect(spies.onStart).toHaveBeenCalledTimes(1);
-      expect(spies.onPause).toHaveBeenCalledTimes(1);
-      expect(spies.onPause).toHaveBeenCalledWith({
-        completed: false,
-        total: 8000,
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 8,
-        milliseconds: 0,
-      });
-      expect(spies.onStop).toHaveBeenCalledTimes(0);
-
-      // Calling pause() a 2nd time while paused should return early
-      api.pause();
-      expect(api.isPaused()).toBe(true);
-      expect(spies.onPause).toHaveBeenCalledTimes(1);
-      expect(spies.onPause).toHaveBeenCalledWith(getCountdownJsInstance().calcTimeDelta());
-
-      runMs += 2000;
-      const pausedMs = 2000;
-      now.mockReturnValue(countdownDate - (countdownMs - runMs));
-      jest.advanceTimersByTime(runMs);
-      expect(countdownMs - runMs + pausedMs).toBe(8000);
-      expect(wrapper.state().timeDelta.total).toBe(8000);
-      expect(obj.offsetStartTimestamp).toBe(nowBeforePause);
-      expect(obj.offsetTime).toBe(0);
-
-      api.start();
-      expect(api.isStarted()).toBe(true);
-      expect(api.isPaused()).toBe(false);
-      expect(api.isStopped()).toBe(false);
-      expect(api.isCompleted()).toBe(false);
-      expect(spies.onMount).toHaveBeenCalledTimes(1);
-      expect(spies.onStart).toHaveBeenCalledTimes(2);
-      expect(spies.onStart).toHaveBeenCalledWith({
-        completed: false,
-        total: 8000,
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 8,
-        milliseconds: 0,
-      });
-      expect(spies.onPause).toHaveBeenCalledTimes(1);
-      expect(spies.onStop).toHaveBeenCalledTimes(0);
-
-      expect(wrapper.state().timeDelta.total).toBe(8000);
-      expect(obj.offsetStartTimestamp).toBe(0);
-      expect(obj.offsetTime).toBe(pausedMs);
-
-      runMs += 1000;
-      now.mockReturnValue(countdownDate - (countdownMs - runMs));
-      jest.advanceTimersByTime(runMs);
-      expect(countdownMs - runMs + pausedMs).toBe(7000);
-      expect(wrapper.state().timeDelta.total).toBe(7000);
-      expect(obj.offsetStartTimestamp).toBe(0);
-      expect(obj.offsetTime).toBe(pausedMs);
-
-      runMs += 1000;
-      now.mockReturnValue(countdownDate - (countdownMs - runMs));
-      jest.advanceTimersByTime(runMs);
-
-      api.pause();
-      expect(obj.offsetStartTimestamp).toBe(now());
-      expect(obj.offsetTime).toBe(2000);
-
-      expect(wrapper.state().timeDelta).toEqual({
-        completed: false,
-        total: 6000,
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 6,
-        milliseconds: 0,
-      });
-
-      runMs += 1000;
-      now.mockReturnValue(countdownDate - (countdownMs - runMs));
-      jest.advanceTimersByTime(runMs);
-
-      api.stop();
-      expect(obj.offsetStartTimestamp).toBe(now());
-      expect(obj.offsetTime).toBe(runMs);
-
-      expect(api.isStarted()).toBe(false);
-      expect(api.isPaused()).toBe(false);
-      expect(api.isStopped()).toBe(true);
-      expect(api.isCompleted()).toBe(false);
-      expect(spies.onMount).toHaveBeenCalledTimes(1);
-      expect(spies.onStart).toHaveBeenCalledTimes(2);
-      expect(spies.onPause).toHaveBeenCalledTimes(2);
-      expect(spies.onStop).toHaveBeenCalledTimes(1);
-      expect(spies.onStop).toHaveBeenCalledWith({
-        completed: false,
-        total: 10000,
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 10,
-        milliseconds: 0,
-      });
-
-      // Calling stop() a 2nd time while stopped should return early
-      api.stop();
-      expect(api.isStopped()).toBe(true);
-      expect(spies.onStop).toHaveBeenCalledTimes(1);
-
-      api.start();
-
-      runMs += 10000;
-      now.mockReturnValue(countdownDate + runMs + pausedMs);
-      jest.advanceTimersByTime(countdownMs + pausedMs);
-
-      expect(wrapper.state().timeDelta.total).toBe(0);
-      expect(wrapper.state().timeDelta.completed).toBe(true);
-      expect(api.isCompleted()).toBe(true);
-      expect(obj.offsetStartTimestamp).toBe(0);
-      expect(obj.offsetTime).toBe(7000);
-
-      expect(spies.onMount).toHaveBeenCalledTimes(1);
-      expect(spies.onStart).toHaveBeenCalledTimes(3);
-      expect(spies.onPause).toHaveBeenCalledTimes(2);
-      expect(spies.onStop).toHaveBeenCalledTimes(1);
+    expect(api.isStarted()).toBe(true);
+    expect(api.isPaused()).toBe(false);
+    expect(api.isStopped()).toBe(false);
+    expect(api.isCompleted()).toBe(false);
+    expect(spies.onMount).toHaveBeenCalledTimes(1);
+    expect(spies.onMount).toHaveBeenCalledWith({
+      completed: false,
+      total: 10000,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 10,
+      milliseconds: 0,
     });
+    expect(spies.onStart).toHaveBeenCalledTimes(1);
+    expect(spies.onPause).toHaveBeenCalledTimes(0);
+    expect(spies.onStop).toHaveBeenCalledTimes(0);
+
+    let runMs = 2000;
+    const nowBeforePause = countdownDate - (countdownMs - runMs);
+    now.mockReturnValue(nowBeforePause);
+    jest.advanceTimersByTime(runMs);
+    expect(getCountdownJsState().timeDelta.total).toBe(countdownMs - runMs);
+
+    api.pause();
+    expect(api.isStarted()).toBe(false);
+    expect(api.isPaused()).toBe(true);
+    expect(api.isStopped()).toBe(false);
+    expect(api.isCompleted()).toBe(false);
+    expect(spies.onMount).toHaveBeenCalledTimes(1);
+    expect(spies.onStart).toHaveBeenCalledTimes(1);
+    expect(spies.onPause).toHaveBeenCalledTimes(1);
+    expect(spies.onPause).toHaveBeenCalledWith({
+      completed: false,
+      total: 8000,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 8,
+      milliseconds: 0,
+    });
+    expect(spies.onStop).toHaveBeenCalledTimes(0);
+
+    // Calling pause() a 2nd time while paused should return early
+    api.pause();
+    expect(api.isPaused()).toBe(true);
+    expect(spies.onPause).toHaveBeenCalledTimes(1);
+    expect(spies.onPause).toHaveBeenCalledWith(getCountdownJsInstance().calcTimeDelta());
+
+    runMs += 2000;
+    const pausedMs = 2000;
+    now.mockReturnValue(countdownDate - (countdownMs - runMs));
+    jest.advanceTimersByTime(runMs);
+    expect(countdownMs - runMs + pausedMs).toBe(8000);
+    expect(wrapper.state().timeDelta.total).toBe(8000);
+    expect(obj.offsetStartTimestamp).toBe(nowBeforePause);
+    expect(obj.offsetTime).toBe(0);
+
+    api.start();
+    expect(api.isStarted()).toBe(true);
+    expect(api.isPaused()).toBe(false);
+    expect(api.isStopped()).toBe(false);
+    expect(api.isCompleted()).toBe(false);
+    expect(spies.onMount).toHaveBeenCalledTimes(1);
+    expect(spies.onStart).toHaveBeenCalledTimes(2);
+    expect(spies.onStart).toHaveBeenCalledWith({
+      completed: false,
+      total: 8000,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 8,
+      milliseconds: 0,
+    });
+    expect(spies.onPause).toHaveBeenCalledTimes(1);
+    expect(spies.onStop).toHaveBeenCalledTimes(0);
+
+    expect(wrapper.state().timeDelta.total).toBe(8000);
+    expect(obj.offsetStartTimestamp).toBe(0);
+    expect(obj.offsetTime).toBe(pausedMs);
+
+    runMs += 1000;
+    now.mockReturnValue(countdownDate - (countdownMs - runMs));
+    jest.advanceTimersByTime(runMs);
+    expect(countdownMs - runMs + pausedMs).toBe(7000);
+    expect(wrapper.state().timeDelta.total).toBe(7000);
+    expect(obj.offsetStartTimestamp).toBe(0);
+    expect(obj.offsetTime).toBe(pausedMs);
+
+    runMs += 1000;
+    now.mockReturnValue(countdownDate - (countdownMs - runMs));
+    jest.advanceTimersByTime(runMs);
+
+    api.pause();
+    expect(obj.offsetStartTimestamp).toBe(now());
+    expect(obj.offsetTime).toBe(2000);
+
+    expect(wrapper.state().timeDelta).toEqual({
+      completed: false,
+      total: 6000,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 6,
+      milliseconds: 0,
+    });
+
+    runMs += 1000;
+    now.mockReturnValue(countdownDate - (countdownMs - runMs));
+    jest.advanceTimersByTime(runMs);
+
+    api.stop();
+    expect(obj.offsetStartTimestamp).toBe(now());
+    expect(obj.offsetTime).toBe(runMs);
+
+    expect(api.isStarted()).toBe(false);
+    expect(api.isPaused()).toBe(false);
+    expect(api.isStopped()).toBe(true);
+    expect(api.isCompleted()).toBe(false);
+    expect(spies.onMount).toHaveBeenCalledTimes(1);
+    expect(spies.onStart).toHaveBeenCalledTimes(2);
+    expect(spies.onPause).toHaveBeenCalledTimes(2);
+    expect(spies.onStop).toHaveBeenCalledTimes(1);
+    expect(spies.onStop).toHaveBeenCalledWith({
+      completed: false,
+      total: 10000,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 10,
+      milliseconds: 0,
+    });
+
+    // Calling stop() a 2nd time while stopped should return early
+    api.stop();
+    expect(api.isStopped()).toBe(true);
+    expect(spies.onStop).toHaveBeenCalledTimes(1);
+
+    api.start();
+
+    runMs += 10000;
+    now.mockReturnValue(countdownDate + runMs + pausedMs);
+    jest.advanceTimersByTime(countdownMs + pausedMs);
+
+    expect(wrapper.state().timeDelta.total).toBe(0);
+    expect(wrapper.state().timeDelta.completed).toBe(true);
+    expect(api.isCompleted()).toBe(true);
+    expect(obj.offsetStartTimestamp).toBe(0);
+    expect(obj.offsetTime).toBe(7000);
+
+    expect(spies.onMount).toHaveBeenCalledTimes(1);
+    expect(spies.onStart).toHaveBeenCalledTimes(3);
+    expect(spies.onPause).toHaveBeenCalledTimes(2);
+    expect(spies.onStop).toHaveBeenCalledTimes(1);
   });
 
   it('should update component when pure', () => {

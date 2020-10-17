@@ -156,7 +156,6 @@ ReactDOM.render(
 |[**zeroPadDays**](#zeropaddays)|`number`|`zeroPadTime`|Length of zero-padded days output, e.g.: `01`|
 |[**controlled**](#controlled) |`boolean`|`false`|Hands over the control to its parent(s)|
 |[**intervalDelay**](#intervaldelay)|`number`|`1000`|Interval delay in milliseconds|
-|[**raf**](#raf)|`boolean`|`true`|`requestAnimationFrame`|
 |[**precision**](#precision)|`number`|`0`|The precision on a millisecond basis|
 |[**autoStart**](#autostart)|`boolean`|`true`|Countdown auto-start option|
 |[**overtime**](#overtime) |`boolean`|`false`|Counts down to infinity|
@@ -202,15 +201,8 @@ Defaults to `zeroPadTime`. Works the same way as [`zeroPadTime`](#zeropadtime) d
 Can be useful if the countdown's interval and/or date control should be handed over to the parent. In case `controlled` is `true`, the
 provided [`date`](#date) will be treated as the countdown's actual time difference and not be compared to [`now`](#now) anymore.
 
-### `raf`
-Defaults to `true`. In most cases, [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame) is the better suiting and more performant version to run the countdown. Setting it to `false` will make the countdown use `setInterval`, which can be configured with [`intervalDelay`](#intervaldelay).
-
 ### `intervalDelay`
-Since this countdown is based on date comparisons, the default value of `1000` milliseconds is probably enough for most scenarios and doesn't need to be changed.
-
-However, if it needs to be more precise, the `intervalDelay` can be set to something lower - down to `0`, which would, for example, allow showing the milliseconds in a more fancy way (_currently_ only possible through a custom [`renderer`](#renderer)).
-
-> Please note that this won't have any effect if [`raf`](#raf) is `true`.
+Defaults to `1000`ms. With higher [`precision`](#precision), the `intervalDelay` could be set to something lower - down to `0`, which would, for example, allow showing the milliseconds in a more fancy way (only possible by using a custom [`renderer`](#renderer)).
 
 ### `precision`
 In certain cases, you might want to base off the calculations on a millisecond basis. The `precision` prop, which defaults to `0`, can be used to refine this calculation. While the default value simply strips the milliseconds part (e.g.: `10123`ms => `10000`ms), a precision of `3` leads to `10123`ms.

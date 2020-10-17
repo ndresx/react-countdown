@@ -11,7 +11,6 @@ export interface CountdownProps extends CountdownTimeDeltaFormatOptions {
   readonly date: Date | number | string;
   readonly key?: React.Key;
   readonly controlled?: boolean;
-  readonly raf?: boolean;
   readonly intervalDelay?: number;
   readonly precision?: number;
   readonly autoStart?: boolean;
@@ -60,7 +59,7 @@ export interface CountdownApi {
   readonly isCompleted: () => boolean;
 }
 
-export type StateUpdaterFn = (state: CountdownState, callback?: () => void) => void;
+export type StateUpdaterFn = (state: CountdownState, callback: () => void) => void;
 
 /**
  * A customizable countdown component for React.
@@ -75,7 +74,7 @@ export default class CountdownJs {
   stateUpdater: StateUpdaterFn;
 
   initialized = false;
-  timer: number | undefined;
+  timerId: number | undefined;
   api: CountdownApi | undefined;
 
   initialTimestamp = 0;
@@ -132,14 +131,6 @@ export default class CountdownJs {
     this.setTimeDeltaState(timeDelta, undefined, callback);
   };
 
-  rafTick = (): void => {
-    this.tick();
-
-    if (this.timer) {
-      this.timer = window.requestAnimationFrame(this.rafTick);
-    }
-  };
-
   calcTimeDelta(): CountdownTimeDelta {
     const { date, now, precision, controlled, overtime } = this.props;
     return calcTimeDelta(date!, {
@@ -193,28 +184,17 @@ export default class CountdownJs {
   };
 
   startTimer(): void {
-    this.timer = this.props.raf
-      ? window.requestAnimationFrame(this.rafTick)
-      : window.setInterval(this.tick, this.props.intervalDelay);
+    this.timerId = window.setInterval(this.tick, this.props.intervalDelay);
   }
 
   clearTimer(): void {
-    if (this.timer) {
-      if (this.props.raf) {
-        window.cancelAnimationFrame(this.timer);
-      } else {
-        window.clearInterval(this.timer);
-      }
-
-      this.timer = undefined;
-    }
+    window.clearInterval(this.timerId);
   }
 
   computeProps(props: CountdownProps): CountdownProps {
     return {
       ...timeDeltaFormatOptionsDefaults,
       controlled: false,
-      raf: true,
       intervalDelay: 1000,
       precision: 0,
       autoStart: true,
@@ -339,7 +319,7 @@ export default class CountdownJs {
 
   setState = (
     state: (prevState: CountdownState) => Partial<CountdownState>,
-    callback?: () => void
+    callback: () => void
   ): void => {
     this.state = { ...this.state, ...state(this.state) };
     this.stateUpdater(this.state, callback);

@@ -20,7 +20,6 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     zeroPadTime: PropTypes.number,
     zeroPadDays: PropTypes.number,
     controlled: PropTypes.bool,
-    raf: PropTypes.bool,
     intervalDelay: PropTypes.number,
     precision: PropTypes.number,
     autoStart: PropTypes.bool,

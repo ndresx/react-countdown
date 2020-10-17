@@ -24,7 +24,7 @@ jest.mock('./CountdownJs', () => {
 
 import useCountdown, { UseCountdownProps } from './useCountdown';
 import { calcTimeDelta } from './utils';
-import { mockDateNow, mockRaf, defaultStats } from './fixtures';
+import { mockDateNow, defaultStats } from './fixtures';
 
 const { now, timeDiff } = mockDateNow();
 
@@ -36,9 +36,7 @@ describe('useCountdown', () => {
 
   beforeEach(() => {
     Date.now = now;
-    const date = Date.now() + countdownMs;
-    countdownDate = date;
-    mockRaf();
+    countdownDate = Date.now() + countdownMs;
   });
 
   const hookCallback = (props: UseCountdownProps) => useCountdown(props); // eslint-disable-line
