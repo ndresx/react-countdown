@@ -11,6 +11,19 @@ export function mockDateNow(): TMockDateNow {
   return { now, timeDiff };
 }
 
+let mockTimerId: number;
+
+export function mockRaf(): void {
+  jest.spyOn(window, 'requestAnimationFrame').mockImplementation((fn) => {
+    mockTimerId = window.setTimeout(fn, 1000);
+    return mockTimerId;
+  });
+
+  jest
+    .spyOn(window, 'cancelAnimationFrame')
+    .mockImplementation(() => window.clearTimeout(mockTimerId));
+}
+
 export const defaultStats = {
   total: 0,
   days: 0,

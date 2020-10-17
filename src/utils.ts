@@ -39,10 +39,10 @@ export interface CountdownTimeDeltaFormatOptions {
 export function zeroPad(value: number | string, length: number = 2): string {
   const strValue = String(value);
   if (length === 0) return strValue;
-  const match = strValue.match(/(.*?)([0-9]+)(.*)/);
-  const prefix = match ? match[1] : '';
-  const suffix = match ? match[3] : '';
-  const strNo = match ? match[2] : strValue;
+  const match = strValue.match(/(.*?)(\d+)(.*)/) || [];
+  const prefix = match[1] || '';
+  const suffix = match[3] || '';
+  const strNo = match[2] || strValue;
   const paddedNo =
     strNo.length >= length
       ? strNo

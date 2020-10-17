@@ -30,6 +30,7 @@ Object {
     "intervalDelay": 1000,
     "precision": 0,
     "pure": true,
+    "raf": true,
     "zeroPadTime": 2,
   },
   "seconds": 10,

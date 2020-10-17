@@ -11,6 +11,7 @@ export interface CountdownProps extends CountdownTimeDeltaFormatOptions {
   readonly date: Date | number | string;
   readonly key?: React.Key;
   readonly controlled?: boolean;
+  readonly raf?: boolean;
   readonly intervalDelay?: number;
   readonly precision?: number;
   readonly autoStart?: boolean;
@@ -74,7 +75,7 @@ export default class CountdownJs {
   stateUpdater: StateUpdaterFn;
 
   initialized = false;
-  interval: number | undefined;
+  timer: number | undefined;
   api: CountdownApi | undefined;
 
   initialTimestamp = 0;
@@ -127,8 +128,16 @@ export default class CountdownJs {
 
   tick = (): void => {
     const timeDelta = this.calcTimeDelta();
-    const callback = timeDelta.completed ? undefined : this.props.onTick;
+    const callback = timeDelta.completed && !this.props.overtime ? undefined : this.props.onTick;
     this.setTimeDeltaState(timeDelta, undefined, callback);
+  };
+
+  rafTick = (): void => {
+    this.tick();
+
+    if (this.timer) {
+      this.timer = window.requestAnimationFrame(this.rafTick);
+    }
   };
 
   calcTimeDelta(): CountdownTimeDelta {
@@ -156,12 +165,14 @@ export default class CountdownJs {
       : 0;
 
     const timeDelta = this.calcTimeDelta();
-    this.setTimeDeltaState(timeDelta, CountdownStatus.STARTED, this.props.onStart);
+    this.setTimeDeltaState(timeDelta, CountdownStatus.STARTED, () => {
+      if (this.props.onStart) this.props.onStart(this.state.timeDelta);
 
-    if (!this.props.controlled && (!timeDelta.completed || this.props.overtime)) {
-      this.clearTimer();
-      this.interval = window.setInterval(this.tick, this.props.intervalDelay);
-    }
+      if (!this.props.controlled && (!this.state.timeDelta.completed || this.props.overtime)) {
+        this.clearTimer();
+        this.startTimer();
+      }
+    });
   };
 
   pause = (): void => {
@@ -181,14 +192,29 @@ export default class CountdownJs {
     this.setTimeDeltaState(this.calcTimeDelta(), CountdownStatus.STOPPED, this.props.onStop);
   };
 
+  startTimer(): void {
+    this.timer = this.props.raf
+      ? window.requestAnimationFrame(this.rafTick)
+      : window.setInterval(this.tick, this.props.intervalDelay);
+  }
+
   clearTimer(): void {
-    window.clearInterval(this.interval);
+    if (this.timer) {
+      if (this.props.raf) {
+        window.cancelAnimationFrame(this.timer);
+      } else {
+        window.clearInterval(this.timer);
+      }
+
+      this.timer = undefined;
+    }
   }
 
   computeProps(props: CountdownProps): CountdownProps {
     return {
       ...timeDeltaFormatOptionsDefaults,
       controlled: false,
+      raf: true,
       intervalDelay: 1000,
       precision: 0,
       autoStart: true,
@@ -312,14 +338,10 @@ export default class CountdownJs {
   };
 
   setState = (
-    state: Partial<CountdownState> | ((prevState: CountdownState) => Partial<CountdownState>),
+    state: (prevState: CountdownState) => Partial<CountdownState>,
     callback?: () => void
   ): void => {
-    this.state = {
-      ...this.state,
-      ...(typeof state === 'function' ? state(this.state) : state),
-    };
-
+    this.state = { ...this.state, ...state(this.state) };
     this.stateUpdater(this.state, callback);
   };
 }

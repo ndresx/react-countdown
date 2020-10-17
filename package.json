@@ -40,10 +40,10 @@
     "prettier:fix": "prettier --write ./src/**/*.{ts,tsx}",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:e2e": "yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress run\"",
+    "test:e2e": "yarn build && yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress run\"",
     "test:e2e:clean": "rm -rf ./e2e/dist",
     "test:e2e:dev": "yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress open\"",
-    "test:e2e:server": "yarn build && parcel ./e2e/index.html --out-dir ./e2e/dist",
+    "test:e2e:server": "parcel ./e2e/index.html --out-dir ./e2e/dist",
     "test:watch": "jest --watch"
   },
   "dependencies": {
