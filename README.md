@@ -47,29 +47,7 @@ ReactDOM.render(
 [Live Demo](https://codesandbox.io/s/cool-fermat-uk0dq)
 
 ### Custom & Conditional Rendering
-In case you want to change the output of the component, or want to signal that the countdown's work is done, you can do this by either using the [`onComplete`](#oncomplete) callback, a
-custom [`renderer`](#renderer), or by specifying a React child within `<Countdown></Countdown>`, which will only be shown once the countdown is complete.
-
-#### Using a React Child for the Completed State
-
-```js
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Countdown from 'react-countdown';
-
-// Random component
-const Completionist = () => <span>You are good to go!</span>;
-
-ReactDOM.render(
-  <Countdown date={Date.now() + 5000}>
-    <Completionist />
-  </Countdown>,
-  document.getElementById('root')
-);
-```
-[Live Demo](https://codesandbox.io/s/condescending-bartik-kyp2v)
-
-#### Custom Renderer with Completed Condition
+In case you want to change the output of the component, or want to signal that the countdown's work is done, you can do this by defining an [`onComplete`](#oncomplete) callback and/or custom [`renderer`](#renderer).
 
 ```js
 import React from 'react';
@@ -159,7 +137,6 @@ ReactDOM.render(
 |[**precision**](#precision)|`number`|`0`|The precision on a millisecond basis|
 |[**autoStart**](#autostart)|`boolean`|`true`|Countdown auto-start option|
 |[**overtime**](#overtime) |`boolean`|`false`|Counts down to infinity|
-|[**children**](#children)*|`any`|`null`|A React child for the countdown's completed state|
 |[**renderer**](#renderer)*|`function`|`undefined`|Custom renderer callback|
 |[**now**](#now)|`function`|`Date.now`|Alternative handler for the current date|
 |[**pure**](#pure)|`boolean`|`true`|Respect prop changes|
@@ -215,13 +192,6 @@ Defines whether the countdown can go into overtime by extending its lifetime pas
 
 When set to `true`, the countdown timer won't stop when hitting 0, but instead becomes negative and continues to run unless paused/stopped. The [`onComplete`](#oncomplete) callback would still get triggered when the initial countdown phase completes.
 
-> Please note that the [`children`](#children) prop will be ignored if `overtime` is `true`.
-
-### `children`
-This component also considers the child that may live within the `<Countdown></Countdown>` element, which, in case it's available, replaces the countdown's component state once it's complete. Moreover, an additional prop called `countdown` is set and contains data similar to what the [`renderer`](#renderer) callback would receive. Here's an [example](#using-a-react-child-for-the-completed-state) that showcases its usage.
-
-> Please note that the [`children`](#children) prop will be ignored if a custom [`renderer`](#renderer) is defined.
-
 ### `renderer`
 The component's raw render output is kept very simple.
 
@@ -246,8 +216,6 @@ The render props object consists of the current time delta object, the countdown
 }
 ```
 
-> Please note that a defined custom [`renderer`](#renderer) will ignore the [`children`](#children) prop.
-
 ### `now`
 If the current date and time (determined via a reference to `Date.now`) is not the right thing to compare with for you, a reference to a custom function that returns a similar dynamic value could be provided as an alternative.
 
@@ -255,8 +223,6 @@ If the current date and time (determined via a reference to `Date.now`) is not t
 By default, the countdown component and [`useCountdown`](#hook) Hook act like pure functions with respect to their props. This means that whenever an input prop changes, the countdown will update accordingly and re-render itself based on the new conditions.
 
 However, this behavior is not always desired and sometimes requires more lines of code than needed, which why it can be turned off as well.
-
-> Please note that this doesn't affect the [`children`](#children) and [`renderer`](#renderer) props.
 
 Read more about this _"issue"_ [here](#why-does-my-countdown-reset-on-every-re-render-).
 
@@ -282,7 +248,7 @@ Read more about this _"issue"_ [here](#why-does-my-countdown-reset-on-every-re-r
 
 > **Requires React 16.8.0 or higher**
 
-The library also ships with a built-in Hook called `useCountdown`. It supports the same [props](#props) as its component counterpart, with the exception that the [`children`](#children) and custom [`renderer`](#renderer) props are ignnored due to the flexibility it already comes with.
+The library also ships with a built-in Hook called `useCountdown`. It supports the same [props](#props) as its component counterpart, with the exception that the [`renderer`](#renderer) prop is ignored due to the already provided flexibility.
 
 ```js
 const { total, api } = useCountdown(props);

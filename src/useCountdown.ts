@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import CountdownJs, { CountdownProps, CountdownRenderProps, CountdownState } from './CountdownJs';
 
-export interface UseCountdownProps extends Omit<CountdownProps, 'children' | 'renderer'> {}
+export interface UseCountdownProps extends Omit<CountdownProps, 'renderer'> {}
 
 export interface UseCountdownResult extends CountdownRenderProps {}
 

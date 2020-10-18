@@ -3,7 +3,7 @@ import { mount, ReactWrapper } from 'enzyme';
 
 import Countdown from './Countdown';
 import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './CountdownJs';
-import { calcTimeDelta, formatTimeDelta } from './utils';
+import { calcTimeDelta } from './utils';
 import { mockDateNow, defaultStats } from './fixtures';
 
 const { now, timeDiff } = mockDateNow();
@@ -51,65 +51,6 @@ describe('<Countdown />', () => {
         )}
       />
     );
-    expect(wrapper).toMatchSnapshot();
-  });
-
-  it('should render and unmount component on countdown end', () => {
-    const zeroPadTime = 0;
-
-    class Completionist extends React.PureComponent<{
-      readonly name: string;
-      readonly children: React.ReactNode;
-    }> {
-      render() {
-        const { name, children } = this.props;
-        return (
-          <div>
-            Completed! {name} {children}
-          </div>
-        );
-      }
-    }
-
-    let completionist;
-    Completionist.prototype.componentDidMount = jest.fn();
-
-    wrapper = mount(
-      <Countdown date={Date.now() + timeDiff} zeroPadTime={zeroPadTime}>
-        <Completionist
-          ref={(el) => {
-            completionist = el;
-          }}
-          name="master"
-        >
-          Another child
-        </Completionist>
-      </Countdown>
-    );
-    expect(Completionist.prototype.componentDidMount).not.toBeCalled();
-    expect(wrapper).toMatchSnapshot();
-
-    // Forward in time
-    wrapper.setProps({ date: 0 });
-    expect(wrapper.state().timeDelta.completed).toBe(true);
-    expect(wrapper.props().children!.type).toBe(Completionist);
-    expect(Completionist.prototype.componentDidMount).toBeCalled();
-
-    const computedProps = { ...wrapper.props() };
-    delete computedProps.children;
-
-    const obj = getCountdownJsInstance();
-    const { timeDelta } = wrapper.state();
-    expect(completionist.props).toEqual({
-      countdown: {
-        ...timeDelta,
-        api: obj.getApi(),
-        props: getCountdownJsInstance().getProps(),
-        formatted: formatTimeDelta(timeDelta, { zeroPadTime }),
-      },
-      name: 'master',
-      children: 'Another child',
-    });
     expect(wrapper).toMatchSnapshot();
   });
 

@@ -30,18 +30,16 @@ describe('React <Countdown />', () => {
     });
   });
 
-  describe('Custom & Conditional Rendering', () => {
-    ['children', 'renderer'].forEach((idPrefix) => {
-      it(`should render conditional states for "${idPrefix}"`, () => {
-        cyGetAs(`#${idPrefix}-conditional`);
+  describe('Custom Renderer with Completed Condition', () => {
+    it('should render conditional states for "renderer"', () => {
+      cyGetAs('#renderer');
 
-        for (let i = 5; i > 0; i--) {
-          cyGet().should('have.text', idPrefix === 'children' ? `00:00:00:0${i}` : `0:0:${i}`);
-          if (i > 0) cy.tick(1000);
-        }
+      for (let i = 5; i > 0; i--) {
+        cyGet().should('have.text', `0:0:${i}`);
+        if (i > 0) cy.tick(1000);
+      }
 
-        cyGet().should('have.text', 'You are good to go!');
-      });
+      cyGet().should('have.text', 'You are good to go!');
     });
   });
 

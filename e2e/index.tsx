@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Countdown, { CountdownRenderProps } from '../dist';
+import Countdown, { CountdownRendererFn } from '../dist';
 import { CountdownHookBasicUsage, CountdownHookCompletionist } from './CountdownHook';
 import CountdownApi from './CountdownApi';
 
@@ -9,7 +9,7 @@ import CountdownApi from './CountdownApi';
 const Completionist = () => <span>You are good to go!</span>;
 
 // Renderer callback with completed condition
-const renderer = ({ hours, minutes, seconds, completed }: CountdownRenderProps) => {
+const renderer: CountdownRendererFn = ({ hours, minutes, seconds, completed }) => {
   return completed ? (
     <Completionist />
   ) : (
@@ -39,15 +39,8 @@ class App extends React.PureComponent {
           <hr />
         </section>
         <section>
-          <h2>Custom &amp; Conditional Rendering</h2>
-          <h3>Using a React Child for the Completed State</h3>
-          <div id="children-conditional">
-            <Countdown date={date}>
-              <Completionist />
-            </Countdown>
-          </div>
-          <h3>Custom Renderer with Completed Condition</h3>
-          <div id="renderer-conditional">
+          <h2>Custom Renderer with Completed Condition</h2>
+          <div id="renderer">
             <Countdown date={date} renderer={renderer} />
           </div>
           <hr />

@@ -14,36 +14,6 @@ exports[`<Countdown /> should render a simple countdown 1`] = `
 </Countdown>
 `;
 
-exports[`<Countdown /> should render and unmount component on countdown end 1`] = `
-<Countdown
-  date={1482453477527}
-  zeroPadTime={0}
->
-  1
-  :
-  1
-  :
-  1
-  :
-  50
-</Countdown>
-`;
-
-exports[`<Countdown /> should render and unmount component on countdown end 2`] = `
-<Countdown
-  date={0}
-  zeroPadTime={0}
->
-  1
-  :
-  1
-  :
-  1
-  :
-  50
-</Countdown>
-`;
-
 exports[`<Countdown /> should render custom renderer output 1`] = `
 <Countdown
   date={1482453477527}

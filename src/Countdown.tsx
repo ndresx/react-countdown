@@ -24,7 +24,6 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     precision: PropTypes.number,
     autoStart: PropTypes.bool,
     overtime: PropTypes.bool,
-    children: PropTypes.element,
     renderer: PropTypes.func,
     now: PropTypes.func,
     pure: PropTypes.bool,
@@ -58,18 +57,13 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   render(): React.ReactNode {
-    const { overtime, children, renderer } = this.props;
+    const { renderer } = this.props;
     const renderProps = this.countdown.getRenderProps();
 
-    if (renderer) {
-      return renderer(renderProps);
-    }
-
-    if (children && renderProps.completed && !overtime) {
-      return React.cloneElement(children, { countdown: renderProps });
-    }
+    if (renderer) return renderer(renderProps);
 
     const { days, hours, minutes, seconds } = renderProps.formatted;
+
     return (
       <>
         {renderProps.total < 0 ? '-' : ''}

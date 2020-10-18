@@ -15,7 +15,6 @@ export interface CountdownProps extends CountdownTimeDeltaFormatOptions {
   readonly precision?: number;
   readonly autoStart?: boolean;
   readonly overtime?: boolean;
-  readonly children?: React.ReactElement<unknown>;
   readonly renderer?: CountdownRendererFn;
   readonly now?: () => number;
   readonly pure?: boolean;
