@@ -23,8 +23,8 @@ jobs:
     - stage: 'Lint'
       name: 'ESLint'
       script: yarn lint:eslint
+    - script: yarn lint:prettier
       name: 'Prettier'
-      script: yarn lint:prettier
     - script: yarn lint:tsc
       name: 'TypeScript'
     - stage: 'Tests'
