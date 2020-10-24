@@ -486,8 +486,9 @@ describe('<Countdown />', () => {
   });
 
   it('should not stop the countdown and go into overtime', () => {
+    const onTick = jest.fn();
     wrapper = mount(
-      <Countdown date={countdownDate} overtime={true}>
+      <Countdown date={countdownDate} overtime={true} onTick={onTick}>
         <div>Completed? Overtime!</div>
       </Countdown>
     );
@@ -499,12 +500,14 @@ describe('<Countdown />', () => {
     jest.runTimersToTime(9000);
 
     expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:01"`);
+    expect(onTick).toHaveBeenCalledTimes(9);
 
     // Forward 1s
     now.mockReturnValue(countdownDate);
     jest.runTimersToTime(1000);
 
     expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:00"`);
+    expect(onTick).toHaveBeenCalledTimes(10);
     expect(wrapper.state().timeDelta.total).toBe(0);
     expect(wrapper.state().timeDelta.completed).toBe(true);
     expect(api.isCompleted()).toBe(false);
@@ -514,6 +517,7 @@ describe('<Countdown />', () => {
     jest.runTimersToTime(1000);
 
     expect(wrapper.text()).toMatchInlineSnapshot(`"-00:00:00:01"`);
+    expect(onTick).toHaveBeenCalledTimes(11);
     expect(wrapper.state().timeDelta.total).toBe(-1000);
     expect(wrapper.state().timeDelta.completed).toBe(true);
     expect(api.isCompleted()).toBe(false);
