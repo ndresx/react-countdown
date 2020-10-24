@@ -252,7 +252,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     const keysA = Object.keys(objA);
     return (
       keysA.length === Object.keys(objB).length &&
-      !keysA.some((keyA) => {
+      !keysA.some(keyA => {
         const valueA = objA[keyA];
         const valueB = objB[keyA];
         return (
@@ -286,7 +286,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       if (completedCallback) completedCallback(this.state.timeDelta);
     };
 
-    return this.setState((prevState) => {
+    return this.setState(prevState => {
       let newStatus = status || prevState.status;
 
       if (timeDelta.completed && !this.props.overtime) {
