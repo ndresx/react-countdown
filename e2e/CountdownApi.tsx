@@ -25,16 +25,22 @@ export default class CountdownApiExample extends React.Component<
           {hours}:{minutes}:{seconds}
         </span>
         <div>
-          <button onClick={api.start} disabled={api.isStarted() || completed}>
+          <button type="button" onClick={api.start} disabled={api.isStarted() || completed}>
             Start
           </button>{' '}
-          <button onClick={api.pause} disabled={api.isPaused() || api.isStopped() || completed}>
+          <button
+            type="button"
+            onClick={api.pause}
+            disabled={api.isPaused() || api.isStopped() || completed}
+          >
             Pause
           </button>{' '}
-          <button onClick={api.stop} disabled={api.isStopped()}>
+          <button type="button" onClick={api.stop} disabled={api.isStopped()}>
             Stop
           </button>{' '}
-          <button onClick={this.handleResetClick}>Reset</button>
+          <button type="button" onClick={this.handleResetClick}>
+            Reset
+          </button>
         </div>
       </div>
     );

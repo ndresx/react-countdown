@@ -24,6 +24,7 @@ module.exports = {
     },
   },
   rules: {
+    'consistent-return': OFF,
     'class-methods-use-this': OFF,
     'func-names': OFF,
     'lines-between-class-members': OFF,
@@ -47,6 +48,7 @@ module.exports = {
     'react/destructuring-assignment': OFF,
     'react/no-unused-prop-types': OFF,
     'react/require-default-props': OFF,
+    'react/state-in-constructor': OFF,
     'react/static-property-placement': OFF,
     '@typescript-eslint/explicit-function-return-type': OFF,
     '@typescript-eslint/no-empty-interface': OFF,

@@ -21,8 +21,10 @@ cache:
 jobs:
   include:
     - stage: 'Lint'
-      name: 'ESLint & Prettier'
+      name: 'ESLint'
       script: yarn lint:eslint
+      name: 'Prettier'
+      script: yarn lint:prettier
     - script: yarn lint:tsc
       name: 'TypeScript'
     - stage: 'Tests'

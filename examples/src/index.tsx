@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Countdown, { CountdownRenderProps } from 'react-countdown';
 import ControlledCountdown from './ControlledCountdown';
-import CountdownHook from './CountdownHook';
 import CountdownApi from './CountdownApi';
 
 // Random component
@@ -24,7 +23,7 @@ const renderer = ({ hours, minutes, seconds, completed }: CountdownRenderProps) 
   );
 };
 
-class App extends Component {
+class App extends React.PureComponent {
   render() {
     return (
       <>
@@ -50,9 +49,6 @@ class App extends Component {
         />
         <hr />
         <ControlledCountdown />
-        <hr />
-        <h3>Countdown Hook</h3>
-        <CountdownHook />
         <hr />
         <h3>Custom Renderer with Stringified Props</h3>
         <Countdown
