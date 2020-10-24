@@ -1,75 +1,52 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-import Countdown, { CountdownApi } from 'react-countdown';
+import Countdown, { CountdownRendererFn } from 'react-countdown';
 
-export default class CountdownApiExample extends Component {
-  countdownApi: CountdownApi | null = null;
+interface CountdownApiExampleState {
+  readonly date: number;
+}
+
+export default class CountdownApiExample extends React.Component<
+  unknown,
+  CountdownApiExampleState
+> {
   state = { date: Date.now() + 10000 };
-
-  handleStartClick = (): void => {
-    this.countdownApi && this.countdownApi.start();
-  };
-
-  handlePauseClick = (): void => {
-    this.countdownApi && this.countdownApi.pause();
-  };
 
   handleResetClick = (): void => {
     this.setState({ date: Date.now() + 10000 });
   };
 
-  handleUpdate = (): void => {
-    this.forceUpdate();
-  };
-
-  setRef = (countdown: Countdown | null): void => {
-    if (countdown) {
-      this.countdownApi = countdown.getApi();
-    }
-  };
-
-  isPaused(): boolean {
-    return !!(this.countdownApi && this.countdownApi.isPaused());
-  }
-
-  isCompleted(): boolean {
-    return !!(this.countdownApi && this.countdownApi.isCompleted());
-  }
-
-  render() {
+  renderer: CountdownRendererFn = ({ api, formatted }) => {
+    const { hours, minutes, seconds } = formatted;
+    const completed = api.isCompleted();
     return (
-      <>
-        <h3>Countdown with Start, Pause and Reset Controls</h3>
-        <Countdown
-          key={this.state.date}
-          ref={this.setRef}
-          date={this.state.date}
-          onMount={this.handleUpdate}
-          onStart={this.handleUpdate}
-          onPause={this.handleUpdate}
-          onComplete={this.handleUpdate}
-          autoStart={false}
-        />
+      <div>
+        <span>
+          {hours}:{minutes}:{seconds}
+        </span>
         <div>
-          <button
-            type="button"
-            onClick={this.handleStartClick}
-            disabled={!this.isPaused() || this.isCompleted()}
-          >
+          <button type="button" onClick={api.start} disabled={api.isStarted() || completed}>
             Start
           </button>{' '}
           <button
             type="button"
-            onClick={this.handlePauseClick}
-            disabled={this.isPaused() || this.isCompleted()}
+            onClick={api.pause}
+            disabled={api.isPaused() || api.isStopped() || completed}
           >
             Pause
+          </button>{' '}
+          <button type="button" onClick={api.stop} disabled={api.isStopped()}>
+            Stop
           </button>{' '}
           <button type="button" onClick={this.handleResetClick}>
             Reset
           </button>
         </div>
-      </>
+      </div>
     );
+  };
+
+  render(): React.ReactNode {
+    return <Countdown date={this.state.date} autoStart={false} renderer={this.renderer} />;
   }
 }

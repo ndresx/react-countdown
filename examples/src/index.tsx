@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Countdown, { CountdownRenderProps } from 'react-countdown';
@@ -23,7 +23,7 @@ const renderer = ({ hours, minutes, seconds, completed }: CountdownRenderProps) 
   );
 };
 
-class App extends Component {
+class App extends React.PureComponent {
   render() {
     return (
       <>

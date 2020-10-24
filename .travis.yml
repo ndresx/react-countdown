@@ -21,17 +21,19 @@ cache:
 jobs:
   include:
     - stage: 'Lint'
+      name: 'ESLint'
+      script: yarn lint:eslint
+    - script: yarn lint:prettier
       name: 'Prettier'
-      script: yarn lint:prettier
-    - script: yarn lint:tslint && yarn lint:tsc
+    - script: yarn lint:tsc
       name: 'TypeScript'
     - stage: 'Tests'
       name: 'Unit Tests'
-      script: yarn test && cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose
+      script: yarn test:coverage && cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose
     - name: 'E2E Tests'
       script: yarn build && yarn test:e2e
     - stage: 'Build'
       name: 'Package'
       script: yarn build
-    - script: rm -rf ./node_modules && cd ./examples && yarn && yarn build
+    - script: cd ./examples && yarn && yarn build
       name: 'Examples'

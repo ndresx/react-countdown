@@ -10,9 +10,14 @@ export {
 
 export {
   CountdownProps,
-  CountdownRenderProps,
   CountdownRendererFn,
+  CountdownRenderProps,
   CountdownApi,
-} from './Countdown';
+  CountdownTimeDeltaFn,
+} from './CountdownJs';
+
 import Countdown from './Countdown';
 export default Countdown;
+
+import useCountdown, { UseCountdownProps, UseCountdownResult } from './useCountdown';
+export { useCountdown, UseCountdownProps, UseCountdownResult };

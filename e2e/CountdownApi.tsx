@@ -6,7 +6,10 @@ interface CountdownApiExampleState {
   readonly date: number;
 }
 
-export default class CountdownApiExample extends React.Component<{}, CountdownApiExampleState> {
+export default class CountdownApiExample extends React.Component<
+  unknown,
+  CountdownApiExampleState
+> {
   state = { date: Date.now() + 10000 };
 
   handleResetClick = (): void => {
@@ -22,16 +25,22 @@ export default class CountdownApiExample extends React.Component<{}, CountdownAp
           {hours}:{minutes}:{seconds}
         </span>
         <div>
-          <button onClick={api.start} disabled={api.isStarted() || completed}>
+          <button type="button" onClick={api.start} disabled={api.isStarted() || completed}>
             Start
           </button>{' '}
-          <button onClick={api.pause} disabled={api.isPaused() || api.isStopped() || completed}>
+          <button
+            type="button"
+            onClick={api.pause}
+            disabled={api.isPaused() || api.isStopped() || completed}
+          >
             Pause
           </button>{' '}
-          <button onClick={api.stop} disabled={api.isStopped()}>
+          <button type="button" onClick={api.stop} disabled={api.isStopped()}>
             Stop
           </button>{' '}
-          <button onClick={this.handleResetClick}>Reset</button>
+          <button type="button" onClick={this.handleResetClick}>
+            Reset
+          </button>
         </div>
       </div>
     );
