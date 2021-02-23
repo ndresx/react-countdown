@@ -97,10 +97,15 @@ jobs:
       run: yarn build
       
     - name: "Tests: Unit"
-      run: yarn test && cat ./coverage/lcov.info | node_modules/.bin/coveralls --verbose
+      run: yarn test
       
     - name: "Tests: E2E"
       run: yarn test:e2e
+      
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
       
   examples:
     needs: build
