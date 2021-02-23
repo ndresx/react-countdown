@@ -35,6 +35,11 @@ jobs:
     - name: Build
       run: yarn build
       
+    - uses: actions/upload-artifact@v2
+      with:
+        name: build-output
+        path: dist/
+      
   lint:
     needs: build
     runs-on: ubuntu-latest
@@ -60,8 +65,9 @@ jobs:
     - name: Install
       run: yarn install
           
-    - name: Build
-      run: yarn build
+    - uses: actions/download-artifact@v2
+      with:
+        name: build-output
       
     - name: "Lint: Prettier"
       run: yarn lint:prettier
@@ -93,8 +99,9 @@ jobs:
     - name: Install
       run: yarn install
           
-    - name: Build
-      run: yarn build
+    - uses: actions/download-artifact@v2
+      with:
+        name: build-output
       
     - name: "Tests: Unit"
       run: yarn test
@@ -131,8 +138,9 @@ jobs:
     - name: Install
       run: yarn install
           
-    - name: Build
-      run: yarn build
+    - uses: actions/download-artifact@v2
+      with:
+        name: build-output
       
     - name: Build Examples
       run: rm -rf ./node_modules && cd ./examples && yarn && yarn build
