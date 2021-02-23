@@ -66,6 +66,7 @@ jobs:
       run: yarn lint:tslint && yarn lint:tsc
       
   test:
+    needs: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -100,6 +101,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
       
   examples:
+    needs: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -118,6 +120,9 @@ jobs:
         key: ${{ runner.os }}-yarn-examples-${{ hashFiles('examples/**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
+          
+    - name: Install master
+      run: yarn install
           
     - name: Install
       run: cd examples && yarn
