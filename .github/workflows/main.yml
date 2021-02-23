@@ -41,7 +41,6 @@ jobs:
         path: dist/
       
   lint:
-    needs: build
     runs-on: ubuntu-latest
     
     steps:
@@ -64,11 +63,6 @@ jobs:
           
     - name: Install
       run: yarn install
-          
-    - uses: actions/download-artifact@v2
-      with:
-        name: build-output
-        path: dist/
       
     - name: "Lint: Prettier"
       run: yarn lint:prettier
@@ -79,12 +73,15 @@ jobs:
   test:
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [10.x, 12.x, 14.x, 15.x]
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js 15.x
+    - name: Use Node.js ${{ matrix.node }}
       uses: actions/setup-node@v1
       with:
-        node-version: "15.x"
+        node-version: ${{ matrix.node }}
     - name: Get yarn cache directory path
       id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -103,7 +100,6 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: build-output
-        path: dist/
       
     - name: "Tests: Unit"
       run: yarn test
@@ -143,7 +139,6 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: build-output
-        path: dist/
       
     - name: Build Examples
       run: rm -rf ./node_modules && cd ./examples && yarn && yarn build
