@@ -68,6 +68,7 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: build-output
+        path: dist/
       
     - name: "Lint: Prettier"
       run: yarn lint:prettier
@@ -102,6 +103,7 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: build-output
+        path: dist/
       
     - name: "Tests: Unit"
       run: yarn test
@@ -141,6 +143,7 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: build-output
+        path: dist/
       
     - name: Build Examples
       run: rm -rf ./node_modules && cd ./examples && yarn && yarn build
