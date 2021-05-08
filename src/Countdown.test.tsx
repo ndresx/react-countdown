@@ -39,7 +39,7 @@ describe('<Countdown />', () => {
     wrapper = mount(
       <Countdown
         date={Date.now() + timeDiff}
-        renderer={(props) => (
+        renderer={props => (
           <div>
             {props.days}
             {props.hours}
@@ -73,7 +73,7 @@ describe('<Countdown />', () => {
     wrapper = mount(
       <Countdown date={Date.now() + timeDiff} zeroPadTime={zeroPadTime}>
         <Completionist
-          ref={(el) => {
+          ref={el => {
             completionist = el;
           }}
           name="master"
@@ -120,11 +120,11 @@ describe('<Countdown />', () => {
   });
 
   it('should trigger onTick and onComplete callbacks', () => {
-    const onTick = jest.fn((stats) => {
+    const onTick = jest.fn(stats => {
       expect(stats).toEqual(calcTimeDelta(countdownDate));
     });
 
-    const onComplete = jest.fn((stats) => {
+    const onComplete = jest.fn(stats => {
       expect(stats.total).toEqual(0);
     });
 
