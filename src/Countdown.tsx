@@ -144,12 +144,10 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       return;
     }
 
-    if (!this.shallowCompare(this.props, prevProps)) {
-      if (this.props.date !== prevProps.date) {
-        this.initialTimestamp = this.calcOffsetStartTimestamp();
-        this.offsetStartTimestamp = this.initialTimestamp;
-        this.offsetTime = 0;
-      }
+    if (this.props.date !== prevProps.date) {
+      this.initialTimestamp = this.calcOffsetStartTimestamp();
+      this.offsetStartTimestamp = this.initialTimestamp;
+      this.offsetTime = 0;
 
       this.setTimeDeltaState(this.calcTimeDelta());
     }
@@ -248,21 +246,6 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     return this.state.status === status;
   }
 
-  shallowCompare(objA: object, objB: object): boolean {
-    const keysA = Object.keys(objA);
-    return (
-      keysA.length === Object.keys(objB).length &&
-      !keysA.some(keyA => {
-        const valueA = objA[keyA];
-        const valueB = objB[keyA];
-        return (
-          !objB.hasOwnProperty(keyA) ||
-          !(valueA === valueB || (valueA !== valueA && valueB !== valueB)) // NaN !== NaN
-        );
-      })
-    );
-  }
-
   handleOnComplete = (timeDelta: CountdownTimeDelta): void => {
     if (this.props.onComplete) this.props.onComplete(timeDelta);
   };
@@ -286,7 +269,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       if (completedCallback) completedCallback(this.state.timeDelta);
     };
 
-    return this.setState(prevState => {
+    return this.setState((prevState) => {
       let newStatus = status || prevState.status;
 
       if (timeDelta.completed && !this.props.overtime) {
