@@ -178,7 +178,7 @@ describe('<Countdown />', () => {
     expect(api.isCompleted()).toBe(true);
   });
 
-  it('should only re-set time delta state when props have changed', () => {
+  it('should only reset time delta state when date prop is changing', () => {
     const root = document.createElement('div');
     wrapper = mount(<Countdown date={1000} />, { attachTo: root });
     const obj = wrapper.instance();
@@ -192,22 +192,22 @@ describe('<Countdown />', () => {
     expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(1);
 
     wrapper.setProps(mergeProps({ intervalDelay: 999 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(2);
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(1);
 
     wrapper.setProps(mergeProps({ date: 500 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(2);
-
-    wrapper.setProps(mergeProps({ precision: NaN }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(3);
-
-    wrapper.setProps(mergeProps({ precision: NaN }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(3);
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(1);
 
     wrapper.setProps(mergeProps({ precision: 3 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(4);
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(1);
 
     wrapper.setProps(mergeProps({ date: 750 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(5);
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(2);
+
+    wrapper.setProps(mergeProps({ children: <div /> }));
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(2);
+
+    wrapper.setProps(mergeProps({ date: 1000 }));
+    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(3);
   });
 
   it('should not (try to) set state after component unmount', () => {
