@@ -354,6 +354,12 @@ In order to avoid this from happening, it should be stored in a place that persi
 
 The [`renderer`](#renderer) callback gets called with a [time delta object](#calctimedelta) that also consists of a `formatted` object which holds these formatted values.
 
+### Why do I get this error `"Text content did not match..."`?
+
+This could have something to do with server-side rendering, and that the countdown already runs on the server-side, resulting in a timestamp discrepancy between the client and the server. In this case, it might be worth checking https://reactjs.org/docs/dom-elements.html#suppresshydrationwarning.
+
+Alternatively, you could try to set [`autoStart`](#autostart) to `false` and start it through the [API](#api-reference) once it's available on the client.
+
 ## Contributing
 
 Contributions of any kind are very welcome. Read more in our [contributing guide](https://github.com/ndresx/react-countdown/blob/master/CONTRIBUTING.md) about how to report bugs, create pull requests, and other development-related topics.
