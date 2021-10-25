@@ -350,13 +350,13 @@ A common reason for this is that the [`date`](#date) prop gets passed directly i
 In order to avoid this from happening, it should be stored in a place that persists throughout lifecycle changes, for example, in the component's local `state`.
 
 
-### My values aren't formatted when using the custom [`renderer`](#renderer)?
+### Why aren't my values formatted when using the custom [`renderer`](#renderer)?
 
 The [`renderer`](#renderer) callback gets called with a [time delta object](#calctimedelta) that also consists of a `formatted` object which holds these formatted values.
 
 ### Why do I get this error `"Warning: Text content did not match..."`?
 
-This could have something to do with server-side rendering, and that the countdown already runs on the server-side, resulting in a timestamp discrepancy between the client and the server. In this case, it might be worth checking https://reactjs.org/docs/dom-elements.html#suppresshydrationwarning.
+This could have something to do with server-side rendering and that the countdown already runs on the server-side, resulting in a timestamp discrepancy between the client and the server. In this case, it might be worth checking https://reactjs.org/docs/dom-elements.html#suppresshydrationwarning.
 
 Alternatively, you could try to set [`autoStart`](#autostart) to `false` and start the countdown through the [API](#api-reference) once it's available on the client. Here are some related [issues](https://github.com/ndresx/react-countdown/issues/152) that might help in fixing this problem.
 
