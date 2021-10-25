@@ -358,7 +358,7 @@ The [`renderer`](#renderer) callback gets called with a [time delta object](#cal
 
 This could have something to do with server-side rendering, and that the countdown already runs on the server-side, resulting in a timestamp discrepancy between the client and the server. In this case, it might be worth checking https://reactjs.org/docs/dom-elements.html#suppresshydrationwarning.
 
-Alternatively, you could try to set [`autoStart`](#autostart) to `false` and start it through the [API](#api-reference) once it's available on the client.
+Alternatively, you could try to set [`autoStart`](#autostart) to `false` and start the countdown through the [API](#api-reference) once it's available on the client.
 
 ## Contributing
 
