@@ -330,7 +330,9 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     const renderProps = this.getRenderProps();
 
     if (renderer) {
-      return renderer(renderProps);
+      const CustomRenderer = renderer;
+
+      return <CustomRenderer {...renderProps} />;
     }
 
     if (children && this.state.timeDelta.completed && !overtime) {
