@@ -157,8 +157,8 @@ describe('<Countdown />', () => {
       seconds: 1,
     });
 
-    expect(onComplete.mock.calls.length).toBe(1);
-    expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true });
+    expect(onComplete).toBeCalledTimes(1);
+    expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true }, false);
     expect(wrapper.state().timeDelta.completed).toBe(true);
   });
 

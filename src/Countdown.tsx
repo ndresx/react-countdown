@@ -31,7 +31,7 @@ export interface CountdownProps
   readonly onPause?: CountdownTimeDeltaFn;
   readonly onStop?: CountdownTimeDeltaFn;
   readonly onTick?: CountdownTimeDeltaFn;
-  readonly onComplete?: CountdownTimeDeltaFn | LegacyCountdownProps['onComplete'];
+  readonly onComplete?: (timeDelta: CountdownTimeDelta, completedBeforeInit: boolean) => void | LegacyCountdownProps['onComplete'];
 }
 
 export interface CountdownRenderProps extends CountdownTimeDelta {
@@ -125,7 +125,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
         status: timeDelta.completed ? CountdownStatus.COMPLETED : CountdownStatus.STOPPED,
       };
       if (timeDelta.completed && props.onComplete) {
-        props.onComplete(timeDelta);
+        props.onComplete(timeDelta, true);
       }
     } else {
       this.legacyMode = true;
@@ -250,7 +250,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   handleOnComplete = (timeDelta: CountdownTimeDelta): void => {
-    if (this.props.onComplete) this.props.onComplete(timeDelta);
+    if (this.props.onComplete) this.props.onComplete(timeDelta, false);
   };
 
   setTimeDeltaState(
