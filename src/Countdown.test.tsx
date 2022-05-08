@@ -490,7 +490,8 @@ describe('<Countdown />', () => {
     countdownDate = Date.now() - 10000;
     wrapper = mount(<Countdown date={countdownDate} onComplete={completeHandler} />);
 
-    expect(completeHandler).toHaveBeenCalled();
+    expect(completeHandler).toHaveBeenCalledTimes(1);
+    expect(completeHandler).toBeCalledWith({... defaultStats, completed: true}, true);
   });
 
   it('should not stop the countdown and go into overtime', () => {
