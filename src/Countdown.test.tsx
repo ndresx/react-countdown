@@ -485,6 +485,14 @@ describe('<Countdown />', () => {
     expect(wrapper.state().timeDelta.completed).toBe(true);
   });
 
+  it('should trigger onComplete if date is in the past', () => {
+    const completeHandler = jest.fn();
+    countdownDate = Date.now() - 10000;
+    wrapper = mount(<Countdown date={countdownDate} onComplete={completeHandler} />);
+
+    expect(completeHandler).toHaveBeenCalled();
+  });
+
   it('should not stop the countdown and go into overtime', () => {
     const onTick = jest.fn();
     wrapper = mount(

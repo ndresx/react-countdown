@@ -124,6 +124,9 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
         timeDelta,
         status: timeDelta.completed ? CountdownStatus.COMPLETED : CountdownStatus.STOPPED,
       };
+      if (timeDelta.completed && props.onComplete) {
+        props.onComplete(timeDelta);
+      }
     } else {
       this.legacyMode = true;
     }
