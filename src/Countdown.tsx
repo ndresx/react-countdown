@@ -124,9 +124,6 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
         timeDelta,
         status: timeDelta.completed ? CountdownStatus.COMPLETED : CountdownStatus.STOPPED,
       };
-      if (timeDelta.completed && props.onComplete) {
-        props.onComplete(timeDelta, true);
-      }
     } else {
       this.legacyMode = true;
     }
@@ -197,6 +194,9 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
 
     const timeDelta = this.calcTimeDelta();
     this.setTimeDeltaState(timeDelta, CountdownStatus.STARTED, this.props.onStart);
+    if (timeDelta.completed && this.props.onComplete) {
+      this.props.onComplete(timeDelta, true);
+    }
 
     if (!this.props.controlled && (!timeDelta.completed || this.props.overtime)) {
       this.clearTimer();
