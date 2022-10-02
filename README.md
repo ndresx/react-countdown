@@ -1,4 +1,4 @@
-# React &lt;Countdown /&gt; [![npm][npm]][npm-url] [![Build Status](https://travis-ci.com/ndresx/react-countdown.svg?branch=master)](https://travis-ci.com/ndresx/react-countdown) [![Coverage Status](https://coveralls.io/repos/github/ndresx/react-countdown/badge.svg?branch=master)](https://coveralls.io/github/ndresx/react-countdown?branch=master)
+# React &lt;Countdown /&gt; [![npm][npm]][npm-url] [![CI: Build Status](https://img.shields.io/github/workflow/status/ndresx/react-countdown/CI)](https://github.com/ndresx/react-countdown/actions/workflows/main.yml) [![Coverage Status](https://coveralls.io/repos/github/ndresx/react-countdown/badge.svg?branch=master)](https://coveralls.io/github/ndresx/react-countdown?branch=master)
 A customizable countdown component for React.
 
 * [Getting Started](#getting-started)

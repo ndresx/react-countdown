@@ -2,118 +2,131 @@ name: CI
 
 on:
   push:
-    branches: [ "*" ]
+    branches: [master]
   pull_request:
-    branches: [ "*" ]
+    branches: ["*"]
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 15.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: "15.x"
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
-
-    - uses: actions/cache@v2
-      id: yarn-cache
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
-          
-    - name: Install
-      run: yarn install
-          
-    - name: Build
-      run: yarn build
-      
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 15.x
-      uses: actions/setup-node@v1
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v3
       with:
-        node-version: "15.x"
+        node-version: 16
+
     - name: Get yarn cache directory path
       id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn cache dir)"
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       id: yarn-cache
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
-          
+
     - name: Install
       run: yarn install
-      
+
     - name: "Lint: Prettier"
       run: yarn lint:prettier
     
     - name: "Lint: TypeScript"
       run: yarn lint:tslint && yarn lint:tsc
-      
+
   test:
-    needs: build
+    name: Test
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 15.x
-      uses: actions/setup-node@v1
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v3
       with:
-        node-version: "15.x"
+        node-version: 16
+
     - name: Get yarn cache directory path
       id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn cache dir)"
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       id: yarn-cache
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
-          
+   
     - name: Install
       run: yarn install
-      
+
     - name: "Tests: Unit"
       run: yarn test
-      
+
     - name: "Tests: E2E"
       run: yarn test:e2e
-      
+
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-      
-  examples:
-    needs: build
+
+  build:
+    name: Build
+    needs: [lint, test]
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 15.x
-      uses: actions/setup-node@v1
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v3
       with:
-        node-version: "15.x"
+        node-version: 16
+
     - name: Get yarn cache directory path
       id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn cache dir)"
-      
-    - uses: actions/cache@v2
+
+    - uses: actions/cache@v3
+      id: yarn-cache
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+ 
+    - name: Install
+      run: yarn install
+
+    - name: Build
+      run: yarn build        
+
+  examples:
+    name: Build examples
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+
+    - uses: actions/cache@v3
       id: yarn-cache
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -121,19 +134,19 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       id: yarn-cache-examples
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
         key: ${{ runner.os }}-yarn-examples-${{ hashFiles('examples/**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-examples-
-          
+ 
     - name: Install master
       run: yarn install
-          
+ 
     - name: Install
       run: cd examples && yarn
-      
+
     - name: Build
       run: yarn build
