@@ -16,7 +16,7 @@ export interface CountdownProps
   extends React.Props<Countdown>,
     CountdownTimeDeltaFormatOptions,
     Omit<LegacyCountdownProps, 'onComplete'> {
-  readonly date?: Date | number | string;
+  readonly date: Date | number | string;
   readonly controlled?: boolean;
   readonly intervalDelay?: number;
   readonly precision?: number;
