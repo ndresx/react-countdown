@@ -1,6 +1,6 @@
 {
   "name": "react-countdown",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "A customizable countdown component for React.",
   "main": "./dist/index.js",
   "module": "./dist/index.es.js",
@@ -35,7 +35,8 @@
     "lint:tsc": "tsc --noEmit",
     "prettier-check": "prettier --list-different ./src/**/*.{ts,tsx}",
     "prettier": "prettier --write ./src/**/*.{ts,tsx}",
-    "test": "jest --coverage",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
     "test:e2e": "yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress run\"",
     "test:e2e:clean": "rm -rf ./e2e/dist",
     "test:e2e:dev": "yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress open\"",
