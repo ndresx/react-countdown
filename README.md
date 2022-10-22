@@ -240,7 +240,7 @@ If the current date and time (determined via a reference to `Date.now`) is not t
 `onTick` is a callback and triggered every time a new period is started, based on what the [`intervalDelay`](#intervaldelay)'s value is. It only gets triggered when the countdown's [`controlled`](#controlled) prop is set to `false`, meaning that the countdown has full control over its interval. It receives a [time delta object](#calctimedelta) as the first argument.
 
 ### `onComplete`
-`onComplete` is a callback and triggered whenever the countdown ends. In contrast to [`onTick`](#ontick), the [`onComplete`](#oncomplete) callback also gets triggered in case [`controlled`](#controlled) is set to `true`. It receives a [time delta object](#calctimedelta) as the first argument.
+`onComplete` is a callback and triggered whenever the countdown ends. In contrast to [`onTick`](#ontick), the [`onComplete`](#oncomplete) callback also gets triggered in case [`controlled`](#controlled) is set to `true`. It receives a [time delta object](#calctimedelta) as the first argument and a `boolean` as a second argument, indicating whether the countdown transitioned into the completed state (`false`) or completed on start (`true`).
 
 ## API Reference
 

@@ -157,9 +157,48 @@ describe('<Countdown />', () => {
       seconds: 1,
     });
 
-    expect(onComplete.mock.calls.length).toBe(1);
-    expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true });
+    expect(onComplete).toBeCalledTimes(1);
+    expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true }, false);
     expect(wrapper.state().timeDelta.completed).toBe(true);
+  });
+
+  it('should trigger various callbacks before onComplete is called', () => {
+    const calls: string[] = [];
+
+    const onStart = jest.fn().mockImplementation(() => calls.push('onStart'));
+    const onTick = jest.fn().mockImplementation(() => calls.push('onTick'));
+    const onComplete = jest.fn().mockImplementation(() => calls.push('onComplete'));
+    wrapper = mount(
+      <Countdown date={countdownDate} onStart={onStart} onTick={onTick} onComplete={onComplete} />
+    );
+
+    expect(calls).toEqual(['onStart']);
+
+    for (let i = 1; i <= 10; i += 1) {
+      now.mockReturnValue(countdownDate - countdownMs + i * 1000);
+      jest.runTimersToTime(1000);
+    }
+
+    expect(calls).toEqual(['onStart', ...Array(9).fill('onTick'), 'onComplete']);
+  });
+
+  it('should trigger onComplete callback on start if date is in the past when countdown starts', () => {
+    const calls: string[] = [];
+
+    const onStart = jest.fn().mockImplementation(() => calls.push('onStart'));
+    const onTick = jest.fn().mockImplementation(() => calls.push('onTick'));
+    const onComplete = jest.fn().mockImplementation(() => calls.push('onComplete'));
+
+    countdownDate = Date.now() - 10000;
+    wrapper = mount(
+      <Countdown date={countdownDate} onStart={onStart} onTick={onTick} onComplete={onComplete} />
+    );
+
+    expect(onStart).toHaveBeenCalledTimes(1);
+    expect(onTick).not.toHaveBeenCalled();
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true }, true);
+    expect(calls).toEqual(['onStart', 'onComplete']);
   });
 
   it('should run through the controlled component by updating the date prop', () => {

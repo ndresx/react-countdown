@@ -31,7 +31,10 @@ export interface CountdownProps
   readonly onPause?: CountdownTimeDeltaFn;
   readonly onStop?: CountdownTimeDeltaFn;
   readonly onTick?: CountdownTimeDeltaFn;
-  readonly onComplete?: CountdownTimeDeltaFn | LegacyCountdownProps['onComplete'];
+  readonly onComplete?: (
+    timeDelta: CountdownTimeDelta,
+    completedOnStart: boolean
+  ) => void | LegacyCountdownProps['onComplete'];
 }
 
 export interface CountdownRenderProps extends CountdownTimeDelta {
@@ -246,10 +249,6 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     return this.state.status === status;
   }
 
-  handleOnComplete = (timeDelta: CountdownTimeDelta): void => {
-    if (this.props.onComplete) this.props.onComplete(timeDelta);
-  };
-
   setTimeDeltaState(
     timeDelta: CountdownTimeDelta,
     status?: CountdownStatus,
@@ -257,16 +256,19 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   ): void {
     if (!this.mounted) return;
 
-    let completedCallback: this['handleOnComplete'] | undefined;
+    const completing = timeDelta.completed && !this.state.timeDelta.completed;
+    const completedOnStart = timeDelta.completed && status === CountdownStatus.STARTED;
 
-    if (!this.state.timeDelta.completed && timeDelta.completed) {
-      if (!this.props.overtime) this.clearTimer();
-      completedCallback = this.handleOnComplete;
+    if (completing && !this.props.overtime) {
+      this.clearTimer();
     }
 
     const onDone = () => {
       if (callback) callback(this.state.timeDelta);
-      if (completedCallback) completedCallback(this.state.timeDelta);
+
+      if (this.props.onComplete && (completing || completedOnStart)) {
+        this.props.onComplete(timeDelta, completedOnStart);
+      }
     };
 
     return this.setState(prevState => {
