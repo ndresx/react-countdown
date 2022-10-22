@@ -14,8 +14,8 @@ import {
 
 export interface CountdownProps
   extends React.Props<Countdown>,
-  CountdownTimeDeltaFormatOptions,
-  Omit<LegacyCountdownProps, 'onComplete'> {
+    CountdownTimeDeltaFormatOptions,
+    Omit<LegacyCountdownProps, 'onComplete'> {
   readonly date?: Date | number | string;
   readonly controlled?: boolean;
   readonly intervalDelay?: number;
@@ -31,7 +31,10 @@ export interface CountdownProps
   readonly onPause?: CountdownTimeDeltaFn;
   readonly onStop?: CountdownTimeDeltaFn;
   readonly onTick?: CountdownTimeDeltaFn;
-  readonly onComplete?: (timeDelta: CountdownTimeDelta, completedOnStart: boolean) => void | LegacyCountdownProps['onComplete'];
+  readonly onComplete?: (
+    timeDelta: CountdownTimeDelta,
+    completedOnStart: boolean
+  ) => void | LegacyCountdownProps['onComplete'];
 }
 
 export interface CountdownRenderProps extends CountdownTimeDelta {
@@ -262,7 +265,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
 
     const onDone = () => {
       if (callback) callback(this.state.timeDelta);
-      
+
       if (this.props.onComplete && (completing || completedOnStart)) {
         this.props.onComplete(timeDelta, completedOnStart);
       }

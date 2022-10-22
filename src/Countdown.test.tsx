@@ -56,7 +56,7 @@ describe('<Countdown />', () => {
     const zeroPadTime = 0;
 
     class Completionist extends React.Component<any> {
-      componentDidMount() { }
+      componentDidMount() {}
 
       render() {
         return (
@@ -168,7 +168,9 @@ describe('<Countdown />', () => {
     const onStart = jest.fn().mockImplementation(() => calls.push('onStart'));
     const onTick = jest.fn().mockImplementation(() => calls.push('onTick'));
     const onComplete = jest.fn().mockImplementation(() => calls.push('onComplete'));
-    wrapper = mount(<Countdown date={countdownDate} onStart={onStart} onTick={onTick} onComplete={onComplete} />);
+    wrapper = mount(
+      <Countdown date={countdownDate} onStart={onStart} onTick={onTick} onComplete={onComplete} />
+    );
 
     expect(calls).toEqual(['onStart']);
 
@@ -177,7 +179,7 @@ describe('<Countdown />', () => {
       jest.runTimersToTime(1000);
     }
 
-    expect(calls).toEqual(['onStart', ...(new Array(9).fill('onTick')), 'onComplete']);
+    expect(calls).toEqual(['onStart', ...new Array(9).fill('onTick'), 'onComplete']);
   });
 
   it('should trigger onComplete callback on start if date is in the past when countdown starts', () => {
@@ -188,7 +190,9 @@ describe('<Countdown />', () => {
     const onComplete = jest.fn().mockImplementation(() => calls.push('onComplete'));
 
     countdownDate = Date.now() - 10000;
-    wrapper = mount(<Countdown date={countdownDate} onStart={onStart} onTick={onTick} onComplete={onComplete} />);
+    wrapper = mount(
+      <Countdown date={countdownDate} onStart={onStart} onTick={onTick} onComplete={onComplete} />
+    );
 
     expect(onStart).toHaveBeenCalledTimes(1);
     expect(onTick).not.toHaveBeenCalled();
@@ -635,6 +639,6 @@ describe('<Countdown />', () => {
   afterEach(() => {
     try {
       wrapper.detach();
-    } catch (e) { }
+    } catch (e) {}
   });
 });
