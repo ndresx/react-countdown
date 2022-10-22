@@ -2,7 +2,7 @@ import * as React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 
 import Countdown, { CountdownProps } from './Countdown';
-import { calcTimeDelta, formatTimeDelta } from './utils';
+import { calcTimeDelta, CountdownTimeDelta, formatTimeDelta } from './utils';
 
 import { CountdownProps as LegacyCountdownProps } from './LegacyCountdown';
 
@@ -56,7 +56,7 @@ describe('<Countdown />', () => {
     const zeroPadTime = 0;
 
     class Completionist extends React.Component<any> {
-      componentDidMount() {}
+      componentDidMount() { }
 
       render() {
         return (
@@ -160,6 +160,41 @@ describe('<Countdown />', () => {
     expect(onComplete).toBeCalledTimes(1);
     expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true }, false);
     expect(wrapper.state().timeDelta.completed).toBe(true);
+  });
+
+  it('should trigger various callbacks before onComplete is called', () => {
+    const calls: string[] = [];
+
+    const onStart = jest.fn().mockImplementation(() => calls.push('onStart'));
+    const onTick = jest.fn().mockImplementation(() => calls.push('onTick'));
+    const onComplete = jest.fn().mockImplementation(() => calls.push('onComplete'));
+    wrapper = mount(<Countdown date={countdownDate} onStart={onStart} onTick={onTick} onComplete={onComplete} />);
+
+    expect(calls).toEqual(['onStart']);
+
+    for (let i = 1; i <= 10; i++) {
+      now.mockReturnValue(countdownDate - countdownMs + i * 1000);
+      jest.runTimersToTime(1000);
+    }
+
+    expect(calls).toEqual(['onStart', ...(new Array(9).fill('onTick')), 'onComplete']);
+  });
+
+  it('should trigger onComplete callback on start if date is in the past when countdown starts', () => {
+    const calls: string[] = [];
+
+    const onStart = jest.fn().mockImplementation(() => calls.push('onStart'));
+    const onTick = jest.fn().mockImplementation(() => calls.push('onTick'));
+    const onComplete = jest.fn().mockImplementation(() => calls.push('onComplete'));
+
+    countdownDate = Date.now() - 10000;
+    wrapper = mount(<Countdown date={countdownDate} onStart={onStart} onTick={onTick} onComplete={onComplete} />);
+
+    expect(onStart).toHaveBeenCalledTimes(1);
+    expect(onTick).not.toHaveBeenCalled();
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true }, true);
+    expect(calls).toEqual(['onStart', 'onComplete']);
   });
 
   it('should run through the controlled component by updating the date prop', () => {
@@ -485,15 +520,6 @@ describe('<Countdown />', () => {
     expect(wrapper.state().timeDelta.completed).toBe(true);
   });
 
-  it('should trigger onComplete if date is in the past', () => {
-    const completeHandler = jest.fn();
-    countdownDate = Date.now() - 10000;
-    wrapper = mount(<Countdown date={countdownDate} onComplete={completeHandler} />);
-
-    expect(completeHandler).toHaveBeenCalledTimes(1);
-    expect(completeHandler).toBeCalledWith({... defaultStats, completed: true}, true);
-  });
-
   it('should not stop the countdown and go into overtime', () => {
     const onTick = jest.fn();
     wrapper = mount(
@@ -609,6 +635,6 @@ describe('<Countdown />', () => {
   afterEach(() => {
     try {
       wrapper.detach();
-    } catch (e) {}
+    } catch (e) { }
   });
 });
