@@ -179,7 +179,7 @@ describe('<Countdown />', () => {
       jest.runTimersToTime(1000);
     }
 
-    expect(calls).toEqual(['onStart', ...Array(10).fill('onTick'), 'onComplete']);
+    expect(calls).toEqual(['onStart', ...Array(9).fill('onTick'), 'onComplete']);
   });
 
   it('should trigger onComplete callback on start if date is in the past when countdown starts', () => {
