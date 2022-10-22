@@ -2,7 +2,7 @@ import * as React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 
 import Countdown, { CountdownProps } from './Countdown';
-import { calcTimeDelta, CountdownTimeDelta, formatTimeDelta } from './utils';
+import { calcTimeDelta, formatTimeDelta } from './utils';
 
 import { CountdownProps as LegacyCountdownProps } from './LegacyCountdown';
 
@@ -174,12 +174,12 @@ describe('<Countdown />', () => {
 
     expect(calls).toEqual(['onStart']);
 
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 10; i += 1) {
       now.mockReturnValue(countdownDate - countdownMs + i * 1000);
       jest.runTimersToTime(1000);
     }
 
-    expect(calls).toEqual(['onStart', ...new Array(9).fill('onTick'), 'onComplete']);
+    expect(calls).toEqual(['onStart', ...Array(10).fill('onTick'), 'onComplete']);
   });
 
   it('should trigger onComplete callback on start if date is in the past when countdown starts', () => {
