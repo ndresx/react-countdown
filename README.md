@@ -275,7 +275,7 @@ import Countdown, { zeroPad, calcTimeDelta, formatTimeDelta } from 'react-countd
 ```
 
 ### `zeroPad(value, [length = 2])`
-The `zeroPad` function works similarly to other well-known pad-functions and takes two arguments into account. A `value` which can be a `string` or `number`, as well as a `length` parameter that defaults to `2` as you are most likely only going to use this function if you actually want to pad one of your values. Either returns a `number` if `length` equals `0`, or the zero-padded `string`.
+The `zeroPad` function returns a given `value` with padded zeros depending on the `length`. The `value` can be a `string` or `number`, while the `length` parameter can be a `number`, defaulting to `2`. Returns the zero-padded `string`, e.g., `zeroPad(5)` => `05`.
 
 ```js
 const renderer = ({ hours, minutes, seconds }) => (
