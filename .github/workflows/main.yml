@@ -68,7 +68,7 @@ jobs:
       run: yarn install
 
     - name: "Tests: Unit"
-      run: yarn test
+      run: yarn test:coverage
 
     - name: "Tests: E2E"
       run: yarn test:e2e
