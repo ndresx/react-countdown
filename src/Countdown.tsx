@@ -34,7 +34,7 @@ export interface CountdownProps
   readonly onComplete?: (
     timeDelta: CountdownTimeDelta,
     completedOnStart: boolean
-  ) => void | LegacyCountdownProps['onComplete'];
+  ) => unknown | LegacyCountdownProps['onComplete'];
 }
 
 export interface CountdownRenderProps extends CountdownTimeDelta {
