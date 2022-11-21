@@ -31,10 +31,9 @@ export interface CountdownProps
   readonly onPause?: CountdownTimeDeltaFn;
   readonly onStop?: CountdownTimeDeltaFn;
   readonly onTick?: CountdownTimeDeltaFn;
-  readonly onComplete?: (
-    timeDelta: CountdownTimeDelta,
-    completedOnStart: boolean
-  ) => unknown | LegacyCountdownProps['onComplete'];
+  readonly onComplete?: 
+    | ((timeDelta: CountdownTimeDelta, completedOnStart: boolean) => void)
+    | LegacyCountdownProps['onComplete'];
 }
 
 export interface CountdownRenderProps extends CountdownTimeDelta {
