@@ -8,6 +8,7 @@ export interface CountdownTimeDeltaOptions {
 
 export interface CountdownTimeDelta {
   readonly total: number;
+  readonly years: number;
   readonly days: number;
   readonly hours: number;
   readonly minutes: number;
@@ -17,6 +18,7 @@ export interface CountdownTimeDelta {
 }
 
 export interface CountdownTimeDeltaFormatted {
+  readonly years: string;
   readonly days: string;
   readonly hours: string;
   readonly minutes: string;
@@ -99,6 +101,7 @@ export function calcTimeDelta(
 
   return {
     total,
+    years: Math.floor(seconds / 31536000);
     days: Math.floor(seconds / (3600 * 24)),
     hours: Math.floor((seconds / 3600) % 24),
     minutes: Math.floor((seconds / 60) % 60),

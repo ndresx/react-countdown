@@ -12,6 +12,7 @@ Date.now = now;
 
 const defaultStats = {
   total: 0,
+  years: 0,
   days: 0,
   hours: 0,
   minutes: 0,
@@ -41,6 +42,7 @@ describe('<Countdown />', () => {
         date={Date.now() + timeDiff}
         renderer={props => (
           <div>
+            {props.years}
             {props.days}
             {props.hours}
             {props.minutes}
@@ -328,6 +330,7 @@ describe('<Countdown />', () => {
     expect(spies.onPause).toHaveBeenCalledWith({
       completed: false,
       total: 8000,
+      years: 0,
       days: 0,
       hours: 0,
       minutes: 0,
@@ -360,6 +363,7 @@ describe('<Countdown />', () => {
     expect(spies.onStart).toHaveBeenCalledWith({
       completed: false,
       total: 8000,
+      years: 0,
       days: 0,
       hours: 0,
       minutes: 0,
@@ -392,6 +396,7 @@ describe('<Countdown />', () => {
     expect(wrapper.state().timeDelta).toEqual({
       completed: false,
       total: 6000,
+      years: 0,
       days: 0,
       hours: 0,
       minutes: 0,
@@ -418,6 +423,7 @@ describe('<Countdown />', () => {
     expect(spies.onStop).toHaveBeenCalledWith({
       completed: false,
       total: 10000,
+      years: 0,
       days: 0,
       hours: 0,
       minutes: 0,

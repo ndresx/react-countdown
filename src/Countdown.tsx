@@ -338,10 +338,11 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       return React.cloneElement(children, { countdown: renderProps });
     }
 
-    const { days, hours, minutes, seconds } = renderProps.formatted;
+    const { years, days, hours, minutes, seconds } = renderProps.formatted;
     return (
       <span className={className}>
         {renderProps.total < 0 ? '-' : ''}
+        {years}
         {days}
         {days ? ':' : ''}
         {hours}:{minutes}:{seconds}
