@@ -101,7 +101,7 @@ export function calcTimeDelta(
 
   return {
     total,
-    years: Math.floor(seconds / 31536000);
+    years: Math.floor(seconds / 31536000),
     days: Math.floor(seconds / (3600 * 24)),
     hours: Math.floor((seconds / 3600) % 24),
     minutes: Math.floor((seconds / 60) % 60),
@@ -126,7 +126,7 @@ export function formatTimeDelta(
   timeDelta: CountdownTimeDelta,
   options?: CountdownTimeDeltaFormatOptions
 ): CountdownTimeDeltaFormatted {
-  const { days, hours, minutes, seconds } = timeDelta;
+  const { years, days, hours, minutes, seconds } = timeDelta;
   const { daysInHours, zeroPadTime, zeroPadDays = zeroPadTime } = {
     ...timeDeltaFormatOptionsDefaults,
     ...options,
@@ -137,7 +137,9 @@ export function formatTimeDelta(
     ? zeroPad(hours + days * 24, zeroPadTime)
     : zeroPad(hours, zeroPadTimeLength);
 
+
   return {
+    years: zeroPad(years, zeroPadTimeLength),
     days: daysInHours ? '' : zeroPad(days, zeroPadDays),
     hours: formattedHours,
     minutes: zeroPad(minutes, zeroPadTimeLength),

@@ -343,6 +343,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       <span className={className}>
         {renderProps.total < 0 ? '-' : ''}
         {years}
+        {years ? ':' : ''}
         {days}
         {days ? ':' : ''}
         {hours}:{minutes}:{seconds}

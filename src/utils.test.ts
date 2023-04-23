@@ -75,7 +75,7 @@ describe('utils', () => {
     it('should calculate the time difference with a precision of 0', () => {
       expect(calcTimeDelta(Date.now() + timeDiff)).toEqual({
         total: timeDiff - 456,
-        years: 1,
+        years: 0,
         days: 1,
         hours: 1,
         minutes: 1,
@@ -88,7 +88,7 @@ describe('utils', () => {
     it('should calculate the time difference with a precision of 3', () => {
       expect(calcTimeDelta(Date.now() + timeDiff, { precision: 3 })).toEqual({
         total: timeDiff,
-        years: 1,
+        years: 0,
         days: 1,
         hours: 1,
         minutes: 1,
@@ -102,7 +102,7 @@ describe('utils', () => {
       Date.now = jest.fn(() => new Date('Thu Dec 22 2016 00:36:07').getTime());
       expect(calcTimeDelta('Thu Dec 23 2017 01:38:10:456', { precision: 3 })).toEqual({
         total: 31626123456,
-        years: 0,
+        years: 1,
         days: 366,
         hours: 1,
         minutes: 2,
