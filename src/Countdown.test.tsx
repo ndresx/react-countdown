@@ -12,6 +12,7 @@ Date.now = now;
 
 const defaultStats = {
   total: 0,
+  years: 0,
   days: 0,
   hours: 0,
   minutes: 0,
@@ -41,6 +42,7 @@ describe('<Countdown />', () => {
         date={Date.now() + timeDiff}
         renderer={props => (
           <div>
+            {props.years}
             {props.days}
             {props.hours}
             {props.minutes}
@@ -115,7 +117,7 @@ describe('<Countdown />', () => {
   });
 
   it('should render with zeroPadDays => 3', () => {
-    wrapper = mount(<Countdown date={Date.now() + 10 * 86400 * 1000} zeroPadDays={3} />);
+    wrapper = mount(<Countdown date={Date.now() + 1 + 10 * 86400 * 1000} zeroPadDays={3} />);
     expect(wrapper).toMatchSnapshot();
   });
 
@@ -301,6 +303,7 @@ describe('<Countdown />', () => {
     expect(spies.onMount).toHaveBeenCalledWith({
       completed: false,
       total: 10000,
+      years: 0,
       days: 0,
       hours: 0,
       minutes: 0,
@@ -328,6 +331,7 @@ describe('<Countdown />', () => {
     expect(spies.onPause).toHaveBeenCalledWith({
       completed: false,
       total: 8000,
+      years: 0,
       days: 0,
       hours: 0,
       minutes: 0,
@@ -360,6 +364,7 @@ describe('<Countdown />', () => {
     expect(spies.onStart).toHaveBeenCalledWith({
       completed: false,
       total: 8000,
+      years: 0,
       days: 0,
       hours: 0,
       minutes: 0,
@@ -392,6 +397,7 @@ describe('<Countdown />', () => {
     expect(wrapper.state().timeDelta).toEqual({
       completed: false,
       total: 6000,
+      years: 0,
       days: 0,
       hours: 0,
       minutes: 0,
@@ -418,6 +424,7 @@ describe('<Countdown />', () => {
     expect(spies.onStop).toHaveBeenCalledWith({
       completed: false,
       total: 10000,
+      years: 0,
       days: 0,
       hours: 0,
       minutes: 0,
@@ -538,14 +545,14 @@ describe('<Countdown />', () => {
     now.mockReturnValue(countdownDate - 1000);
     jest.runTimersToTime(9000);
 
-    expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:01"`);
+    expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:00:01"`);
     expect(onTick).toHaveBeenCalledTimes(9);
 
     // Forward 1s
     now.mockReturnValue(countdownDate);
     jest.runTimersToTime(1000);
 
-    expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:00"`);
+    expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:00:00"`);
     expect(onTick).toHaveBeenCalledTimes(10);
     expect(wrapper.state().timeDelta.total).toBe(0);
     expect(wrapper.state().timeDelta.completed).toBe(true);
@@ -555,7 +562,7 @@ describe('<Countdown />', () => {
     now.mockReturnValue(countdownDate + 1000);
     jest.runTimersToTime(1000);
 
-    expect(wrapper.text()).toMatchInlineSnapshot(`"-00:00:00:01"`);
+    expect(wrapper.text()).toMatchInlineSnapshot(`"-00:00:00:00:01"`);
     expect(onTick).toHaveBeenCalledTimes(11);
     expect(wrapper.state().timeDelta.total).toBe(-1000);
     expect(wrapper.state().timeDelta.completed).toBe(true);

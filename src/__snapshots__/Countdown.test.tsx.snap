@@ -11,6 +11,8 @@ exports[`<Countdown /> should render and unmount component on countdown end 1`] 
   zeroPadTime={0}
 >
   <span>
+    0
+    :
     1
     :
     1
@@ -33,6 +35,8 @@ exports[`<Countdown /> should render and unmount component on countdown end 2`] 
   zeroPadTime={0}
 >
   <span>
+    0
+    :
     1
     :
     1
@@ -56,6 +60,7 @@ exports[`<Countdown /> should render custom renderer output 1`] = `
   zeroPadTime={2}
 >
   <div>
+    0
     1
     1
     1
@@ -75,6 +80,8 @@ exports[`<Countdown /> should render with daysInHours => true 1`] = `
   zeroPadTime={2}
 >
   <span>
+    00
+    :
     25
     :
     01
@@ -88,7 +95,7 @@ exports[`<Countdown /> should render with zeroPadDays => 3 1`] = `
 <Countdown
   autoStart={true}
   controlled={false}
-  date={1483227367071}
+  date={1483227367072}
   daysInHours={false}
   intervalDelay={1000}
   precision={0}
@@ -96,6 +103,8 @@ exports[`<Countdown /> should render with zeroPadDays => 3 1`] = `
   zeroPadTime={2}
 >
   <span>
+    00
+    :
     010
     :
     00
@@ -127,6 +136,7 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
             "minutes": 0,
             "seconds": 6,
             "total": 6000,
+            "years": 0,
           },
         ],
         Array [
@@ -138,6 +148,7 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
             "minutes": 0,
             "seconds": 6,
             "total": 6000,
+            "years": 0,
           },
         ],
         Array [
@@ -149,6 +160,7 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
             "minutes": 0,
             "seconds": 6,
             "total": 6000,
+            "years": 0,
           },
         ],
         Array [
@@ -160,6 +172,7 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
             "minutes": 0,
             "seconds": 6,
             "total": 6000,
+            "years": 0,
           },
         ],
         Array [
@@ -171,6 +184,7 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
             "minutes": 0,
             "seconds": 6,
             "total": 6000,
+            "years": 0,
           },
         ],
         Array [
@@ -182,6 +196,7 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
             "minutes": 0,
             "seconds": 6,
             "total": 6000,
+            "years": 0,
           },
         ],
       ],
@@ -217,6 +232,8 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
   zeroPadTime={2}
 >
   <span>
+    00
+    :
     00
     :
     00
