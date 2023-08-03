@@ -12,8 +12,14 @@ import {
   formatTimeDelta,
 } from './utils';
 
+interface Props<T> {
+  children?: React.ReactNode;
+  key?: React.Key;
+  ref?: React.LegacyRef<T>;
+}
+
 export interface CountdownProps
-  extends React.Props<Countdown>,
+  extends Props<Countdown>,
     CountdownTimeDeltaFormatOptions,
     Omit<LegacyCountdownProps, 'onComplete'> {
   readonly date: Date | number | string;
