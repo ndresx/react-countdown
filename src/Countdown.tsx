@@ -13,7 +13,7 @@ import {
 } from './utils';
 
 export interface CountdownProps
-  extends React.Props<Countdown>,
+  extends React.PropsWithoutRef<Countdown>,
     CountdownTimeDeltaFormatOptions,
     Omit<LegacyCountdownProps, 'onComplete'> {
   readonly date: Date | number | string;
