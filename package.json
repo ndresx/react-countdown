@@ -1,5 +1,5 @@
 {
-  "name": "react-countdown",
+  "name": "@nyaxk/react-countdown",
   "version": "2.3.5",
   "description": "A customizable countdown component for React.",
   "main": "./dist/index.js",
@@ -10,14 +10,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ndresx/react-countdown.git"
+    "url": "https://github.com/nyaxk/react-countdown"
   },
   "author": "Martin Veith",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ndresx/react-countdown/issues"
+    "url": "https://github.com/nyaxk/react-countdown/issues"
   },
-  "homepage": "https://github.com/ndresx/react-countdown",
+  "homepage": "https://github.com/nyaxk/react-countdown",
   "keywords": [
     "react",
     "typescript",
