@@ -1,6 +1,6 @@
 {
   "name": "@nyaxk/react-countdown",
-  "version": "2.3.5",
+  "version": "2.3.6",
   "description": "A customizable countdown component for React.",
   "main": "./dist/index.js",
   "module": "./dist/index.es.js",
