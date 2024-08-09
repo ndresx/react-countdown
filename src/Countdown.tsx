@@ -225,7 +225,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   };
 
   addTime(seconds: number): void {
-    this.legacyCountdownRef?.addTime(seconds);
+    this.legacyCountdownRef!.addTime(seconds);
   }
 
   clearTimer(): void {
