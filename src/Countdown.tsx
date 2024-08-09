@@ -115,7 +115,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   offsetTime = 0;
 
   legacyMode = false;
-  legacyCountdownRef = React.createRef<LegacyCountdown>();
+  legacyCountdownRef: LegacyCountdown | null = null;
 
   constructor(props: CountdownProps) {
     super(props);
@@ -185,6 +185,10 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
     return Date.now();
   }
 
+  setLegacyCountdownRef = (ref: LegacyCountdown | null): void => {
+    this.legacyCountdownRef = ref;
+  };
+
   start = (): void => {
     if (this.isStarted()) return;
 
@@ -221,7 +225,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   };
 
   addTime(seconds: number): void {
-    this.legacyCountdownRef.current!.addTime(seconds);
+    this.legacyCountdownRef?.addTime(seconds);
   }
 
   clearTimer(): void {
@@ -318,7 +322,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
       const { count, children, onComplete } = this.props;
       return (
         <LegacyCountdown
-          ref={this.legacyCountdownRef}
+          ref={this.setLegacyCountdownRef}
           count={count}
           onComplete={onComplete as LegacyCountdownProps['onComplete']}
         >
