@@ -13,9 +13,9 @@ import {
 } from './utils';
 
 interface Props<T> {
-  children?: React.ReactNode;
-  key?: React.Key;
-  ref?: React.LegacyRef<T>;
+  children?: React.ReactNode | undefined;
+  key?: React.Key | undefined;
+  ref?: React.LegacyRef<T> | undefined;
 }
 
 export interface CountdownProps
