@@ -1,9 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<Countdown /> should render a simple countdown 1`] = `
-<Countdown
-  date={1482453477527}
->
+<div>
   01
   :
   01
@@ -11,41 +9,32 @@ exports[`<Countdown /> should render a simple countdown 1`] = `
   01
   :
   50
-</Countdown>
+</div>
 `;
 
 exports[`<Countdown /> should render custom renderer output 1`] = `
-<Countdown
-  date={1482453477527}
-  renderer={[Function]}
->
+<div>
   <div>
     1
     1
     1
     50
   </div>
-</Countdown>
+</div>
 `;
 
 exports[`<Countdown /> should render with daysInHours => true 1`] = `
-<Countdown
-  date={1482453477527}
-  daysInHours={true}
->
+<div>
   25
   :
   01
   :
   50
-</Countdown>
+</div>
 `;
 
 exports[`<Countdown /> should render with zeroPadDays => 3 1`] = `
-<Countdown
-  date={1483227367071}
-  zeroPadDays={3}
->
+<div>
   010
   :
   00
@@ -53,112 +42,11 @@ exports[`<Countdown /> should render with zeroPadDays => 3 1`] = `
   00
   :
   00
-</Countdown>
+</div>
 `;
 
 exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
-<Countdown
-  date={1482363377071}
-  onComplete={[MockFunction]}
-  onTick={
-    [MockFunction] {
-      "calls": Array [
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-      ],
-      "results": Array [
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-      ],
-    }
-  }
->
+<div>
   00
   :
   00
@@ -166,5 +54,5 @@ exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
   00
   :
   06
-</Countdown>
+</div>
 `;

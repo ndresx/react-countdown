@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`useCountdown should use countdown 1`] = `
-Object {
-  "api": Object {
+{
+  "api": {
     "isCompleted": [Function],
     "isPaused": [Function],
     "isStarted": [Function],
@@ -13,7 +13,7 @@ Object {
   },
   "completed": false,
   "days": 0,
-  "formatted": Object {
+  "formatted": {
     "days": "00",
     "hours": "00",
     "minutes": "00",
@@ -22,7 +22,7 @@ Object {
   "hours": 0,
   "milliseconds": 0,
   "minutes": 0,
-  "props": Object {
+  "props": {
     "autoStart": true,
     "controlled": false,
     "date": 1482363377071,

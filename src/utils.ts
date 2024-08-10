@@ -136,7 +136,11 @@ export function formatTimeDelta(
   options?: CountdownTimeDeltaFormatOptions
 ): CountdownTimeDeltaFormatted {
   const { days, hours, minutes, seconds } = timeDelta;
-  const { daysInHours, zeroPadTime, zeroPadDays = zeroPadTime } = {
+  const {
+    daysInHours,
+    zeroPadTime = 0,
+    zeroPadDays = zeroPadTime,
+  } = {
     ...timeDeltaFormatOptionsDefaults,
     ...options,
   };

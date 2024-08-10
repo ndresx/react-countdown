@@ -13,6 +13,7 @@ export const CountdownHookBasicUsage: React.FC<CountdownProps> = (props) => {
 
 export const CountdownHookCompletionist: React.FC<CountdownProps> = () => {
   const props = useRef({ date: Date.now() + 5000 });
+  // eslint-disable-next-line react/prop-types
   const { hours, minutes, seconds, api } = useCountdown(props.current);
   return <span>{api.isCompleted() ? 'Completionist!' : `${hours}:${minutes}:${seconds}`}</span>;
 };

@@ -1,4 +1,4 @@
-import { zeroPad, calcTimeDelta } from './utils';
+import { zeroPad, calcTimeDelta, formatTimeDelta } from './utils';
 import { mockDateNow, defaultStats } from './fixtures';
 
 const { timeDiff } = mockDateNow();
@@ -187,6 +187,19 @@ describe('utils', () => {
         seconds: 1,
         milliseconds: 0,
         completed: true,
+      });
+    });
+  });
+
+  describe('formatTimeDelta', () => {
+    it('should return 0-padded time when zeroPadTime is undefined', () => {
+      const date = new Date();
+      date.getTime = jest.fn(() => Date.now() + 10000);
+      expect(formatTimeDelta(calcTimeDelta(date), { zeroPadTime: undefined })).toEqual({
+        days: '0',
+        hours: '0',
+        minutes: '0',
+        seconds: '10',
       });
     });
   });
