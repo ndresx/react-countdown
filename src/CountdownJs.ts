@@ -23,7 +23,7 @@ export interface CountdownProps extends CountdownTimeDeltaFormatOptions {
   readonly onPause?: CountdownTimeDeltaFn;
   readonly onStop?: CountdownTimeDeltaFn;
   readonly onTick?: CountdownTimeDeltaFn;
-  readonly onComplete?: CountdownTimeDeltaFn;
+  readonly onComplete?: (timeDelta: CountdownTimeDelta, completedOnStart: boolean) => void;
 }
 
 export interface CountdownRenderProps extends CountdownTimeDelta {
@@ -227,7 +227,7 @@ export default class CountdownJs {
     const keysA = Object.keys(objA);
     return (
       keysA.length === Object.keys(objB).length &&
-      !keysA.some((keyA) => {
+      !keysA.some(keyA => {
         const valueA = objA[keyA];
         const valueB = objB[keyA];
         return (
@@ -238,10 +238,6 @@ export default class CountdownJs {
     );
   }
 
-  handleOnComplete = (timeDelta: CountdownTimeDelta): void => {
-    if (this.props.onComplete) this.props.onComplete(timeDelta);
-  };
-
   setTimeDeltaState(
     timeDelta: CountdownTimeDelta,
     status?: CountdownStatus,
@@ -249,19 +245,22 @@ export default class CountdownJs {
   ): void {
     if (!this.initialized) return;
 
-    let completedCallback: this['handleOnComplete'] | undefined;
+    const completing = timeDelta.completed && !this.state.timeDelta.completed;
+    const completedOnStart = timeDelta.completed && status === CountdownStatus.STARTED;
 
-    if (!this.state.timeDelta.completed && timeDelta.completed) {
-      if (!this.props.overtime) this.clearTimer();
-      completedCallback = this.handleOnComplete;
+    if (completing && !this.props.overtime) {
+      this.clearTimer();
     }
 
     const onDone = () => {
       if (callback) callback(this.state.timeDelta);
-      if (completedCallback) completedCallback(this.state.timeDelta);
+
+      if (this.props.onComplete && (completing || completedOnStart)) {
+        this.props.onComplete(timeDelta, completedOnStart);
+      }
     };
 
-    this.setState((prevState) => {
+    this.setState(prevState => {
       let newStatus = status || prevState.status;
 
       if (timeDelta.completed && !this.props.overtime) {
