@@ -6,22 +6,21 @@ export interface CountdownTimeDeltaOptions {
   readonly overtime?: boolean;
 }
 
-export interface CountdownTimeDelta {
+export interface CountdownTimeDelta extends CountdownTimeUnits {
   readonly total: number;
-  readonly days: number;
-  readonly hours: number;
-  readonly minutes: number;
-  readonly seconds: number;
-  readonly milliseconds: number;
   readonly completed: boolean;
 }
 
-export interface CountdownTimeDeltaFormatted {
-  readonly days: string;
-  readonly hours: string;
-  readonly minutes: string;
-  readonly seconds: string;
+export interface CountdownTimeUnits<T = number> {
+  readonly days: T;
+  readonly hours: T;
+  readonly minutes: T;
+  readonly seconds: T;
+  readonly milliseconds: T;
 }
+
+export interface CountdownTimeDeltaFormatted
+  extends Omit<CountdownTimeUnits<string>, 'milliseconds'> {}
 
 export interface CountdownTimeDeltaFormatOptions {
   readonly daysInHours?: boolean;
@@ -40,10 +39,10 @@ export interface CountdownTimeDeltaFormatOptions {
 export function zeroPad(value: number | string, length: number = 2): string {
   const strValue = String(value);
   if (length === 0) return strValue;
-  const match = strValue.match(/(.*?)([0-9]+)(.*)/);
-  const prefix = match ? match[1] : '';
-  const suffix = match ? match[3] : '';
-  const strNo = match ? match[2] : strValue;
+  const match = strValue.match(/(.*?)(\d+)(.*)/) || [];
+  const prefix = match[1] || '';
+  const suffix = match[3] || '';
+  const strNo = match[2] || strValue;
   const paddedNo =
     strNo.length >= length
       ? strNo
@@ -55,6 +54,25 @@ export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {
   daysInHours: false,
   zeroPadTime: 2,
 };
+
+/**
+ * Calculates each time unit of a given timestamp.
+ *
+ * @export
+ * @param {number} timestamp Timestamp of a certain point in time.
+ * @returns {CountdownTimeUnits} Object that includes details about each time unit.
+ */
+export function calcTimeUnits(timestamp: number): CountdownTimeUnits {
+  const seconds = timestamp / 1000;
+
+  return {
+    days: Math.floor(seconds / (3600 * 24)),
+    hours: Math.floor((seconds / 3600) % 24),
+    minutes: Math.floor((seconds / 60) % 60),
+    seconds: Math.floor(seconds % 60),
+    milliseconds: Number(((seconds % 1) * 1000).toFixed()),
+  };
+}
 
 /**
  * Calculates the time difference between a given end date and the current date.
@@ -76,10 +94,10 @@ export function calcTimeDelta(
   const { now = Date.now, precision = 0, controlled, offsetTime = 0, overtime } = options;
   let startTimestamp: number;
 
-  if (typeof date === 'string') {
-    startTimestamp = new Date(date).getTime();
-  } else if (date instanceof Date) {
+  if (date instanceof Date) {
     startTimestamp = date.getTime();
+  } else if (typeof date === 'string') {
+    startTimestamp = new Date(date).getTime();
   } else {
     startTimestamp = date;
   }
@@ -95,15 +113,9 @@ export function calcTimeDelta(
       1000
   );
 
-  const seconds = Math.abs(total) / 1000;
-
   return {
+    ...calcTimeUnits(Math.abs(total)),
     total,
-    days: Math.floor(seconds / (3600 * 24)),
-    hours: Math.floor((seconds / 3600) % 24),
-    minutes: Math.floor((seconds / 60) % 60),
-    seconds: Math.floor(seconds % 60),
-    milliseconds: Number(((seconds % 1) * 1000).toFixed()),
     completed: total <= 0,
   };
 }
@@ -124,7 +136,11 @@ export function formatTimeDelta(
   options?: CountdownTimeDeltaFormatOptions
 ): CountdownTimeDeltaFormatted {
   const { days, hours, minutes, seconds } = timeDelta;
-  const { daysInHours, zeroPadTime, zeroPadDays = zeroPadTime } = {
+  const {
+    daysInHours,
+    zeroPadTime = 0,
+    zeroPadDays = zeroPadTime,
+  } = {
     ...timeDeltaFormatOptionsDefaults,
     ...options,
   };

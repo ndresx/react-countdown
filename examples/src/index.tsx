@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 
 import Countdown, { CountdownRenderProps } from 'react-countdown';
 import ControlledCountdown from './ControlledCountdown';
@@ -23,7 +23,7 @@ const renderer = ({ hours, minutes, seconds, completed }: CountdownRenderProps) 
   );
 };
 
-class App extends Component {
+class App extends React.PureComponent {
   render() {
     return (
       <>
@@ -65,4 +65,6 @@ class App extends Component {
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(<App />);

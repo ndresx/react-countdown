@@ -2,16 +2,16 @@ const pkg = require('./package.json');
 const babel = require('rollup-plugin-babel');
 const typescript = require('rollup-plugin-typescript2');
 
-module.exports = {
-  input: './src/index.ts',
+const createConfig = ({ name, ext }) => ({
+  input: `./src/${name}.${ext}`,
   output: [
     {
-      file: pkg.main,
+      file: pkg.main.replace('index', name),
       format: 'cjs',
       exports: 'named',
     },
     {
-      file: pkg.module,
+      file: pkg.module.replace('index', name),
       format: 'es',
       exports: 'named',
     },
@@ -28,4 +28,6 @@ module.exports = {
       extensions: ['.ts', '.tsx'],
     }),
   ],
-};
+});
+
+module.exports = [{ name: 'index', ext: 'ts' }].map(createConfig);

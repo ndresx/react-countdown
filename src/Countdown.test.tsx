@@ -1,45 +1,52 @@
 import * as React from 'react';
-import { mount, ReactWrapper } from 'enzyme';
+import { act, render, RenderResult } from '@testing-library/react';
 
-import Countdown, { CountdownProps } from './Countdown';
-import { calcTimeDelta, formatTimeDelta } from './utils';
+import Countdown from './Countdown';
+import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './CountdownJs';
+import { calcTimeDelta } from './utils';
+import { mockDateNow, defaultStats } from './fixtures';
 
-import { CountdownProps as LegacyCountdownProps } from './LegacyCountdown';
-
-const timeDiff = 90110456;
-const now = jest.fn(() => 1482363367071);
-Date.now = now;
-
-const defaultStats = {
-  total: 0,
-  days: 0,
-  hours: 0,
-  minutes: 0,
-  seconds: 0,
-  milliseconds: 0,
-  completed: false,
-};
+const { now, timeDiff } = mockDateNow();
 
 describe('<Countdown />', () => {
   jest.useFakeTimers();
 
-  let wrapper: ReactWrapper<CountdownProps, any, Countdown>;
+  let countdownRef: React.RefObject<Countdown>;
+  let container: RenderResult['container'];
+  let unmount: RenderResult['unmount'];
+  let rerender: RenderResult['rerender'];
   let countdownDate: number;
   const countdownMs = 10000;
 
+  function getCountdownJsInstance(): CountdownJs {
+    return countdownRef.current!.countdown;
+  }
+
+  function getCountdownApi(): CountdownApi {
+    return countdownRef.current!.getApi();
+  }
+
+  function getCountdownJsState(): CountdownState {
+    return getCountdownJsInstance().getState();
+  }
+
   beforeEach(() => {
     Date.now = now;
-    const date = Date.now() + countdownMs;
-    const root = document.createElement('div');
-    countdownDate = date;
-    wrapper = mount(<Countdown date={date} />, { attachTo: root });
+    countdownDate = Date.now() + countdownMs;
+    countdownRef = React.createRef<Countdown>();
+  });
+
+  it('should render a simple countdown', () => {
+    ({ container } = render(<Countdown ref={countdownRef} date={Date.now() + timeDiff} />));
+    expect(container).toMatchSnapshot();
   });
 
   it('should render custom renderer output', () => {
-    wrapper = mount(
+    ({ container } = render(
       <Countdown
+        ref={countdownRef}
         date={Date.now() + timeDiff}
-        renderer={props => (
+        renderer={(props) => (
           <div>
             {props.days}
             {props.hours}
@@ -48,118 +55,75 @@ describe('<Countdown />', () => {
           </div>
         )}
       />
-    );
-    expect(wrapper).toMatchSnapshot();
-  });
-
-  it('should render and unmount component on countdown end', () => {
-    const zeroPadTime = 0;
-
-    class Completionist extends React.Component<any> {
-      componentDidMount() {}
-
-      render() {
-        return (
-          <div>
-            Completed! {this.props.name} {this.props.children}
-          </div>
-        );
-      }
-    }
-
-    let completionist;
-    Completionist.prototype.componentDidMount = jest.fn();
-
-    wrapper = mount(
-      <Countdown date={Date.now() + timeDiff} zeroPadTime={zeroPadTime}>
-        <Completionist
-          ref={el => {
-            completionist = el;
-          }}
-          name="master"
-        >
-          Another child
-        </Completionist>
-      </Countdown>
-    );
-    expect(Completionist.prototype.componentDidMount).not.toBeCalled();
-    expect(wrapper).toMatchSnapshot();
-
-    // Forward in time
-    wrapper.setProps({ date: 0 });
-    expect(wrapper.state().timeDelta.completed).toBe(true);
-    expect(wrapper.props().children!.type).toBe(Completionist);
-    expect(Completionist.prototype.componentDidMount).toBeCalled();
-
-    const computedProps = { ...wrapper.props() };
-    delete computedProps.children;
-
-    const obj = wrapper.instance();
-    const { timeDelta } = wrapper.state();
-    expect(completionist.props).toEqual({
-      countdown: {
-        ...timeDelta,
-        api: obj.getApi(),
-        props: wrapper.props(),
-        formatted: formatTimeDelta(timeDelta, { zeroPadTime }),
-      },
-      name: 'master',
-      children: 'Another child',
-    });
-    expect(wrapper).toMatchSnapshot();
+    ));
+    expect(container).toMatchSnapshot();
   });
 
   it('should render with daysInHours => true', () => {
-    wrapper = mount(<Countdown date={Date.now() + timeDiff} daysInHours />);
-    expect(wrapper).toMatchSnapshot();
+    ({ container } = render(
+      <Countdown ref={countdownRef} date={Date.now() + timeDiff} daysInHours />
+    ));
+    expect(container).toMatchSnapshot();
   });
 
   it('should render with zeroPadDays => 3', () => {
-    wrapper = mount(<Countdown date={Date.now() + 10 * 86400 * 1000} zeroPadDays={3} />);
-    expect(wrapper).toMatchSnapshot();
+    ({ container } = render(
+      <Countdown ref={countdownRef} date={Date.now() + 10 * 86400 * 1000} zeroPadDays={3} />
+    ));
+    expect(container).toMatchSnapshot();
   });
 
   it('should trigger onTick and onComplete callbacks', () => {
-    const onTick = jest.fn(stats => {
+    const onTick = jest.fn((stats) => {
       expect(stats).toEqual(calcTimeDelta(countdownDate));
     });
 
-    const onComplete = jest.fn(stats => {
+    const onComplete = jest.fn((stats) => {
       expect(stats.total).toEqual(0);
     });
 
-    wrapper.setProps({ onTick, onComplete });
-    expect(onTick).not.toBeCalled();
+    act(() => {
+      ({ container } = render(
+        <Countdown
+          ref={countdownRef}
+          date={countdownDate}
+          onTick={onTick}
+          onComplete={onComplete}
+        />
+      ));
+    });
+
+    expect(onTick).not.toHaveBeenCalled();
 
     // Forward 6s in time
     now.mockReturnValue(countdownDate - 6000);
-    jest.runTimersToTime(6000);
+    act(() => jest.advanceTimersByTime(6000));
     expect(onTick.mock.calls.length).toBe(6);
-    expect(wrapper.state().timeDelta.total).toBe(6000);
+    expect(getCountdownJsState().timeDelta.total).toBe(6000);
 
-    wrapper.update();
-    expect(wrapper).toMatchSnapshot();
+    act(() => getCountdownJsInstance().update({ date: countdownDate }));
+    expect(container).toMatchSnapshot();
 
     // Forward 3 more seconds
     now.mockReturnValue(countdownDate - 1000);
-    jest.runTimersToTime(3000);
+    act(() => jest.advanceTimersByTime(3000));
     expect(onTick.mock.calls.length).toBe(9);
-    expect(wrapper.state().timeDelta.total).toBe(1000);
-    expect(wrapper.state().timeDelta.completed).toBe(false);
+    expect(getCountdownJsState().timeDelta.total).toBe(1000);
+    expect(getCountdownJsState().timeDelta.completed).toBe(false);
 
     // The End: onComplete callback gets triggered instead of the onTick callback
     now.mockReturnValue(countdownDate);
-    jest.runTimersToTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
     expect(onTick.mock.calls.length).toBe(9);
-    expect(onTick).toBeCalledWith({
+    expect(onTick).toHaveBeenCalledWith({
       ...defaultStats,
       total: 1000,
       seconds: 1,
     });
 
-    expect(onComplete).toBeCalledTimes(1);
-    expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true }, false);
-    expect(wrapper.state().timeDelta.completed).toBe(true);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledWith({ ...defaultStats, completed: true }, false);
+    expect(getCountdownJsState().timeDelta.completed).toBe(true);
   });
 
   it('should trigger various callbacks before onComplete is called', () => {
@@ -168,15 +132,24 @@ describe('<Countdown />', () => {
     const onStart = jest.fn().mockImplementation(() => calls.push('onStart'));
     const onTick = jest.fn().mockImplementation(() => calls.push('onTick'));
     const onComplete = jest.fn().mockImplementation(() => calls.push('onComplete'));
-    wrapper = mount(
-      <Countdown date={countdownDate} onStart={onStart} onTick={onTick} onComplete={onComplete} />
-    );
+
+    act(() => {
+      ({ container } = render(
+        <Countdown
+          ref={countdownRef}
+          date={countdownDate}
+          onStart={onStart}
+          onTick={onTick}
+          onComplete={onComplete}
+        />
+      ));
+    });
 
     expect(calls).toEqual(['onStart']);
 
     for (let i = 1; i <= 10; i += 1) {
       now.mockReturnValue(countdownDate - countdownMs + i * 1000);
-      jest.runTimersToTime(1000);
+      act(() => jest.advanceTimersByTime(1000));
     }
 
     expect(calls).toEqual(['onStart', ...Array(9).fill('onTick'), 'onComplete']);
@@ -190,105 +163,127 @@ describe('<Countdown />', () => {
     const onComplete = jest.fn().mockImplementation(() => calls.push('onComplete'));
 
     countdownDate = Date.now() - 10000;
-    wrapper = mount(
-      <Countdown date={countdownDate} onStart={onStart} onTick={onTick} onComplete={onComplete} />
-    );
+
+    act(() => {
+      ({ container } = render(
+        <Countdown
+          ref={countdownRef}
+          date={countdownDate}
+          onStart={onStart}
+          onTick={onTick}
+          onComplete={onComplete}
+        />
+      ));
+    });
 
     expect(onStart).toHaveBeenCalledTimes(1);
     expect(onTick).not.toHaveBeenCalled();
     expect(onComplete).toHaveBeenCalledTimes(1);
-    expect(onComplete).toBeCalledWith({ ...defaultStats, completed: true }, true);
+    expect(onComplete).toHaveBeenCalledWith({ ...defaultStats, completed: true }, true);
     expect(calls).toEqual(['onStart', 'onComplete']);
   });
 
   it('should run through the controlled component by updating the date prop', () => {
-    const root = document.createElement('div');
-    wrapper = mount(<Countdown date={1000} controlled />, { attachTo: root });
-    const obj = wrapper.instance();
-    const api = obj.getApi();
+    ({ container, rerender } = render(<Countdown ref={countdownRef} date={1000} controlled />));
 
-    expect(obj.interval).toBeUndefined();
-    expect(wrapper.state().timeDelta.completed).toBe(false);
+    const api = getCountdownApi();
+    const countdownJsObj = getCountdownJsInstance();
+
+    expect(countdownJsObj.timerId).toBeUndefined();
+    expect(getCountdownJsState().timeDelta.completed).toBe(false);
     expect(api.isCompleted()).toBe(false);
 
-    wrapper.setProps({ date: 0 });
-    expect(wrapper.state().timeDelta.total).toBe(0);
-    expect(wrapper.state().timeDelta.completed).toBe(true);
+    rerender(<Countdown ref={countdownRef} date={0} controlled />);
+    expect(getCountdownJsState().timeDelta.total).toBe(0);
+    expect(getCountdownJsState().timeDelta.completed).toBe(true);
     expect(api.isCompleted()).toBe(true);
   });
 
-  it('should only reset time delta state when date prop is changing', () => {
-    const root = document.createElement('div');
-    wrapper = mount(<Countdown date={1000} />, { attachTo: root });
-    const obj = wrapper.instance();
-    obj.setTimeDeltaState = jest.fn();
+  it('should only re-set time delta state when props have changed', () => {
+    ({ container, rerender } = render(<Countdown ref={countdownRef} date={1000} />));
+
+    const countdownJsObj = getCountdownJsInstance();
+    countdownJsObj.setTimeDeltaState = jest.fn();
 
     function mergeProps(partialProps: Partial<CountdownProps>): CountdownProps {
-      return { ...wrapper.props(), ...partialProps };
+      return { ...countdownJsObj.getProps(), ...partialProps };
     }
 
-    wrapper.setProps(mergeProps({ date: 500 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(1);
+    rerender(<Countdown ref={countdownRef} {...mergeProps({ date: 500 })} />);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(1);
 
-    wrapper.setProps(mergeProps({ intervalDelay: 999 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(1);
+    rerender(<Countdown ref={countdownRef} {...mergeProps({ intervalDelay: 999 })} />);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(2);
 
-    wrapper.setProps(mergeProps({ date: 500 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(1);
+    rerender(<Countdown ref={countdownRef} {...mergeProps({ date: 500 })} />);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(2);
 
-    wrapper.setProps(mergeProps({ precision: 3 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(1);
+    rerender(<Countdown ref={countdownRef} {...mergeProps({ precision: NaN })} />);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(3);
 
-    wrapper.setProps(mergeProps({ date: 750 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(2);
+    rerender(<Countdown ref={countdownRef} {...mergeProps({ precision: NaN })} />);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(3);
 
-    wrapper.setProps(mergeProps({ children: <div /> }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(2);
+    rerender(<Countdown ref={countdownRef} {...mergeProps({ precision: 3 })} />);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(4);
 
-    wrapper.setProps(mergeProps({ date: 1000 }));
-    expect(obj.setTimeDeltaState).toHaveBeenCalledTimes(3);
+    rerender(<Countdown ref={countdownRef} {...mergeProps({ date: 750 })} />);
+    expect(countdownJsObj.setTimeDeltaState).toHaveBeenCalledTimes(5);
   });
 
   it('should not (try to) set state after component unmount', () => {
-    expect(wrapper.state().timeDelta.completed).toBe(false);
+    ({ container, unmount } = render(<Countdown ref={countdownRef} date={countdownDate} />));
+
+    const countdownJsObj = getCountdownJsInstance();
+    expect(getCountdownJsState().timeDelta.completed).toBe(false);
 
     now.mockReturnValue(countdownDate - 6000);
-    jest.runTimersToTime(6000);
-    expect(wrapper.state().timeDelta.total).toBe(6000);
+    act(() => jest.advanceTimersByTime(6000));
+    expect(countdownJsObj.initialized).toBe(true);
+    expect(getCountdownJsState().timeDelta.total).toBe(6000);
 
-    wrapper.instance().mounted = false;
+    unmount();
+
     now.mockReturnValue(countdownDate - 3000);
-    jest.runTimersToTime(3000);
-    expect(wrapper.state().timeDelta.total).toBe(6000);
+    act(() => jest.advanceTimersByTime(3000));
+    expect(countdownJsObj.initialized).toBe(false);
+    expect(countdownJsObj.getState().timeDelta.total).toBe(6000);
+
+    countdownJsObj.setTimeDeltaState(defaultStats);
+    expect(countdownJsObj.getState().timeDelta).not.toEqual(defaultStats);
   });
 
-  it('should set countdown status to STOPPED if a prop-update occurs that updates a completed countdown', () => {
-    wrapper = mount(<Countdown date={countdownDate} />);
-    const obj = wrapper.instance();
-    const api = obj.getApi();
+  it('should set countdown status to stopped if a prop-update occurs that updates a completed countdown', () => {
+    ({ container, rerender } = render(<Countdown ref={countdownRef} date={countdownDate} />));
+
+    const api = getCountdownApi();
 
     expect(api.isStarted()).toBe(true);
 
-    wrapper.setProps({ date: countdownDate + 1000 });
+    rerender(<Countdown ref={countdownRef} date={countdownDate + 1000} />);
     expect(api.isStarted()).toBe(true);
 
-    wrapper.setProps({ date: 0 });
+    rerender(<Countdown ref={countdownRef} date={0} />);
     expect(api.isCompleted()).toBe(true);
 
-    wrapper.setProps({ date: countdownDate + 1000 });
+    rerender(<Countdown ref={countdownRef} date={countdownDate + 1000} />);
     expect(api.isStopped()).toBe(true);
   });
 
-  it('should pause => start => pause => stop and restart countdown', () => {
+  it(`should pause => start => pause => stop and restart countdown`, () => {
     const spies = {
       onMount: jest.fn(),
       onStart: jest.fn(),
       onPause: jest.fn(),
       onStop: jest.fn(),
     };
-    wrapper = mount(<Countdown date={countdownDate} {...spies} />);
-    const obj = wrapper.instance();
-    const api = obj.getApi();
+
+    ({ container, unmount } = render(
+      <Countdown ref={countdownRef} date={countdownDate} {...spies} />
+    ));
+
+    const obj = getCountdownJsInstance();
+    const api = getCountdownApi();
 
     expect(obj.offsetStartTimestamp).toBe(0);
     expect(obj.offsetTime).toBe(0);
@@ -314,10 +309,10 @@ describe('<Countdown />', () => {
     let runMs = 2000;
     const nowBeforePause = countdownDate - (countdownMs - runMs);
     now.mockReturnValue(nowBeforePause);
-    jest.runTimersToTime(runMs);
-    expect(wrapper.state().timeDelta.total).toBe(countdownMs - runMs);
+    act(() => jest.advanceTimersByTime(runMs));
+    expect(getCountdownJsState().timeDelta.total).toBe(countdownMs - runMs);
 
-    api.pause();
+    act(() => api.pause());
     expect(api.isStarted()).toBe(false);
     expect(api.isPaused()).toBe(true);
     expect(api.isStopped()).toBe(false);
@@ -337,20 +332,21 @@ describe('<Countdown />', () => {
     expect(spies.onStop).toHaveBeenCalledTimes(0);
 
     // Calling pause() a 2nd time while paused should return early
-    api.pause();
+    act(() => api.pause());
     expect(api.isPaused()).toBe(true);
     expect(spies.onPause).toHaveBeenCalledTimes(1);
+    expect(spies.onPause).toHaveBeenCalledWith(getCountdownJsInstance().calcTimeDelta());
 
     runMs += 2000;
     const pausedMs = 2000;
     now.mockReturnValue(countdownDate - (countdownMs - runMs));
-    jest.runTimersToTime(runMs);
+    act(() => jest.advanceTimersByTime(runMs));
     expect(countdownMs - runMs + pausedMs).toBe(8000);
-    expect(wrapper.state().timeDelta.total).toBe(8000);
+    expect(getCountdownJsState().timeDelta.total).toBe(8000);
     expect(obj.offsetStartTimestamp).toBe(nowBeforePause);
     expect(obj.offsetTime).toBe(0);
 
-    api.start();
+    act(() => api.start());
     expect(api.isStarted()).toBe(true);
     expect(api.isPaused()).toBe(false);
     expect(api.isStopped()).toBe(false);
@@ -369,27 +365,27 @@ describe('<Countdown />', () => {
     expect(spies.onPause).toHaveBeenCalledTimes(1);
     expect(spies.onStop).toHaveBeenCalledTimes(0);
 
-    expect(wrapper.state().timeDelta.total).toBe(8000);
+    expect(getCountdownJsState().timeDelta.total).toBe(8000);
     expect(obj.offsetStartTimestamp).toBe(0);
     expect(obj.offsetTime).toBe(pausedMs);
 
     runMs += 1000;
     now.mockReturnValue(countdownDate - (countdownMs - runMs));
-    jest.runTimersToTime(runMs);
+    act(() => jest.advanceTimersByTime(runMs));
     expect(countdownMs - runMs + pausedMs).toBe(7000);
-    expect(wrapper.state().timeDelta.total).toBe(7000);
+    expect(getCountdownJsState().timeDelta.total).toBe(7000);
     expect(obj.offsetStartTimestamp).toBe(0);
     expect(obj.offsetTime).toBe(pausedMs);
 
     runMs += 1000;
     now.mockReturnValue(countdownDate - (countdownMs - runMs));
-    jest.runTimersToTime(runMs);
+    act(() => jest.advanceTimersByTime(runMs));
 
-    api.pause();
+    act(() => api.pause());
     expect(obj.offsetStartTimestamp).toBe(now());
     expect(obj.offsetTime).toBe(2000);
 
-    expect(wrapper.state().timeDelta).toEqual({
+    expect(getCountdownJsState().timeDelta).toEqual({
       completed: false,
       total: 6000,
       days: 0,
@@ -401,9 +397,9 @@ describe('<Countdown />', () => {
 
     runMs += 1000;
     now.mockReturnValue(countdownDate - (countdownMs - runMs));
-    jest.runTimersToTime(runMs);
+    act(() => jest.advanceTimersByTime(runMs));
 
-    api.stop();
+    act(() => api.stop());
     expect(obj.offsetStartTimestamp).toBe(now());
     expect(obj.offsetTime).toBe(runMs);
 
@@ -426,17 +422,18 @@ describe('<Countdown />', () => {
     });
 
     // Calling stop() a 2nd time while stopped should return early
-    api.stop();
+    act(() => api.stop());
     expect(api.isStopped()).toBe(true);
     expect(spies.onStop).toHaveBeenCalledTimes(1);
 
-    api.start();
+    act(() => api.start());
 
     runMs += 10000;
     now.mockReturnValue(countdownDate + runMs + pausedMs);
-    jest.runTimersToTime(countdownMs + pausedMs);
-    expect(wrapper.state().timeDelta.total).toBe(0);
-    expect(wrapper.state().timeDelta.completed).toBe(true);
+    act(() => jest.advanceTimersByTime(countdownMs + pausedMs));
+
+    expect(getCountdownJsState().timeDelta.total).toBe(0);
+    expect(getCountdownJsState().timeDelta.completed).toBe(true);
     expect(api.isCompleted()).toBe(true);
     expect(obj.offsetStartTimestamp).toBe(0);
     expect(obj.offsetTime).toBe(7000);
@@ -447,198 +444,169 @@ describe('<Countdown />', () => {
     expect(spies.onStop).toHaveBeenCalledTimes(1);
   });
 
+  it('should update component when pure', () => {
+    ({ container, rerender } = render(<Countdown ref={countdownRef} pure date={countdownDate} />));
+
+    const countdownJsObj = getCountdownJsInstance();
+    expect(countdownJsObj.getProps().date).toBe(countdownDate);
+
+    rerender(<Countdown ref={countdownRef} pure date={0} />);
+    expect(countdownJsObj.getProps().date).toBe(0);
+  });
+
+  it('should not update component when impure', () => {
+    ({ container, rerender } = render(
+      <Countdown ref={countdownRef} pure={false} date={countdownDate} />
+    ));
+
+    const countdownJsObj = getCountdownJsInstance();
+    expect(countdownJsObj.getProps().date).toBe(countdownDate);
+
+    rerender(<Countdown ref={countdownRef} pure={false} date={0} />);
+    expect(countdownJsObj.getProps().date).not.toBe(0);
+  });
+
+  it('should auto start countdown', () => {
+    const spies = {
+      onStart: jest.fn(),
+      onPause: jest.fn(),
+    };
+
+    ({ container } = render(
+      <Countdown ref={countdownRef} date={countdownDate} autoStart={true} {...spies} />
+    ));
+
+    const obj = getCountdownJsInstance();
+    const api = getCountdownApi();
+
+    expect(spies.onStart).toHaveBeenCalledTimes(1);
+    expect(spies.onPause).toHaveBeenCalledTimes(0);
+    expect(api.isPaused()).toBe(false);
+    expect(obj.offsetStartTimestamp).toBe(0);
+    expect(obj.offsetTime).toBe(0);
+
+    act(() => api.pause());
+    expect(spies.onStart).toHaveBeenCalledTimes(1);
+    expect(spies.onPause).toHaveBeenCalledTimes(1);
+    expect(api.isPaused()).toBe(true);
+    expect(obj.offsetStartTimestamp).toBe(countdownDate - countdownMs);
+    expect(obj.offsetTime).toBe(0);
+  });
+
   it('should not auto start countdown', () => {
     const spies = {
       onStart: jest.fn(),
     };
-    wrapper = mount(<Countdown date={countdownDate} autoStart={false} {...spies} />);
-    const obj = wrapper.instance();
-    const api = obj.getApi();
+
+    ({ container } = render(
+      <Countdown ref={countdownRef} date={countdownDate} autoStart={false} {...spies} />
+    ));
+
+    const obj = getCountdownJsInstance();
+    const api = getCountdownApi();
 
     expect(spies.onStart).toHaveBeenCalledTimes(0);
     expect(api.isStarted()).toBe(false);
     expect(api.isPaused()).toBe(false);
     expect(api.isStopped()).toBe(true);
     expect(api.isCompleted()).toBe(false);
-    expect(obj).toEqual(
-      expect.objectContaining({
-        offsetStartTimestamp: countdownDate - countdownMs,
-        offsetTime: 0,
-      })
-    );
+    expect(obj.offsetStartTimestamp).toBe(countdownDate - countdownMs);
+    expect(obj.offsetTime).toBe(0);
 
-    api.start();
+    act(() => api.start());
     expect(spies.onStart).toHaveBeenCalledTimes(1);
     expect(api.isStarted()).toBe(true);
     expect(api.isPaused()).toBe(false);
     expect(api.isStopped()).toBe(false);
     expect(api.isCompleted()).toBe(false);
-    expect(obj).toEqual(
-      expect.objectContaining({
-        offsetStartTimestamp: 0,
-        offsetTime: 0,
-      })
-    );
+    expect(obj.offsetStartTimestamp).toBe(0);
+    expect(obj.offsetTime).toBe(0);
 
     // Calling start() a 2nd time while started should return early
-    api.start();
+    act(() => api.start());
     expect(spies.onStart).toHaveBeenCalledTimes(1);
   });
 
   it('should continuously call the renderer if date is in the future', () => {
     const renderer = jest.fn(() => <div />);
-    wrapper = mount(<Countdown date={countdownDate} renderer={renderer} />);
+
+    ({ container } = render(
+      <Countdown ref={countdownRef} date={countdownDate} renderer={renderer} />
+    ));
+
     expect(renderer).toHaveBeenCalledTimes(2);
 
     // Forward 1s
     now.mockReturnValue(countdownDate - 9000);
-    jest.runTimersToTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
     expect(renderer).toHaveBeenCalledTimes(3);
 
     // Forward 2s
     now.mockReturnValue(countdownDate - 8000);
-    jest.runTimersToTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
     expect(renderer).toHaveBeenCalledTimes(4);
 
-    expect(wrapper.state().timeDelta.total).toBe(8000);
-    expect(wrapper.state().timeDelta.completed).toBe(false);
+    expect(getCountdownJsState().timeDelta.total).toBe(8000);
+    expect(getCountdownJsState().timeDelta.completed).toBe(false);
   });
 
   it('should stop immediately if date is in the past', () => {
     const renderer = jest.fn(() => <div />);
     countdownDate = Date.now() - 10000;
-    wrapper = mount(<Countdown date={countdownDate} renderer={renderer} />);
+
+    ({ container } = render(
+      <Countdown ref={countdownRef} date={countdownDate} renderer={renderer} />
+    ));
+
     expect(renderer).toHaveBeenCalledTimes(2);
 
     // Forward 1s
     now.mockReturnValue(countdownDate - 9000);
-    jest.runTimersToTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
     expect(renderer).toHaveBeenCalledTimes(2);
 
     // Forward 2s
     now.mockReturnValue(countdownDate - 8000);
-    jest.runTimersToTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
     expect(renderer).toHaveBeenCalledTimes(2);
 
-    expect(wrapper.state().timeDelta.total).toBe(0);
-    expect(wrapper.state().timeDelta.completed).toBe(true);
+    expect(getCountdownJsState().timeDelta.total).toBe(0);
+    expect(getCountdownJsState().timeDelta.completed).toBe(true);
   });
 
   it('should not stop the countdown and go into overtime', () => {
     const onTick = jest.fn();
-    wrapper = mount(
-      <Countdown date={countdownDate} overtime={true} onTick={onTick}>
-        <div>Completed? Overtime!</div>
-      </Countdown>
-    );
-    const obj = wrapper.instance();
-    const api = obj.getApi();
+    ({ container } = render(
+      <Countdown ref={countdownRef} date={countdownDate} overtime={true} onTick={onTick} />
+    ));
+
+    const api = getCountdownApi();
 
     // Forward 9s
     now.mockReturnValue(countdownDate - 1000);
-    jest.runTimersToTime(9000);
+    act(() => jest.advanceTimersByTime(9000));
 
-    expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:01"`);
+    expect(container.textContent).toBe('00:00:00:01');
     expect(onTick).toHaveBeenCalledTimes(9);
 
     // Forward 1s
     now.mockReturnValue(countdownDate);
-    jest.runTimersToTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
 
-    expect(wrapper.text()).toMatchInlineSnapshot(`"00:00:00:00"`);
+    expect(container.textContent).toBe('00:00:00:00');
     expect(onTick).toHaveBeenCalledTimes(10);
-    expect(wrapper.state().timeDelta.total).toBe(0);
-    expect(wrapper.state().timeDelta.completed).toBe(true);
+    expect(getCountdownJsState().timeDelta.total).toBe(0);
+    expect(getCountdownJsState().timeDelta.completed).toBe(true);
     expect(api.isCompleted()).toBe(false);
 
     // Forward 1s (overtime)
     now.mockReturnValue(countdownDate + 1000);
-    jest.runTimersToTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
 
-    expect(wrapper.text()).toMatchInlineSnapshot(`"-00:00:00:01"`);
+    expect(container.textContent).toBe('-00:00:00:01');
     expect(onTick).toHaveBeenCalledTimes(11);
-    expect(wrapper.state().timeDelta.total).toBe(-1000);
-    expect(wrapper.state().timeDelta.completed).toBe(true);
+    expect(getCountdownJsState().timeDelta.total).toBe(-1000);
+    expect(getCountdownJsState().timeDelta.completed).toBe(true);
     expect(api.isCompleted()).toBe(false);
-  });
-
-  describe('legacy mode', () => {
-    class LegacyCountdownOverlay extends React.Component<LegacyCountdownProps> {
-      render() {
-        return <div>{this.props.count}</div>;
-      }
-    }
-
-    it('should render legacy countdown', () => {
-      wrapper = mount(
-        <Countdown count={3}>
-          <LegacyCountdownOverlay />
-        </Countdown>
-      );
-      expect(wrapper.find('div').text()).toBe('3');
-    });
-
-    it('should render legacy countdown without count prop', () => {
-      wrapper = mount(
-        <Countdown>
-          <LegacyCountdownOverlay />
-        </Countdown>
-      );
-      expect(wrapper.find('div').text()).toBe('3');
-    });
-
-    it('should render null without children', () => {
-      wrapper = mount(<Countdown count={3}></Countdown>);
-      expect(wrapper.html()).toBe('');
-      wrapper.setProps({});
-      wrapper.unmount();
-    });
-
-    it('should allow adding time in seconds', () => {
-      const ref = React.createRef<Countdown>();
-
-      wrapper = mount(
-        <>
-          <Countdown ref={ref} count={3}>
-            <LegacyCountdownOverlay />
-          </Countdown>
-        </>
-      );
-
-      expect(wrapper.find('div').text()).toBe('3');
-
-      ref && ref.current && ref.current.addTime(2);
-      jest.runOnlyPendingTimers();
-      wrapper.update();
-
-      expect(wrapper.find('div').text()).toBe('4');
-    });
-
-    it('should trigger onComplete callback when count reaches 0', () => {
-      const ref = React.createRef<Countdown>();
-      const onComplete = jest.fn();
-
-      wrapper = mount(
-        <>
-          <Countdown ref={ref} count={3} onComplete={onComplete}>
-            <LegacyCountdownOverlay />
-          </Countdown>
-        </>
-      );
-
-      expect(onComplete).not.toHaveBeenCalled();
-      ref && ref.current && ref.current.addTime(-2);
-      jest.runOnlyPendingTimers();
-      wrapper.update();
-
-      expect(onComplete).toHaveBeenCalled();
-      expect(wrapper.find('div').text()).toBe('1');
-    });
-  });
-
-  afterEach(() => {
-    try {
-      wrapper.detach();
-    } catch (e) {}
   });
 });

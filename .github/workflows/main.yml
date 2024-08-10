@@ -34,11 +34,11 @@ jobs:
       - name: Install
         run: yarn install
 
-      - name: 'Lint: Prettier'
-        run: yarn lint:prettier
+      - name: 'Lint: ESLint'
+        run: yarn eslint
 
       - name: 'Lint: TypeScript'
-        run: yarn lint:tslint && yarn lint:tsc
+        run: yarn lint:tsc
 
   test:
     name: Test

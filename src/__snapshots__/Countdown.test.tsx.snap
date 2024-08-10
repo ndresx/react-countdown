@@ -1,229 +1,58 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<Countdown /> should render and unmount component on countdown end 1`] = `
-<Countdown
-  autoStart={true}
-  controlled={false}
-  date={1482453477527}
-  daysInHours={false}
-  intervalDelay={1000}
-  precision={0}
-  zeroPadTime={0}
->
-  <span>
-    1
-    :
-    1
-    :
-    1
-    :
-    50
-  </span>
-</Countdown>
-`;
-
-exports[`<Countdown /> should render and unmount component on countdown end 2`] = `
-<Countdown
-  autoStart={true}
-  controlled={false}
-  date={0}
-  daysInHours={false}
-  intervalDelay={1000}
-  precision={0}
-  zeroPadTime={0}
->
-  <span>
-    1
-    :
-    1
-    :
-    1
-    :
-    50
-  </span>
-</Countdown>
+exports[`<Countdown /> should render a simple countdown 1`] = `
+<div>
+  01
+  :
+  01
+  :
+  01
+  :
+  50
+</div>
 `;
 
 exports[`<Countdown /> should render custom renderer output 1`] = `
-<Countdown
-  autoStart={true}
-  controlled={false}
-  date={1482453477527}
-  daysInHours={false}
-  intervalDelay={1000}
-  precision={0}
-  renderer={[Function]}
-  zeroPadTime={2}
->
+<div>
   <div>
     1
     1
     1
     50
   </div>
-</Countdown>
+</div>
 `;
 
 exports[`<Countdown /> should render with daysInHours => true 1`] = `
-<Countdown
-  autoStart={true}
-  controlled={false}
-  date={1482453477527}
-  daysInHours={true}
-  intervalDelay={1000}
-  precision={0}
-  zeroPadTime={2}
->
-  <span>
-    25
-    :
-    01
-    :
-    50
-  </span>
-</Countdown>
+<div>
+  25
+  :
+  01
+  :
+  50
+</div>
 `;
 
 exports[`<Countdown /> should render with zeroPadDays => 3 1`] = `
-<Countdown
-  autoStart={true}
-  controlled={false}
-  date={1483227367071}
-  daysInHours={false}
-  intervalDelay={1000}
-  precision={0}
-  zeroPadDays={3}
-  zeroPadTime={2}
->
-  <span>
-    010
-    :
-    00
-    :
-    00
-    :
-    00
-  </span>
-</Countdown>
+<div>
+  010
+  :
+  00
+  :
+  00
+  :
+  00
+</div>
 `;
 
 exports[`<Countdown /> should trigger onTick and onComplete callbacks 1`] = `
-<Countdown
-  autoStart={true}
-  controlled={false}
-  date={1482363377071}
-  daysInHours={false}
-  intervalDelay={1000}
-  onComplete={[MockFunction]}
-  onTick={
-    [MockFunction] {
-      "calls": Array [
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-        Array [
-          Object {
-            "completed": false,
-            "days": 0,
-            "hours": 0,
-            "milliseconds": 0,
-            "minutes": 0,
-            "seconds": 6,
-            "total": 6000,
-          },
-        ],
-      ],
-      "results": Array [
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
-      ],
-    }
-  }
-  precision={0}
-  zeroPadTime={2}
->
-  <span>
-    00
-    :
-    00
-    :
-    00
-    :
-    06
-  </span>
-</Countdown>
+<div>
+  00
+  :
+  00
+  :
+  00
+  :
+  06
+</div>
 `;
