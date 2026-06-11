@@ -39,15 +39,13 @@
     "prettier": "prettier --list-different ./{src,examples,cypress,e2e}/**/*.{ts,tsx}",
     "prettier:fix": "prettier --write ./{src,examples,cypress,e2e}/**/*.{ts,tsx}",
     "test": "jest",
+    "test:all": "yarn test && yarn test:e2e",
     "test:coverage": "jest --coverage",
     "test:e2e": "yarn build && yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress run\"",
     "test:e2e:clean": "rm -rf ./e2e/dist",
     "test:e2e:dev": "yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress open\"",
     "test:e2e:server": "parcel ./e2e/index.html --dist-dir ./e2e/dist",
     "test:watch": "jest --watch"
-  },
-  "dependencies": {
-    "prop-types": "^15.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

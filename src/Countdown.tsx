@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
 
 import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './CountdownJs';
 
@@ -12,28 +11,6 @@ import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './Cou
  */
 export default class Countdown extends React.Component<CountdownProps, CountdownState> {
   countdown: CountdownJs;
-
-  static propTypes = {
-    date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string, PropTypes.number])
-      .isRequired,
-    daysInHours: PropTypes.bool,
-    zeroPadTime: PropTypes.number,
-    zeroPadDays: PropTypes.number,
-    controlled: PropTypes.bool,
-    intervalDelay: PropTypes.number,
-    precision: PropTypes.number,
-    autoStart: PropTypes.bool,
-    overtime: PropTypes.bool,
-    renderer: PropTypes.func,
-    now: PropTypes.func,
-    pure: PropTypes.bool,
-    onMount: PropTypes.func,
-    onStart: PropTypes.func,
-    onPause: PropTypes.func,
-    onStop: PropTypes.func,
-    onTick: PropTypes.func,
-    onComplete: PropTypes.func,
-  };
 
   constructor(props: CountdownProps) {
     super(props);

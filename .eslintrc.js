@@ -49,6 +49,7 @@ module.exports = {
     'react/destructuring-assignment': OFF,
     'react/no-unused-class-component-methods': OFF,
     'react/no-unused-prop-types': OFF,
+    'react/prop-types': OFF,
     'react/require-default-props': OFF,
     'react/state-in-constructor': OFF,
     'react/static-property-placement': OFF,
