@@ -3,20 +3,21 @@ import {
   CountdownTimeDelta,
   CountdownTimeDeltaFormatted,
   CountdownTimeDeltaFormatOptions,
+  CountdownTimeDeltaOptions,
   timeDeltaFormatOptionsDefaults,
   formatTimeDelta,
 } from './utils';
 
-export interface CountdownProps extends CountdownTimeDeltaFormatOptions {
+// `now`, `precision`, `controlled`, and `overtime` are shared with
+// `calcTimeDelta`; reuse its options type so the two never drift. `offsetTime`
+// is internal to the engine and not a public prop, hence the `Omit`.
+export interface CountdownProps
+  extends CountdownTimeDeltaFormatOptions, Omit<CountdownTimeDeltaOptions, 'offsetTime'> {
   readonly date: Date | number | string;
   readonly resetKey?: string | number;
-  readonly controlled?: boolean;
   readonly intervalDelay?: number;
-  readonly precision?: number;
   readonly autoStart?: boolean;
-  readonly overtime?: boolean;
   readonly renderer?: CountdownRendererFn;
-  readonly now?: () => number;
   readonly freezeProps?: boolean;
   readonly onMount?: CountdownTimeDeltaFn;
   readonly onStart?: CountdownTimeDeltaFn;

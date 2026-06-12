@@ -209,7 +209,7 @@ Defines whether the time of day should be calculated as hours rather than separa
 
 ### `zeroPadTime`
 
-This option defaults to `2` in order to display the common format `00:00:00` instead of `0:0:0`. If the value is higher than `2`, only the hours part _(see [`zeroPadDays`](#zeropaddays) for days)_ will be zero-padded while it stays at `2` for minutes as well as seconds. If the value is lower, the output won't be zero-padded like the example before is showing.
+This option defaults to `2` in order to display the common format `00:00:00` instead of `0:0:0`. Minutes and seconds are always capped at a padding width of `2`. A value higher than `2` only widens the leading field: the hours when [`daysInHours`](#daysinhours) is `true` (since hours then absorb the days and can exceed `99`), otherwise the separate days field _(see [`zeroPadDays`](#zeropaddays))_. If the value is lower, the output won't be zero-padded like the example before is showing.
 
 ### `zeroPadDays`
 
@@ -273,7 +273,9 @@ If the current date and time (determined via a reference to `Date.now`) is not t
 
 By default, the countdown component and [`useCountdown`](#hook) Hook track their props. This means that whenever an input prop changes, the countdown will update accordingly and re-render itself based on the new conditions.
 
-However, this behavior is not always desired and sometimes requires more lines of code than needed, which is why it can be turned off as well. With `freezeProps` set to `true`, the countdown ignores all prop changes after mounting and keeps running from its initial props, so a `date` that gets recomputed on every render no longer restarts it, without having to persist it yourself. Note that this applies to _every_ prop, so other changes (e.g. [`daysInHours`](#daysinhours) or a callback) also won't take effect while `freezeProps` is `true`.
+However, this behavior is not always desired and sometimes requires more lines of code than needed, which is why it can be turned off as well. With `freezeProps` set to `true`, the countdown ignores all prop changes after mounting and keeps running from its initial props, so a `date` that gets recomputed on every render no longer restarts it, without having to persist it yourself. Note that this applies to _every_ other prop, so other changes (e.g. [`daysInHours`](#daysinhours) or a callback) also won't take effect while `freezeProps` is `true`.
+
+`freezeProps` itself is read live, so it is not a one-way latch: toggling it back to `false` re-enables prop tracking, and the next prop change is picked up again.
 
 Read more about this _"issue"_ [here](#why-does-my-countdown-reset-on-every-re-render-).
 
@@ -317,7 +319,7 @@ The countdown invokes a set of optional lifecycle callbacks that you pass as pro
 
 ### `onTick`
 
-`onTick` is a callback and triggered every time a new period is started, based on what the [`intervalDelay`](#intervaldelay)'s value is. It only gets triggered when the countdown's [`controlled`](#controlled) prop is set to `false`, meaning that the countdown has full control over its interval. It receives a [time delta object](#calctimedelta) as the first argument.
+`onTick` is a callback and triggered every time a new period is started, based on what the [`intervalDelay`](#intervaldelay)'s value is. It only gets triggered when the countdown's [`controlled`](#controlled) prop is set to `false`, meaning that the countdown has full control over its interval. The tick that completes the countdown is reported through [`onComplete`](#oncomplete) instead, so `onTick` does not fire for it (unless [`overtime`](#overtime) is `true`, where there is no completing tick and ticks keep coming). It receives a [time delta object](#calctimedelta) as the first argument.
 
 ### `onComplete`
 
