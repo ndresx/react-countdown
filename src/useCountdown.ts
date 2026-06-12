@@ -8,12 +8,12 @@ export interface UseCountdownResult extends CountdownRenderProps {}
 
 export default function useCountdown(props: UseCountdownProps): UseCountdownResult {
   const countdownRef = useRef<CountdownJs | null>(null);
-  const keyRef = useRef(props.key);
+  const resetKeyRef = useRef(props.resetKey);
   const mountedRef = useRef(false);
 
-  // Create the instance on first render, and recreate it when `key` changes (restart).
-  if (!countdownRef.current || keyRef.current !== props.key) {
-    keyRef.current = props.key;
+  // Create the instance on first render, and recreate it when `resetKey` changes (restart).
+  if (!countdownRef.current || resetKeyRef.current !== props.resetKey) {
+    resetKeyRef.current = props.resetKey;
     mountedRef.current = false;
     countdownRef.current = new CountdownJs(props);
   }

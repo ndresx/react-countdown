@@ -143,7 +143,6 @@ ReactDOM.render(<MyComponent />, document.getElementById('root'));
 | Name                                |                   Type                    |    Default    | Description                                                                                                                |
 | :---------------------------------- | :---------------------------------------: | :-----------: | :------------------------------------------------------------------------------------------------------------------------- |
 | [**date**](#date)                   | <code>Date&#124;string&#124;number</code> |   required    | [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) or timestamp in the future |
-| [**key**](#key)                     |      <code>string&#124;number</code>      |  `undefined`  | React [`key`](https://reactjs.org/docs/lists-and-keys.html#keys); can be used to restart the countdown                     |
 | [**daysInHours**](#daysinhours)     |                 `boolean`                 |    `false`    | Days are calculated as hours                                                                                               |
 | [**zeroPadTime**](#zeropadtime)     |                 `number`                  |      `2`      | Length of zero-padded output, e.g.: `00:01:02`                                                                             |
 | [**zeroPadDays**](#zeropaddays)     |                 `number`                  | `zeroPadTime` | Length of zero-padded days output, e.g.: `01`                                                                              |
@@ -155,6 +154,7 @@ ReactDOM.render(<MyComponent />, document.getElementById('root'));
 | [**renderer**](#renderer)\*         |                `function`                 |  `undefined`  | Custom renderer callback                                                                                                   |
 | [**now**](#now)                     |                `function`                 |  `Date.now`   | Alternative handler for the current date                                                                                   |
 | [**freezeProps**](#freezeprops)     |                 `boolean`                 |    `false`    | Ignore all prop changes after mount                                                                                        |
+| [**resetKey**](#resetkey)           |      <code>string&#124;number</code>      |  `undefined`  | Change this value to restart the countdown (component + Hook)                                                              |
 | [**onMount**](#onmount)             |                `function`                 |  `undefined`  | Callback when component mounts                                                                                             |
 | [**onStart**](#onstart)             |                `function`                 |  `undefined`  | Callback when countdown starts                                                                                             |
 | [**onPause**](#onpause)             |                `function`                 |  `undefined`  | Callback when countdown pauses                                                                                             |
@@ -173,15 +173,6 @@ Valid values can be _(and more)_:
 - `'2020-02-01T01:02:03'` // [`Date` time string format](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse#Date_Time_String_Format)
 - `1580518923000` // Timestamp in milliseconds
 - `new Date(1580518923000)` // [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object
-
-### `key`
-
-This is one of React's internal component props to help identifying elements throughout the reconciliation process. It can be used to restart the countdown by
-passing in a new `string` or `number` value.
-
-> Avoid using the `key` prop as there are usually better options to achieve this, for example, by simply updating the [`date`](#date) prop.
-
-Please see [official React docs](https://reactjs.org/docs/lists-and-keys.html#keys) for more information about keys.
 
 ### `daysInHours`
 
@@ -251,9 +242,15 @@ If the current date and time (determined via a reference to `Date.now`) is not t
 
 By default, the countdown component and [`useCountdown`](#hook) Hook track their props. This means that whenever an input prop changes, the countdown will update accordingly and re-render itself based on the new conditions.
 
-However, this behavior is not always desired and sometimes requires more lines of code than needed, which is why it can be turned off as well. With `freezeProps` set to `true`, the countdown ignores all prop changes after mounting and keeps running from its initial props — so a `date` that gets recomputed on every render no longer restarts it, without having to persist it yourself. Note that this applies to _every_ prop, so other changes (e.g. [`daysInHours`](#daysinhours) or a callback) also won't take effect while `freezeProps` is `true`.
+However, this behavior is not always desired and sometimes requires more lines of code than needed, which is why it can be turned off as well. With `freezeProps` set to `true`, the countdown ignores all prop changes after mounting and keeps running from its initial props, so a `date` that gets recomputed on every render no longer restarts it, without having to persist it yourself. Note that this applies to _every_ prop, so other changes (e.g. [`daysInHours`](#daysinhours) or a callback) also won't take effect while `freezeProps` is `true`.
 
 Read more about this _"issue"_ [here](#why-does-my-countdown-reset-on-every-re-render-).
+
+### `resetKey`
+
+A library-owned token used to **restart** the countdown. Passing in a new `string` or `number` value recreates it from scratch with its current props. It behaves identically on both the [`<Countdown />`](#getting-started) component and the [`useCountdown`](#hook) Hook.
+
+> Prefer other options where they fit, for example, simply updating the [`date`](#date) prop. On the component, React's built-in [`key`](https://react.dev/learn/rendering-lists#keeping-list-items-in-order-with-key) prop also forces a full remount; `resetKey` is the equivalent that additionally works inside the Hook.
 
 ## Hook
 
@@ -269,7 +266,7 @@ Using the Hook gives direct access to the countdown's [API](#api-reference), cur
 
 ## API Reference
 
-The countdown component exposes a simple control API as `api` on the component `ref` — e.g. `ref.current.api.start()`. The same `api` object is also part of the [render props](#render-props) passed into a custom [`renderer`](#renderer) and returned by the [`useCountdown`](#hook) Hook. Type a `ref` with the exported `CountdownHandle` type.
+The countdown component exposes a simple control API as `api` on the component `ref` (e.g. `ref.current.api.start()`). The same `api` object is also part of the [render props](#render-props) passed into a custom [`renderer`](#renderer) and returned by the [`useCountdown`](#hook) Hook. Type a `ref` with the exported `CountdownHandle` type.
 
 ### `onMount`
 
@@ -297,7 +294,7 @@ The countdown component exposes a simple control API as `api` on the component `
 
 ## API Reference
 
-The countdown component exposes a simple control API as `api` on the component `ref` — e.g. `ref.current.api.start()`. The same `api` object is also part (`api`) of the [render props](#render-props) passed into [`renderer`](#renderer) if needed. Here's an [example](https://github.com/ndresx/react-countdown/blob/master/examples/src/CountdownApi.tsx) of how to use it.
+The countdown component exposes a simple control API as `api` on the component `ref` (e.g. `ref.current.api.start()`). The same `api` object is also part (`api`) of the [render props](#render-props) passed into [`renderer`](#renderer) if needed. Here's an [example](https://github.com/ndresx/react-countdown/blob/master/examples/src/CountdownApi.tsx) of how to use it.
 
 ### `start()`
 

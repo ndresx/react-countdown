@@ -9,7 +9,7 @@ import {
 
 export interface CountdownProps extends CountdownTimeDeltaFormatOptions {
   readonly date: Date | number | string;
-  readonly key?: React.Key;
+  readonly resetKey?: string | number;
   readonly controlled?: boolean;
   readonly intervalDelay?: number;
   readonly precision?: number;

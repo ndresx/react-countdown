@@ -485,6 +485,26 @@ describe('<Countdown />', () => {
     expect(countdownJsObj.getProps().date).not.toBe(0);
   });
 
+  it('should restart the component countdown when resetKey changes', () => {
+    const onMount = jest.fn();
+    ({ container, rerender } = render(
+      <Countdown ref={countdownRef} resetKey={1} date={countdownDate} onMount={onMount} />
+    ));
+
+    const firstInstance = getCountdownJsInstance();
+    expect(onMount).toHaveBeenCalledTimes(1);
+
+    // Same resetKey: no restart, same instance kept.
+    rerender(<Countdown ref={countdownRef} resetKey={1} date={countdownDate} onMount={onMount} />);
+    expect(getCountdownJsInstance()).toBe(firstInstance);
+    expect(onMount).toHaveBeenCalledTimes(1);
+
+    // Changed resetKey: instance is recreated (restart) without a remount.
+    rerender(<Countdown ref={countdownRef} resetKey={2} date={countdownDate} onMount={onMount} />);
+    expect(getCountdownJsInstance()).not.toBe(firstInstance);
+    expect(onMount).toHaveBeenCalledTimes(2);
+  });
+
   it('should auto start countdown', () => {
     const spies = {
       onStart: jest.fn(),

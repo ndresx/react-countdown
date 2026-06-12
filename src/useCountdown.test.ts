@@ -93,7 +93,7 @@ describe('useCountdown', () => {
     expect(result.current.total).toBe(6000);
 
     // Respect key-prop change and re-instantiate countdown
-    rerender({ date: countdownDate, key: Math.random(), intervalDelay: 1111 });
+    rerender({ date: countdownDate, resetKey: Math.random(), intervalDelay: 1111 });
 
     expect(classSpies.init).toHaveBeenCalledTimes(2);
     expect(classSpies.update).toHaveBeenCalledTimes(1);
