@@ -254,7 +254,7 @@ A library-owned token used to **restart** the countdown. Passing in a new `strin
 
 ## Hook
 
-> **Requires React 16.8.0 or higher**
+> **Requires React 18 or higher**
 
 The library also ships with a built-in Hook called `useCountdown`. It supports the same [props](#props) as its component counterpart, with the exception that the [`renderer`](#renderer) prop is ignored due to the already provided flexibility.
 
