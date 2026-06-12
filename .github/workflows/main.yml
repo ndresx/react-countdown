@@ -4,7 +4,7 @@ on:
   push:
     branches: [master]
   pull_request:
-    branches: ['*']
+    branches: ["*"]
 
 jobs:
   lint:
@@ -34,18 +34,23 @@ jobs:
       - name: Install
         run: yarn install
 
-      - name: 'Lint: oxlint'
+      - name: "Lint: oxlint"
         run: yarn lint:oxlint
 
-      - name: 'Lint: oxfmt'
+      - name: "Lint: oxfmt"
         run: yarn lint:oxfmt
 
-      - name: 'Lint: TypeScript'
+      - name: "Lint: TypeScript"
         run: yarn lint:tsc
 
   test:
-    name: Test
+    name: Test (React ${{ matrix.react }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        react: ["18", "19"]
 
     steps:
       - uses: actions/checkout@v4
@@ -70,13 +75,23 @@ jobs:
       - name: Install
         run: yarn install
 
-      - name: 'Tests: Unit'
+      # The lockfile pins React 18; override it to validate the matrix's other
+      # major against the actual runtime. Type-checking stays pinned to 18 in the
+      # lint job, since the @types/react 18/19 ref-variance differences are a
+      # DefinitelyTyped concern, not the library's.
+      - name: "Override React ${{ matrix.react }}"
+        if: matrix.react != '18'
+        run: yarn add -D react@^${{ matrix.react }} react-dom@^${{ matrix.react }} @types/react@^${{ matrix.react }} @types/react-dom@^${{ matrix.react }}
+
+      - name: "Tests: Unit"
         run: yarn test:coverage
 
-      - name: 'Tests: E2E'
+      - name: "Tests: E2E"
+        if: matrix.react == '18'
         run: yarn test:e2e
 
       - name: Coveralls
+        if: matrix.react == '18'
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
