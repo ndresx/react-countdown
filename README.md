@@ -421,9 +421,18 @@ The [`renderer`](#renderer) callback gets called with a [time delta object](#cal
 
 ### Why do I get this error `"Warning: Text content did not match..."`?
 
-This could have something to do with server-side rendering and that the countdown already runs on the server-side, resulting in a timestamp discrepancy between the client and the server. In this case, it might be worth checking https://reactjs.org/docs/dom-elements.html#suppresshydrationwarning.
+This is a server-side rendering hydration mismatch. The countdown's value is based on the current time, which advances between the server render and the client's hydration, so the two produce different output.
 
-Alternatively, you could try to set [`autoStart`](#autostart) to `false` and start the countdown through the [API](#api-reference) once it's available on the client. Here are some related [issues](https://github.com/ndresx/react-countdown/issues/152) that might help in fixing this problem.
+The countdown itself is SSR-safe (it does not touch `window` while rendering), so this is purely a rendering concern. The most reliable fix is to render the time-dependent output only after the client has mounted, so the server and the first client render match:
+
+```tsx
+const [mounted, setMounted] = useState(false);
+useEffect(() => setMounted(true), []);
+if (!mounted) return null; // render nothing, or your own placeholder, until client-side
+return <Countdown {...props} />;
+```
+
+Alternatively, wrap the output in [`suppressHydrationWarning`](https://react.dev/reference/react-dom/components/common#suppressing-unavoidable-hydration-mismatch-errors) to silence the warning, or set [`autoStart`](#autostart) to `false` and start the countdown through the [API](#api-reference) once it is available on the client. Here are some related [issues](https://github.com/ndresx/react-countdown/issues/152) that might help.
 
 ## Contributing
 
