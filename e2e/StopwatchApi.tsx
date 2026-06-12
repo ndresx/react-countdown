@@ -1,21 +1,21 @@
-import React from 'react';
+import * as React from 'react';
 
-import Countdown, { CountdownRendererFn } from 'react-countdown';
+import Countdown, { CountdownRendererFn } from '../dist/component';
 
-interface StopwatchExampleState {
+interface StopwatchApiExampleState {
   readonly date: number;
 }
 
 /**
- * A stopwatch is just an `overtime` countdown that starts at `now`: the delta
- * immediately crosses zero and keeps ticking, so the elapsed time counts up.
- *
- * `formatted` is derived from the absolute value of the delta, so rendering it
- * (instead of the default renderer, which prefixes a `-` once `total` goes
- * negative) reads as a normal count-up timer. `daysInHours` folds days into the
- * hours field for a classic HH:MM:SS display.
+ * A stopwatch is an `overtime` countdown anchored at `now`, so the delta starts
+ * at zero and counts up. `formatted` is abs-based, so rendering it reads as a
+ * normal count-up timer (no leading minus sign). Pause/resume excludes the
+ * paused gap, and the Clear button (`stop()`) resets the elapsed time to zero.
  */
-export default class StopwatchExample extends React.Component<unknown, StopwatchExampleState> {
+export default class StopwatchApiExample extends React.Component<
+  unknown,
+  StopwatchApiExampleState
+> {
   state = { date: Date.now() };
 
   handleResetClick = (): void => {

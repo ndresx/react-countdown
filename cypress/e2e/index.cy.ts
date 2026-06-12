@@ -115,7 +115,7 @@ describe('React <Countdown />', () => {
       cyGet().should('contain.text', '00:00:05');
     });
 
-    it('should click the "Start" (10s) => "Pause" (5s) => "Start" (5s)  => "Stop" (3s) buttons => 10s', () => {
+    it('should click "Start" (10s) => "Pause" (5s) => "Resume" (5s) => "Stop" (3s) buttons => 10s', () => {
       cy.tick(5000);
       cyGet().should('contain.text', '00:00:05');
 
@@ -124,7 +124,8 @@ describe('React <Countdown />', () => {
       cy.tick(2000);
       cyGet().should('contain.text', '00:00:05');
 
-      cyGet('StartBtn').click();
+      // While paused, the "Start" button reads "Resume".
+      cyGet().find('button').contains('Resume').click();
 
       cy.tick(2000);
       cyGet().should('contain.text', '00:00:03');
@@ -142,6 +143,52 @@ describe('React <Countdown />', () => {
 
       cy.tick(3000);
       cyGet().should('contain.text', '00:00:07');
+    });
+  });
+
+  describe('Stopwatch API', () => {
+    beforeEach(() => {
+      cyGetAs('#stopwatch-api');
+      cyGet().should('contain.text', '00:00:00');
+
+      cyGet().find('button').contains('Start').as('StartBtn').click().should('have.be.disabled');
+    });
+
+    it('should click the "Start" button and count up 5s', () => {
+      cy.tick(5000);
+      cyGet().should('contain.text', '00:00:05');
+    });
+
+    it('should click "Start" (0s) => "Pause" (5s) => "Resume" (5s) => "Clear" (7s) buttons => 0s', () => {
+      cy.tick(5000);
+      cyGet().should('contain.text', '00:00:05');
+
+      cyGet().find('button').contains('Pause').as('PauseBtn').click().should('have.be.disabled');
+
+      cy.tick(2000);
+      cyGet().should('contain.text', '00:00:05');
+
+      // While paused, the "Start" button reads "Resume".
+      cyGet().find('button').contains('Resume').click();
+
+      cy.tick(2000);
+      cyGet().should('contain.text', '00:00:07');
+
+      // On a stopwatch, "Clear" (stop()) halts and resets the elapsed time to zero.
+      cyGet().find('button').contains('Clear').as('ClearBtn').click().should('have.be.disabled');
+
+      cyGet().should('contain.text', '00:00:00');
+    });
+
+    it('should reset the stopwatch at 4s => 0s and count up to 3s', () => {
+      cy.tick(4000);
+      cyGet().should('contain.text', '00:00:04');
+
+      cyGet().find('button').contains('Reset').as('ResetBtn').click();
+      cyGet().should('contain.text', '00:00:00');
+
+      cy.tick(3000);
+      cyGet().should('contain.text', '00:00:03');
     });
   });
 });

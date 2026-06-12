@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import Countdown, { CountdownRendererFn } from '../dist';
 import { CountdownHookBasicUsage, CountdownHookCompletionist } from './CountdownHook';
 import CountdownApi from './CountdownApi';
+import StopwatchApi from './StopwatchApi';
 
 // Random component
 const Completionist = () => <span>You are good to go!</span>;
@@ -95,6 +96,13 @@ class App extends React.PureComponent {
           <h3>Countdown with Start, Pause, Stop and Reset Controls (Custom Renderer)</h3>
           <div id="api">
             <CountdownApi />
+          </div>
+        </section>
+        <section>
+          <h2>Stopwatch API</h2>
+          <h3>Stopwatch with Start, Pause, Stop and Reset Controls (Custom Renderer)</h3>
+          <div id="stopwatch-api">
+            <StopwatchApi />
           </div>
         </section>
       </>

@@ -26,7 +26,7 @@ export default class CountdownApiExample extends React.Component<
         </span>
         <div>
           <button type="button" onClick={api.start} disabled={api.isStarted() || completed}>
-            Start
+            {api.isPaused() ? 'Resume' : 'Start'}
           </button>{' '}
           <button
             type="button"

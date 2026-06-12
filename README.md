@@ -115,6 +115,37 @@ ReactDOM.render(
 
 [Live Demo](https://codesandbox.io/s/elastic-euclid-6vnlw)
 
+### Building a Stopwatch
+
+A stopwatch is simply a countdown with [`overtime`](#overtime) enabled that starts at the current time: the time delta immediately crosses `0` and keeps running, so the elapsed time counts up. Because the [render props'](#render-props) `formatted` values are based on the absolute time delta, rendering them (instead of relying on the default renderer, which prefixes a `-` once `total` turns negative) reads as a regular count-up timer. The countdown's `api` ([`start()`](#start), [`pause()`](#pause), [`stop()`](#stop)) works unchanged.
+
+```js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Countdown from 'react-countdown';
+
+ReactDOM.render(
+  <Countdown
+    date={Date.now()}
+    overtime
+    daysInHours
+    autoStart={false}
+    renderer={({ formatted, api }) => (
+      <div>
+        <span>
+          {formatted.hours}:{formatted.minutes}:{formatted.seconds}
+        </span>
+        <button onClick={api.start}>{api.isPaused() ? 'Resume' : 'Start'}</button>
+        <button onClick={api.pause}>Pause</button>
+      </div>
+    )}
+  />,
+  document.getElementById('root')
+);
+```
+
+> Note: because the timer starts at `0`, the time delta's `total` is negative and `completed` is `true` from the first tick onwards. The `formatted` values stay positive, which is why the renderer above doesn't need to handle the sign.
+
 ### Using the `useCountdown` Hook
 
 If you prefer React Hooks over normal components, you can also use the built-in [`useCountdown`](#hook) Hook to render and control the countdown.
@@ -208,6 +239,8 @@ Defines whether the countdown should start automatically or not. Defaults to `tr
 Defines whether the countdown can go into overtime by extending its lifetime past the targeted endpoint. Defaults to `false`.
 
 When set to `true`, the countdown timer won't stop when hitting 0, but instead becomes negative and continues to run unless paused/stopped. The [`onComplete`](#oncomplete) callback would still get triggered when the initial countdown phase completes.
+
+See [Building a Stopwatch](#building-a-stopwatch) for a common use of this option.
 
 ### `renderer`
 
