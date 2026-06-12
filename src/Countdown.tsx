@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './CountdownJs';
+import CountdownJs, { CountdownProps, CountdownApi } from './CountdownJs';
 
 /**
  * A customizable countdown component for React.
@@ -9,15 +9,18 @@ import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './Cou
  * @class Countdown
  * @extends {React.Component}
  */
-export default class Countdown extends React.Component<CountdownProps, CountdownState> {
+export default class Countdown extends React.Component<CountdownProps> {
   countdown: CountdownJs;
+
+  unsubscribe?: () => void;
 
   constructor(props: CountdownProps) {
     super(props);
-    this.countdown = new CountdownJs(props, (state, callback) => this.setState(state, callback));
+    this.countdown = new CountdownJs(props);
   }
 
   componentDidMount(): void {
+    this.unsubscribe = this.countdown.subscribe(() => this.forceUpdate());
     this.countdown.init();
   }
 
@@ -26,6 +29,7 @@ export default class Countdown extends React.Component<CountdownProps, Countdown
   }
 
   componentWillUnmount(): void {
+    this.unsubscribe?.();
     this.countdown.destroy();
   }
 

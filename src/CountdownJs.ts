@@ -58,8 +58,6 @@ export interface CountdownApi {
   readonly isCompleted: () => boolean;
 }
 
-export type StateUpdaterFn = (state: CountdownState, callback: () => void) => void;
-
 /**
  * A customizable countdown component for React.
  *
@@ -70,7 +68,6 @@ export type StateUpdaterFn = (state: CountdownState, callback: () => void) => vo
 export default class CountdownJs {
   props: CountdownProps;
   state: CountdownState;
-  stateUpdater: StateUpdaterFn;
 
   initialized = false;
   timerId: number | undefined;
@@ -80,7 +77,9 @@ export default class CountdownJs {
   offsetStartTimestamp = 0;
   offsetTime = 0;
 
-  constructor(props: CountdownProps, stateUpdater: StateUpdaterFn) {
+  listeners = new Set<() => void>();
+
+  constructor(props: CountdownProps) {
     this.props = this.computeProps(props);
 
     this.initialTimestamp = this.calcOffsetStartTimestamp();
@@ -91,8 +90,6 @@ export default class CountdownJs {
       timeDelta,
       status: timeDelta.completed ? CountdownStatus.COMPLETED : CountdownStatus.STOPPED,
     };
-
-    this.stateUpdater = stateUpdater;
   }
 
   init = (): void => {
@@ -104,14 +101,14 @@ export default class CountdownJs {
   update = (props: CountdownProps): boolean => {
     const nextProps = this.computeProps(props);
 
-    if (nextProps.pure && !this.shallowCompare(nextProps, this.computeProps(this.props))) {
+    if (nextProps.pure && !this.shallowCompare(nextProps, this.props)) {
       if (this.props.date !== nextProps.date) {
         this.initialTimestamp = this.calcOffsetStartTimestamp();
         this.offsetStartTimestamp = this.initialTimestamp;
         this.offsetTime = 0;
       }
 
-      this.setProps(nextProps);
+      this.props = nextProps;
       this.setTimeDeltaState(this.calcTimeDelta());
       return true;
     }
@@ -142,7 +139,7 @@ export default class CountdownJs {
   }
 
   calcOffsetStartTimestamp(): number {
-    return Date.now();
+    return (this.props.now ?? Date.now)();
   }
 
   start = (): void => {
@@ -251,28 +248,20 @@ export default class CountdownJs {
       this.clearTimer();
     }
 
-    const onDone = () => {
+    let newStatus = status || this.state.status;
+    if (timeDelta.completed && !this.props.overtime) {
+      newStatus = CountdownStatus.COMPLETED;
+    } else if (!status && newStatus === CountdownStatus.COMPLETED) {
+      newStatus = CountdownStatus.STOPPED;
+    }
+
+    this.setState({ timeDelta, status: newStatus }, () => {
       if (callback) callback(this.state.timeDelta);
 
       if (this.props.onComplete && (completing || completedOnStart)) {
         this.props.onComplete(timeDelta, completedOnStart);
       }
-    };
-
-    this.setState((prevState) => {
-      let newStatus = status || prevState.status;
-
-      if (timeDelta.completed && !this.props.overtime) {
-        newStatus = CountdownStatus.COMPLETED;
-      } else if (!status && newStatus === CountdownStatus.COMPLETED) {
-        newStatus = CountdownStatus.STOPPED;
-      }
-
-      return {
-        timeDelta,
-        status: newStatus,
-      };
-    }, onDone);
+    });
   }
 
   getApi(): CountdownApi {
@@ -306,19 +295,20 @@ export default class CountdownJs {
     return this.props;
   };
 
-  setProps = (props: CountdownProps): void => {
-    this.props = this.computeProps(props);
-  };
-
   getState = (): CountdownState => {
     return this.state;
   };
 
-  setState = (
-    state: (prevState: CountdownState) => Partial<CountdownState>,
-    callback: () => void
-  ): void => {
-    this.state = { ...this.state, ...state(this.state) };
-    this.stateUpdater(this.state, callback);
+  subscribe = (listener: () => void): (() => void) => {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  };
+
+  setState = (partialState: Partial<CountdownState>, callback?: () => void): void => {
+    this.state = { ...this.state, ...partialState };
+    this.listeners.forEach((listener) => listener());
+    if (callback) callback();
   };
 }

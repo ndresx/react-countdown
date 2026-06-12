@@ -251,7 +251,7 @@ If the current date and time (determined via a reference to `Date.now`) is not t
 
 By default, the countdown component and [`useCountdown`](#hook) Hook act like pure functions with respect to their props. This means that whenever an input prop changes, the countdown will update accordingly and re-render itself based on the new conditions.
 
-However, this behavior is not always desired and sometimes requires more lines of code than needed, which why it can be turned off as well.
+However, this behavior is not always desired and sometimes requires more lines of code than needed, which is why it can be turned off as well. With `pure` set to `false`, the countdown ignores all prop changes after mounting and keeps running from its initial props — so a `date` that gets recomputed on every render no longer restarts it, without having to persist it yourself. Note that this applies to _every_ prop, so other changes (e.g. [`daysInHours`](#daysinhours) or a callback) also won't take effect while `pure` is `false`.
 
 Read more about this _"issue"_ [here](#why-does-my-countdown-reset-on-every-re-render-).
 

@@ -112,7 +112,7 @@
     "typescript": "^5.5.4"
   },
   "peerDependencies": {
-    "react": ">= 16.8",
-    "react-dom": ">= 16.8"
+    "react": ">= 18",
+    "react-dom": ">= 18"
   }
 }
