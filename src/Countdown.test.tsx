@@ -461,25 +461,27 @@ describe('<Countdown />', () => {
     expect(spies.onStop).toHaveBeenCalledTimes(1);
   });
 
-  it('should update component when pure', () => {
-    ({ container, rerender } = render(<Countdown ref={countdownRef} pure date={countdownDate} />));
-
-    const countdownJsObj = getCountdownJsInstance();
-    expect(countdownJsObj.getProps().date).toBe(countdownDate);
-
-    rerender(<Countdown ref={countdownRef} pure date={0} />);
-    expect(countdownJsObj.getProps().date).toBe(0);
-  });
-
-  it('should not update component when impure', () => {
+  it('should update component when props are not frozen', () => {
     ({ container, rerender } = render(
-      <Countdown ref={countdownRef} pure={false} date={countdownDate} />
+      <Countdown ref={countdownRef} freezeProps={false} date={countdownDate} />
     ));
 
     const countdownJsObj = getCountdownJsInstance();
     expect(countdownJsObj.getProps().date).toBe(countdownDate);
 
-    rerender(<Countdown ref={countdownRef} pure={false} date={0} />);
+    rerender(<Countdown ref={countdownRef} freezeProps={false} date={0} />);
+    expect(countdownJsObj.getProps().date).toBe(0);
+  });
+
+  it('should not update component when props are frozen', () => {
+    ({ container, rerender } = render(
+      <Countdown ref={countdownRef} freezeProps date={countdownDate} />
+    ));
+
+    const countdownJsObj = getCountdownJsInstance();
+    expect(countdownJsObj.getProps().date).toBe(countdownDate);
+
+    rerender(<Countdown ref={countdownRef} freezeProps date={0} />);
     expect(countdownJsObj.getProps().date).not.toBe(0);
   });
 

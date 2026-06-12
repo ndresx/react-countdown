@@ -134,7 +134,7 @@ const MyComponent = () => {
 ReactDOM.render(<MyComponent />, document.getElementById('root'));
 ```
 
-> Note: `useRef` could be omitted here by setting [`pure`](#pure) to `false`.
+> Note: `useRef` could be omitted here by setting [`freezeProps`](#freezeprops) to `true`.
 
 [Live Demo](https://codesandbox.io/s/kyLRX0yX)
 
@@ -154,7 +154,7 @@ ReactDOM.render(<MyComponent />, document.getElementById('root'));
 | [**overtime**](#overtime)           |                 `boolean`                 |    `false`    | Counts down to infinity                                                                                                    |
 | [**renderer**](#renderer)\*         |                `function`                 |  `undefined`  | Custom renderer callback                                                                                                   |
 | [**now**](#now)                     |                `function`                 |  `Date.now`   | Alternative handler for the current date                                                                                   |
-| [**pure**](#pure)                   |                 `boolean`                 |    `true`     | Respect prop changes                                                                                                       |
+| [**freezeProps**](#freezeprops)     |                 `boolean`                 |    `false`    | Ignore all prop changes after mount                                                                                        |
 | [**onMount**](#onmount)             |                `function`                 |  `undefined`  | Callback when component mounts                                                                                             |
 | [**onStart**](#onstart)             |                `function`                 |  `undefined`  | Callback when countdown starts                                                                                             |
 | [**onPause**](#onpause)             |                `function`                 |  `undefined`  | Callback when countdown pauses                                                                                             |
@@ -247,11 +247,11 @@ The render props object consists of the current time delta object, the countdown
 
 If the current date and time (determined via a reference to `Date.now`) is not the right thing to compare with for you, a reference to a custom function that returns a similar dynamic value could be provided as an alternative.
 
-### `pure`
+### `freezeProps`
 
-By default, the countdown component and [`useCountdown`](#hook) Hook act like pure functions with respect to their props. This means that whenever an input prop changes, the countdown will update accordingly and re-render itself based on the new conditions.
+By default, the countdown component and [`useCountdown`](#hook) Hook track their props. This means that whenever an input prop changes, the countdown will update accordingly and re-render itself based on the new conditions.
 
-However, this behavior is not always desired and sometimes requires more lines of code than needed, which is why it can be turned off as well. With `pure` set to `false`, the countdown ignores all prop changes after mounting and keeps running from its initial props — so a `date` that gets recomputed on every render no longer restarts it, without having to persist it yourself. Note that this applies to _every_ prop, so other changes (e.g. [`daysInHours`](#daysinhours) or a callback) also won't take effect while `pure` is `false`.
+However, this behavior is not always desired and sometimes requires more lines of code than needed, which is why it can be turned off as well. With `freezeProps` set to `true`, the countdown ignores all prop changes after mounting and keeps running from its initial props — so a `date` that gets recomputed on every render no longer restarts it, without having to persist it yourself. Note that this applies to _every_ prop, so other changes (e.g. [`daysInHours`](#daysinhours) or a callback) also won't take effect while `freezeProps` is `true`.
 
 Read more about this _"issue"_ [here](#why-does-my-countdown-reset-on-every-re-render-).
 
@@ -416,7 +416,7 @@ In order to avoid this from happening, it should be stored in a place that persi
 
 When using function components with the [`useCountdown`](#hook) Hook, the date could be persisted via React's [`useRef`](https://reactjs.org/docs/hooks-reference.html#useref) before it gets passed in.
 
-Alternatively, the countdown is providing a [`pure`](#pure) prop to turn off this behavior so that aforementioned precautions don't necessarily have to be taken manually.
+Alternatively, the countdown is providing a [`freezeProps`](#freezeprops) prop to turn off this behavior so that aforementioned precautions don't necessarily have to be taken manually.
 
 ### Why aren't my values formatted when using the custom [`renderer`](#renderer)?
 

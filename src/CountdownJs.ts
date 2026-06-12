@@ -17,7 +17,7 @@ export interface CountdownProps extends CountdownTimeDeltaFormatOptions {
   readonly overtime?: boolean;
   readonly renderer?: CountdownRendererFn;
   readonly now?: () => number;
-  readonly pure?: boolean;
+  readonly freezeProps?: boolean;
   readonly onMount?: CountdownTimeDeltaFn;
   readonly onStart?: CountdownTimeDeltaFn;
   readonly onPause?: CountdownTimeDeltaFn;
@@ -101,7 +101,7 @@ export default class CountdownJs {
   update = (props: CountdownProps): boolean => {
     const nextProps = this.computeProps(props);
 
-    if (nextProps.pure && !this.shallowCompare(nextProps, this.props)) {
+    if (!nextProps.freezeProps && !this.shallowCompare(nextProps, this.props)) {
       if (this.props.date !== nextProps.date) {
         this.initialTimestamp = this.calcOffsetStartTimestamp();
         this.offsetStartTimestamp = this.initialTimestamp;
@@ -194,7 +194,7 @@ export default class CountdownJs {
       intervalDelay: 1000,
       precision: 0,
       autoStart: true,
-      pure: true,
+      freezeProps: false,
       ...props,
     };
   }
