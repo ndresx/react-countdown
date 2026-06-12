@@ -25,6 +25,21 @@ npm install react-countdown --save
 yarn add react-countdown
 ```
 
+### Imports
+
+The package ships as both ES modules and CommonJS, is fully typed, and is side-effect free, so bundlers can tree-shake it. Import the component and the [`useCountdown`](#hook) Hook from the package root:
+
+```js
+import Countdown, { useCountdown } from 'react-countdown';
+```
+
+If you only need one of them, dedicated entry points let your bundler include just that part (plus the shared core) and leave the rest out:
+
+```js
+import Countdown from 'react-countdown/component';
+import { useCountdown } from 'react-countdown/hook';
+```
+
 ## Motivation
 
 As part of a small web app at first, the idea was to separate the countdown component from the main package to combine general aspects of the development with React, testing with Jest and more things that relate to publishing a new Open Source project.
@@ -107,7 +122,7 @@ If you prefer React Hooks over normal components, you can also use the built-in 
 ```js
 import React, { useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { useCountdown } from 'react-countdown-now';
+import { useCountdown } from 'react-countdown';
 
 // Function component
 const MyComponent = () => {
@@ -406,14 +421,6 @@ Alternatively, the countdown is providing a [`pure`](#pure) prop to turn off thi
 ### Why aren't my values formatted when using the custom [`renderer`](#renderer)?
 
 The [`renderer`](#renderer) callback gets called with a [time delta object](#calctimedelta) that also consists of a `formatted` object which holds these formatted values.
-
-### Can I still use the countdown with an older version of React?
-
-If you are running a React version lower than 16.8.0 (introduction of Hooks) and started to encounter a problem when trying to use the countdown, the `Countdown` component itself can also be imported in the following way:
-
-```js
-import Countdown from 'react-countdown-now/dist/Countdown';
-```
 
 ### Why do I get this error `"Warning: Text content did not match..."`?
 

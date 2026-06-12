@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import Countdown, { CountdownRendererFn } from '../dist';
+import Countdown, { CountdownRendererFn } from '../dist/component';
 
 interface CountdownApiExampleState {
   readonly date: number;

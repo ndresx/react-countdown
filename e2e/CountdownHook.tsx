@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 
-import { useCountdown, CountdownProps } from '../dist';
+import { useCountdown, UseCountdownProps } from '../dist/hook';
 
-export const CountdownHookBasicUsage: React.FC<CountdownProps> = (props) => {
+export const CountdownHookBasicUsage: React.FC<UseCountdownProps> = (props) => {
   const { hours, minutes, seconds } = useCountdown(props);
   return (
     <>
@@ -11,9 +11,8 @@ export const CountdownHookBasicUsage: React.FC<CountdownProps> = (props) => {
   );
 };
 
-export const CountdownHookCompletionist: React.FC<CountdownProps> = () => {
+export const CountdownHookCompletionist: React.FC<UseCountdownProps> = () => {
   const props = useRef({ date: Date.now() + 5000 });
-  // eslint-disable-next-line react/prop-types
   const { hours, minutes, seconds, api } = useCountdown(props.current);
   return <span>{api.isCompleted() ? 'Completionist!' : `${hours}:${minutes}:${seconds}`}</span>;
 };

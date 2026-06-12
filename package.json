@@ -3,8 +3,27 @@
   "version": "3.0.0-beta",
   "description": "A customizable countdown component for React.",
   "main": "./dist/index.js",
-  "module": "./dist/index.es.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./hook": {
+      "types": "./dist/hook.d.ts",
+      "import": "./dist/hook.mjs",
+      "require": "./dist/hook.js"
+    },
+    "./component": {
+      "types": "./dist/component.d.ts",
+      "import": "./dist/component.mjs",
+      "require": "./dist/component.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "/dist"
   ],
@@ -34,6 +53,7 @@
     "eslint:fix": "yarn eslint --fix",
     "lint": "yarn lint:eslint && yarn lint:prettier && yarn lint:tsc",
     "lint:eslint": "yarn eslint",
+    "lint:fix": "yarn eslint:fix && yarn prettier:fix && yarn lint:tsc",
     "lint:prettier": "yarn prettier",
     "lint:tsc": "tsc --noEmit",
     "prettier": "prettier --list-different ./{src,examples,cypress,e2e}/**/*.{ts,tsx}",
@@ -45,7 +65,8 @@
     "test:e2e:clean": "rm -rf ./e2e/dist",
     "test:e2e:dev": "yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress open\"",
     "test:e2e:server": "parcel ./e2e/index.html --dist-dir ./e2e/dist",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "verify": "yarn lint:fix && yarn test"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -54,6 +75,8 @@
     "@babel/preset-typescript": "^7.24.7",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^8.57.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^12.1.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/react-hooks": "^8.0.1",
@@ -82,10 +105,10 @@
     "react-dom": "^18.3.1",
     "react-test-renderer": "^18.3.1",
     "rollup": "^4.20.0",
-    "rollup-plugin-babel": "^4.3.3",
-    "rollup-plugin-typescript2": "^0.36.0",
+    "rollup-plugin-dts": "^6.1.1",
     "start-server-and-test": "^2.0.5",
     "ts-jest": "^29.2.4",
+    "tslib": "^2.6.3",
     "typescript": "^5.5.4"
   },
   "peerDependencies": {
