@@ -7,6 +7,7 @@ A customizable countdown component for React.
 - [Examples](#examples)
 - [Props](#props)
 - [Hook](#hook)
+- [Lifecycle Callbacks](#lifecycle-callbacks)
 - [API Reference](#api-reference)
 - [Helpers](#helpers)
 - [FAQ](#faq)
@@ -42,7 +43,7 @@ import { useCountdown } from 'react-countdown/hook';
 
 ## Motivation
 
-As part of a small web app at first, the idea was to separate the countdown component from the main package to combine general aspects of the development with React, testing with Jest and more things that relate to publishing a new Open Source project.
+This countdown started as part of a small web app. Extracting it into its own package was a way to explore the broader aspects of building with React, testing with Jest, and publishing an open source project.
 
 ## Examples
 
@@ -53,11 +54,10 @@ Here are some examples which you can try directly online. You can also clone thi
 A very simple and minimal example of how to set up a countdown that counts down from 10 seconds.
 
 ```js
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Countdown from 'react-countdown';
 
-ReactDOM.render(<Countdown date={Date.now() + 10000} />, document.getElementById('root'));
+createRoot(document.getElementById('root')).render(<Countdown date={Date.now() + 10000} />);
 ```
 
 [Live Demo](https://codesandbox.io/s/cool-fermat-uk0dq)
@@ -67,8 +67,7 @@ ReactDOM.render(<Countdown date={Date.now() + 10000} />, document.getElementById
 In case you want to change the output of the component, or want to signal that the countdown's work is done, you can do this by defining an [`onComplete`](#oncomplete) callback and/or custom [`renderer`](#renderer).
 
 ```js
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Countdown from 'react-countdown';
 
 // Random component
@@ -85,9 +84,8 @@ const renderer = ({ hours, minutes, seconds, completed }) => {
   );
 };
 
-ReactDOM.render(
-  <Countdown date={Date.now() + 5000} renderer={renderer} />,
-  document.getElementById('root')
+createRoot(document.getElementById('root')).render(
+  <Countdown date={Date.now() + 5000} renderer={renderer} />
 );
 ```
 
@@ -98,18 +96,16 @@ ReactDOM.render(
 Here is an example with a countdown of 10 seconds that displays the total time difference in milliseconds. In order to display the milliseconds appropriately, the [`intervalDelay`](#intervaldelay) value needs to be lower than `1000`ms and a [`precision`](#precision) of `1` to `3` should be used. Last but not least, a simple [`renderer`](#renderer) callback needs to be set up.
 
 ```js
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Countdown from 'react-countdown';
 
-ReactDOM.render(
+createRoot(document.getElementById('root')).render(
   <Countdown
     date={Date.now() + 10000}
     intervalDelay={0}
     precision={3}
-    renderer={props => <div>{props.total}</div>}
-  />,
-  document.getElementById('root')
+    renderer={(props) => <div>{props.total}</div>}
+  />
 );
 ```
 
@@ -120,11 +116,10 @@ ReactDOM.render(
 A stopwatch is simply a countdown with [`overtime`](#overtime) enabled that starts at the current time: the time delta immediately crosses `0` and keeps running, so the elapsed time counts up. Because the [render props'](#render-props) `formatted` values are based on the absolute time delta, rendering them (instead of relying on the default renderer, which prefixes a `-` once `total` turns negative) reads as a regular count-up timer. The countdown's `api` ([`start()`](#start), [`pause()`](#pause), [`stop()`](#stop)) works unchanged.
 
 ```js
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Countdown from 'react-countdown';
 
-ReactDOM.render(
+createRoot(document.getElementById('root')).render(
   <Countdown
     date={Date.now()}
     overtime
@@ -139,8 +134,7 @@ ReactDOM.render(
         <button onClick={api.pause}>Pause</button>
       </div>
     )}
-  />,
-  document.getElementById('root')
+  />
 );
 ```
 
@@ -151,8 +145,8 @@ ReactDOM.render(
 If you prefer React Hooks over normal components, you can also use the built-in [`useCountdown`](#hook) Hook to render and control the countdown.
 
 ```js
-import React, { useRef } from 'react';
-import ReactDOM from 'react-dom';
+import { useRef } from 'react';
+import { createRoot } from 'react-dom/client';
 import { useCountdown } from 'react-countdown';
 
 // Function component
@@ -162,7 +156,7 @@ const MyComponent = () => {
   return <span>{api.isCompleted() ? 'Completionist!' : `${hours}:${minutes}:${seconds}`} </span>;
 };
 
-ReactDOM.render(<MyComponent />, document.getElementById('root'));
+createRoot(document.getElementById('root')).render(<MyComponent />);
 ```
 
 > Note: `useRef` could be omitted here by setting [`freezeProps`](#freezeprops) to `true`.
@@ -297,9 +291,9 @@ const { total, api } = useCountdown(props);
 
 Using the Hook gives direct access to the countdown's [API](#api-reference), current [time delta object](#calctimedelta), formatted values and more as part of the [render props](#render-props) object.
 
-## API Reference
+## Lifecycle Callbacks
 
-The countdown component exposes a simple control API as `api` on the component `ref` (e.g. `ref.current.api.start()`). The same `api` object is also part of the [render props](#render-props) passed into a custom [`renderer`](#renderer) and returned by the [`useCountdown`](#hook) Hook. Type a `ref` with the exported `CountdownHandle` type.
+The countdown invokes a set of optional lifecycle callbacks that you pass as props (also listed in the [props](#props) table). Each one receives a [time delta object](#calctimedelta) as its first argument; [`onComplete`](#oncomplete) additionally receives a second argument.
 
 ### `onMount`
 
@@ -327,7 +321,7 @@ The countdown component exposes a simple control API as `api` on the component `
 
 ## API Reference
 
-The countdown component exposes a simple control API as `api` on the component `ref` (e.g. `ref.current.api.start()`). The same `api` object is also part (`api`) of the [render props](#render-props) passed into [`renderer`](#renderer) if needed. Here's an [example](https://github.com/ndresx/react-countdown/blob/master/examples/src/CountdownApi.tsx) of how to use it.
+The countdown exposes a small control API as `api`. It is the same object reached three ways: on the component `ref` as `ref.current.api` (e.g. `ref.current.api.start()`; type the `ref` with the exported [`CountdownHandle`](#getting-started) type), inside a custom [`renderer`](#renderer) via the [render props](#render-props), and as part of the object returned by the [`useCountdown`](#hook) Hook. Here's an [example](https://github.com/ndresx/react-countdown/blob/master/examples/src/CountdownApi.tsx) of how to use it.
 
 ### `start()`
 
@@ -341,6 +335,10 @@ Pauses the running countdown. This only works as expected if the [`controlled`](
 
 Stops the countdown. This only works as expected if the [`controlled`](#controlled) prop is set to `false` because [`calcTimeDelta`](#calctimedelta) calculates an offset time internally.
 
+### `isStarted()`
+
+Returns a `boolean` for whether the countdown is currently started (running) or not.
+
 ### `isPaused()`
 
 Returns a `boolean` for whether the countdown has been paused or not.
@@ -353,7 +351,15 @@ Returns a `boolean` for whether the countdown has been stopped or not.
 
 Returns a `boolean` for whether the countdown has been completed or not.
 
-> Please note that this will always return `false` if [`overtime`](#overtime) is `true`. Nevertheless, an into overtime running countdown's completed state can still be looking at the time delta object's `completed` value.
+> Please note that this will always return `false` if [`overtime`](#overtime) is `true`. Nevertheless, when [`overtime`](#overtime) is enabled, the countdown's completed state can still be read from the time delta object's `completed` value.
+
+<a name="countdownstatus"></a>
+
+### `getStatus()`
+
+Returns the countdown's current status as a `CountdownStatus` enum value: `STARTED`, `PAUSED`, `STOPPED`, or `COMPLETED`. Use this when you need the exact state rather than one of the boolean predicates above. The `CountdownStatus` enum is exported from the package (and from the `react-countdown/component` and `react-countdown/hook` entry points) for typing and comparison.
+
+> Like [`isCompleted()`](#iscompleted), the status never becomes `COMPLETED` while [`overtime`](#overtime) is `true`, since the countdown keeps running past zero.
 
 ## Helpers
 
@@ -387,7 +393,7 @@ const renderer = ({ hours, minutes, seconds }) => (
 }
 ```
 
-The `total` value is the absolute time difference in milliseconds, whereas the other time-related values contain their relative portion of the current time difference. The `completed` value signalizes whether the countdown reached its initial end or not.
+The `total` value is the absolute time difference in milliseconds, whereas the other time-related values contain their relative portion of the current time difference. The `completed` value indicates whether the countdown reached its initial end or not.
 
 The `calcTimeDelta` function accepts two arguments in total; only the first one is required.
 
@@ -444,7 +450,7 @@ A common reason for this is that the [`date`](#date) prop gets passed directly i
 
 In order to avoid this from happening, it should be stored in a place that persists throughout lifecycle changes, for example, in the component's local `state`.
 
-When using function components with the [`useCountdown`](#hook) Hook, the date could be persisted via React's [`useRef`](https://reactjs.org/docs/hooks-reference.html#useref) before it gets passed in.
+When using function components with the [`useCountdown`](#hook) Hook, the date could be persisted via React's [`useRef`](https://react.dev/reference/react/useRef) before it gets passed in.
 
 Alternatively, the countdown is providing a [`freezeProps`](#freezeprops) prop to turn off this behavior so that aforementioned precautions don't necessarily have to be taken manually.
 
