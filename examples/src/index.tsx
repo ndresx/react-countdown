@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import Countdown, { CountdownRenderProps } from 'react-countdown';
 import ControlledCountdown from './ControlledCountdown';
 import CountdownApi from './CountdownApi';
+import CountdownRef from './CountdownRef';
 
 // Random component
 const Completionist = () => <span>You are good to go!</span>;
@@ -55,6 +56,9 @@ class App extends React.PureComponent {
         />
         <hr />
         <CountdownApi />
+        <hr />
+        <h3>Imperative Control via Ref</h3>
+        <CountdownRef />
       </>
     );
   }
