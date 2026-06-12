@@ -3,6 +3,7 @@
 exports[`useCountdown should use countdown 1`] = `
 {
   "api": {
+    "getStatus": [Function],
     "isCompleted": [Function],
     "isPaused": [Function],
     "isStarted": [Function],
@@ -29,6 +30,7 @@ exports[`useCountdown should use countdown 1`] = `
     "daysInHours": false,
     "freezeProps": false,
     "intervalDelay": 1000,
+    "overtime": false,
     "precision": 0,
     "zeroPadTime": 2,
   },

@@ -2,9 +2,9 @@ import { useEffect, useRef, useSyncExternalStore } from 'react';
 
 import CountdownJs, { CountdownProps, CountdownRenderProps } from './CountdownJs';
 
-export interface UseCountdownProps extends Omit<CountdownProps, 'renderer'> {}
+export type UseCountdownProps = Omit<CountdownProps, 'renderer'>;
 
-export interface UseCountdownResult extends CountdownRenderProps {}
+export type UseCountdownResult = CountdownRenderProps;
 
 export default function useCountdown(props: UseCountdownProps): UseCountdownResult {
   const countdownRef = useRef<CountdownJs | null>(null);

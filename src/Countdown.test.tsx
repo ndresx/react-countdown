@@ -1,20 +1,29 @@
 import * as React from 'react';
 import { act, render, RenderResult } from '@testing-library/react';
 
-const ActualCountdownJs = jest.requireActual('./CountdownJs').default;
+const actualCountdownJs = jest.requireActual('./CountdownJs');
 // The ref now exposes only `{ api }`, so capture the CountdownJs instance the
 // component creates to keep the white-box assertions below.
 let lastInstance: CountdownJs;
 
-jest.mock('./CountdownJs', () => {
-  return jest.fn().mockImplementation((props) => {
-    lastInstance = new ActualCountdownJs(props);
+// Mock only the default export (the CountdownJs class) to capture instances,
+// while keeping the real named exports (e.g. CountdownStatus) intact.
+jest.mock('./CountdownJs', () => ({
+  __esModule: true,
+  ...actualCountdownJs,
+  default: jest.fn().mockImplementation((props) => {
+    lastInstance = new actualCountdownJs.default(props);
     return lastInstance;
-  });
-});
+  }),
+}));
 
 import Countdown, { CountdownHandle } from './Countdown';
-import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './CountdownJs';
+import CountdownJs, {
+  CountdownProps,
+  CountdownState,
+  CountdownApi,
+  CountdownStatus,
+} from './CountdownJs';
 import { calcTimeDelta } from './utils';
 import { mockDateNow, defaultStats } from './fixtures';
 
@@ -549,6 +558,7 @@ describe('<Countdown />', () => {
     expect(api.isPaused()).toBe(false);
     expect(api.isStopped()).toBe(true);
     expect(api.isCompleted()).toBe(false);
+    expect(api.getStatus()).toBe(CountdownStatus.STOPPED);
     expect(obj.offsetStartTimestamp).toBe(countdownDate - countdownMs);
     expect(obj.offsetTime).toBe(0);
 
@@ -558,6 +568,7 @@ describe('<Countdown />', () => {
     expect(api.isPaused()).toBe(false);
     expect(api.isStopped()).toBe(false);
     expect(api.isCompleted()).toBe(false);
+    expect(api.getStatus()).toBe(CountdownStatus.STARTED);
     expect(obj.offsetStartTimestamp).toBe(0);
     expect(obj.offsetTime).toBe(0);
 

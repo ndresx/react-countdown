@@ -6,6 +6,7 @@ export type {
   CountdownTimeDeltaFormatOptions,
 } from './utils';
 
+export { CountdownStatus } from './CountdownJs';
 export type {
   CountdownProps,
   CountdownRendererFn,

@@ -36,7 +36,7 @@ export type CountdownRendererFn = (props: CountdownRenderProps) => React.ReactNo
 
 export type CountdownTimeDeltaFn = (timeDelta: CountdownTimeDelta) => void;
 
-const enum CountdownStatus {
+export enum CountdownStatus {
   STARTED = 'STARTED',
   PAUSED = 'PAUSED',
   STOPPED = 'STOPPED',
@@ -56,6 +56,7 @@ export interface CountdownApi {
   readonly isPaused: () => boolean;
   readonly isStopped: () => boolean;
   readonly isCompleted: () => boolean;
+  readonly getStatus: () => CountdownStatus;
 }
 
 /**
@@ -197,6 +198,7 @@ export default class CountdownJs {
       intervalDelay: 1000,
       precision: 0,
       autoStart: true,
+      overtime: false,
       freezeProps: false,
       ...props,
     };
@@ -216,6 +218,10 @@ export default class CountdownJs {
 
   isCompleted = (): boolean => {
     return this.isStatus(CountdownStatus.COMPLETED);
+  };
+
+  getStatus = (): CountdownStatus => {
+    return this.state.status;
   };
 
   isStatus(status: CountdownStatus): boolean {
@@ -270,6 +276,7 @@ export default class CountdownJs {
       isPaused: this.isPaused,
       isStopped: this.isStopped,
       isCompleted: this.isCompleted,
+      getStatus: this.getStatus,
     });
   }
 
