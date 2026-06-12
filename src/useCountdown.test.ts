@@ -22,7 +22,7 @@ jest.mock('./CountdownJs', () => {
   });
 });
 
-import useCountdown, { UseCountdownProps } from './useCountdown';
+import useCountdown, { UseCountdownProps, UseCountdownResult } from './useCountdown';
 import { calcTimeDelta } from './utils';
 import { mockDateNow, defaultStats } from './fixtures';
 
@@ -71,7 +71,7 @@ describe('useCountdown', () => {
   });
 
   it('should respect hook lifecycle', async () => {
-    const { result, rerender } = renderHook(hookCallback, {
+    const { result, rerender } = renderHook<UseCountdownResult, UseCountdownProps>(hookCallback, {
       initialProps: { date: countdownDate, intervalDelay: 1111 },
     });
 

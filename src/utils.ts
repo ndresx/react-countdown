@@ -19,8 +19,10 @@ export interface CountdownTimeUnits<T = number> {
   readonly milliseconds: T;
 }
 
-export interface CountdownTimeDeltaFormatted
-  extends Omit<CountdownTimeUnits<string>, 'milliseconds'> {}
+export interface CountdownTimeDeltaFormatted extends Omit<
+  CountdownTimeUnits<string>,
+  'milliseconds'
+> {}
 
 export interface CountdownTimeDeltaFormatOptions {
   readonly daysInHours?: boolean;
