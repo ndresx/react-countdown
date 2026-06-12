@@ -34,8 +34,11 @@ jobs:
       - name: Install
         run: yarn install
 
-      - name: 'Lint: ESLint'
-        run: yarn eslint
+      - name: 'Lint: oxlint'
+        run: yarn lint:oxlint
+
+      - name: 'Lint: oxfmt'
+        run: yarn lint:oxfmt
 
       - name: 'Lint: TypeScript'
         run: yarn lint:tsc

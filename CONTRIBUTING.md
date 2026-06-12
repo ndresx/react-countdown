@@ -28,10 +28,16 @@ Once you have forked the project and checked it out locally, create a new branch
 
 ### Linting
 
-You can run the linting tools with the following command:
+Linting (oxlint), format checking (oxfmt), and type-checking (`tsc`) all run via:
 
 ```sh
 yarn lint
+```
+
+To auto-fix lint and formatting issues before committing:
+
+```sh
+yarn lint:fix
 ```
 
 ### Tests

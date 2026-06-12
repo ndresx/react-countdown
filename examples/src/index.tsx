@@ -32,11 +32,6 @@ class App extends React.PureComponent {
         <h3>Basic Usage</h3>
         <Countdown date={Date.now() + 10000} />
         <hr />
-        <h3>Custom & Conditional Rendering</h3>
-        <h4>Using a React Child for the Completed State</h4>
-        <Countdown date={Date.now() + 5000}>
-          <Completionist />
-        </Countdown>
         <h3>Custom Renderer with Completed Condition</h3>
         <Countdown date={Date.now() + 5000} renderer={renderer} />
         <hr />

@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "jest", "import", "jsx-a11y"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2021": true,
+    "jest": true
+  },
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "no-unused-expressions": ["error", { "allowShortCircuit": true }],
+    "typescript/no-non-null-assertion": "off"
+  }
+}
