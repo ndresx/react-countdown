@@ -17,6 +17,7 @@ export type {
 import Countdown from './Countdown';
 
 export default Countdown;
+export type { CountdownHandle } from './Countdown';
 
 import useCountdown from './useCountdown';
 

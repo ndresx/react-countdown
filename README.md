@@ -269,7 +269,7 @@ Using the Hook gives direct access to the countdown's [API](#api-reference), cur
 
 ## API Reference
 
-The countdown component exposes a simple API through the `getApi()` function that can be accessed via component `ref`. It is also available through the into a custom [`renderer`](#renderer) or [`useCountdown`](#hook) passed [render props](#render-props).
+The countdown component exposes a simple control API as `api` on the component `ref` — e.g. `ref.current.api.start()`. The same `api` object is also part of the [render props](#render-props) passed into a custom [`renderer`](#renderer) and returned by the [`useCountdown`](#hook) Hook. Type a `ref` with the exported `CountdownHandle` type.
 
 ### `onMount`
 
@@ -297,7 +297,7 @@ The countdown component exposes a simple API through the `getApi()` function tha
 
 ## API Reference
 
-The countdown component exposes a simple API through the `getApi()` function that can be accessed via component `ref`. It is also part (`api`) of the [render props](#render-props) passed into [`renderer`](#renderer) if needed. Here's an [example](https://github.com/ndresx/react-countdown/blob/master/examples/src/CountdownApi.tsx) of how to use it.
+The countdown component exposes a simple control API as `api` on the component `ref` — e.g. `ref.current.api.start()`. The same `api` object is also part (`api`) of the [render props](#render-props) passed into [`renderer`](#renderer) if needed. Here's an [example](https://github.com/ndresx/react-countdown/blob/master/examples/src/CountdownApi.tsx) of how to use it.
 
 ### `start()`
 

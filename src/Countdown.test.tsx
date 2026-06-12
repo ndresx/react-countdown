@@ -1,7 +1,19 @@
 import * as React from 'react';
 import { act, render, RenderResult } from '@testing-library/react';
 
-import Countdown from './Countdown';
+const ActualCountdownJs = jest.requireActual('./CountdownJs').default;
+// The ref now exposes only `{ api }`, so capture the CountdownJs instance the
+// component creates to keep the white-box assertions below.
+let lastInstance: CountdownJs;
+
+jest.mock('./CountdownJs', () => {
+  return jest.fn().mockImplementation((props) => {
+    lastInstance = new ActualCountdownJs(props);
+    return lastInstance;
+  });
+});
+
+import Countdown, { CountdownHandle } from './Countdown';
 import CountdownJs, { CountdownProps, CountdownState, CountdownApi } from './CountdownJs';
 import { calcTimeDelta } from './utils';
 import { mockDateNow, defaultStats } from './fixtures';
@@ -11,7 +23,7 @@ const { now, timeDiff } = mockDateNow();
 describe('<Countdown />', () => {
   jest.useFakeTimers();
 
-  let countdownRef: React.RefObject<Countdown>;
+  let countdownRef: React.RefObject<CountdownHandle>;
   let container: RenderResult['container'];
   let unmount: RenderResult['unmount'];
   let rerender: RenderResult['rerender'];
@@ -19,11 +31,11 @@ describe('<Countdown />', () => {
   const countdownMs = 10000;
 
   function getCountdownJsInstance(): CountdownJs {
-    return countdownRef.current!.countdown;
+    return lastInstance;
   }
 
   function getCountdownApi(): CountdownApi {
-    return countdownRef.current!.getApi();
+    return countdownRef.current!.api;
   }
 
   function getCountdownJsState(): CountdownState {
@@ -33,7 +45,7 @@ describe('<Countdown />', () => {
   beforeEach(() => {
     Date.now = now;
     countdownDate = Date.now() + countdownMs;
-    countdownRef = React.createRef<Countdown>();
+    countdownRef = React.createRef<CountdownHandle>();
   });
 
   it('should render a simple countdown', () => {
@@ -101,7 +113,12 @@ describe('<Countdown />', () => {
     expect(onTick.mock.calls.length).toBe(6);
     expect(getCountdownJsState().timeDelta.total).toBe(6000);
 
-    act(() => getCountdownJsInstance().update({ date: countdownDate }));
+    act(() =>
+      getCountdownJsInstance().update({
+        ...getCountdownJsInstance().getProps(),
+        date: countdownDate,
+      })
+    );
     expect(container).toMatchSnapshot();
 
     // Forward 3 more seconds
