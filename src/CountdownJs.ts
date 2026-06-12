@@ -59,11 +59,14 @@ export interface CountdownApi {
 }
 
 /**
- * A customizable countdown component for React.
+ * Framework-agnostic countdown engine and external store.
+ *
+ * Holds all countdown logic and state, exposes a `subscribe`/`getState`/
+ * `setState` store interface plus the control API, and knows nothing about
+ * React. The `useCountdown` Hook is the React adapter on top of it.
  *
  * @export
- * @class Countdown
- * @extends {React.Component}
+ * @class CountdownJs
  */
 export default class CountdownJs {
   props: CountdownProps;
@@ -129,7 +132,7 @@ export default class CountdownJs {
 
   calcTimeDelta(): CountdownTimeDelta {
     const { date, now, precision, controlled, overtime } = this.props;
-    return calcTimeDelta(date!, {
+    return calcTimeDelta(date, {
       now,
       precision,
       controlled,
@@ -223,14 +226,8 @@ export default class CountdownJs {
     const keysA = Object.keys(objA);
     return (
       keysA.length === Object.keys(objB).length &&
-      !keysA.some((keyA) => {
-        const valueA = objA[keyA];
-        const valueB = objB[keyA];
-        return (
-          !objB.hasOwnProperty(keyA) ||
-          !(valueA === valueB || (valueA !== valueA && valueB !== valueB)) // NaN !== NaN
-        );
-      })
+      // Object.is treats NaN as equal to itself, which a plain === would not.
+      !keysA.some((key) => !objB.hasOwnProperty(key) || !Object.is(objA[key], objB[key]))
     );
   }
 

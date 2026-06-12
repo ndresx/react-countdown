@@ -19,9 +19,18 @@ const renderer: CountdownRendererFn = ({ hours, minutes, seconds, completed }) =
   );
 };
 
+// Stopwatch renderer: `formatted` is abs-based, so it counts up without the
+// leading minus sign the default renderer would add once the delta goes negative.
+const stopwatchRenderer: CountdownRendererFn = ({ formatted }) => (
+  <span>
+    {formatted.hours}:{formatted.minutes}:{formatted.seconds}
+  </span>
+);
+
 class App extends React.PureComponent {
   render() {
-    const date = Date.now() + 5000;
+    const now = Date.now();
+    const date = now + 5000;
     return (
       <>
         <h1>React {'<Countdown />'} (E2E)</h1>
@@ -51,6 +60,14 @@ class App extends React.PureComponent {
           </h2>
           <div id="overtime">
             <Countdown date={date} overtime={true} />
+          </div>
+        </section>
+        <section>
+          <h2>
+            Stopwatch (<code>overtime</code> starting at zero)
+          </h2>
+          <div id="stopwatch">
+            <Countdown date={now} overtime={true} daysInHours={true} renderer={stopwatchRenderer} />
           </div>
         </section>
         <section>

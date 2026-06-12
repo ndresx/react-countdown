@@ -5,6 +5,7 @@ import Countdown, { CountdownRenderProps } from 'react-countdown';
 import ControlledCountdown from './ControlledCountdown';
 import CountdownApi from './CountdownApi';
 import CountdownRef from './CountdownRef';
+import Stopwatch from './Stopwatch';
 
 // Random component
 const Completionist = () => <span>You are good to go!</span>;
@@ -56,6 +57,12 @@ class App extends React.PureComponent {
         />
         <hr />
         <CountdownApi />
+        <hr />
+        <h3>Overtime (counts past zero)</h3>
+        <Countdown date={Date.now() + 5000} overtime />
+        <hr />
+        <h3>Stopwatch (overtime starting at zero)</h3>
+        <Stopwatch />
         <hr />
         <h3>Imperative Control via Ref</h3>
         <CountdownRef />

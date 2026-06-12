@@ -57,6 +57,19 @@ describe('React <Countdown />', () => {
     });
   });
 
+  describe('Stopwatch (overtime starting at zero)', () => {
+    it('should count up from zero', () => {
+      cyGetAs('#stopwatch');
+
+      for (let i = 0; i <= 5; i++) {
+        cyGet().should('have.text', `00:00:0${i}`);
+        cy.tick(1000);
+      }
+
+      cyGet().should('have.text', '00:00:06');
+    });
+  });
+
   describe('Countdown Hook (useCountdown)', () => {
     it('should render final state', () => {
       cyGetAs('#hook-basic-usage');
