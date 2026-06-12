@@ -1,7 +1,8 @@
 {
   "name": "react-countdown",
-  "version": "3.0.0-beta",
+  "version": "3.0.0-beta.0",
   "description": "A customizable countdown component for React.",
+  "packageManager": "pnpm@10.30.1",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -45,30 +46,26 @@
     "hook"
   ],
   "scripts": {
-    "build": "yarn build:clean && yarn rollup --config",
-    "build:clean": "rm -rf ./dist && yarn test:e2e:clean && mkdir dist",
-    "build:watch": "yarn build --watch",
-    "clean": "rm -rf ./node_modules && rm -rf ./coverage && yarn build:clean",
-    "lint": "yarn lint:oxlint && yarn lint:oxfmt && yarn lint:tsc",
+    "build": "pnpm build:clean && rollup --config",
+    "build:clean": "rm -rf ./dist && pnpm test:e2e:clean && mkdir dist",
+    "build:watch": "pnpm build --watch",
+    "clean": "rm -rf ./node_modules && rm -rf ./coverage && pnpm build:clean",
+    "lint": "pnpm lint:oxlint && pnpm lint:oxfmt && pnpm lint:tsc",
     "lint:oxlint": "oxlint",
     "lint:oxfmt": "oxfmt --check './**/*.{ts,tsx}'",
     "lint:tsc": "tsc --noEmit",
     "lint:fix": "oxlint --fix && oxfmt './**/*.{ts,tsx}' && tsc --noEmit",
     "test": "jest",
-    "test:all": "yarn test && yarn test:e2e",
+    "test:all": "pnpm test && pnpm test:e2e",
     "test:coverage": "jest --coverage",
-    "test:e2e": "yarn build && yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress run\"",
+    "test:e2e": "pnpm build && start-server-and-test test:e2e:server http://localhost:1234 \"cypress run\"",
     "test:e2e:clean": "rm -rf ./e2e/dist",
-    "test:e2e:dev": "yarn start-server-and-test test:e2e:server http://localhost:1234 \"cypress open\"",
+    "test:e2e:dev": "start-server-and-test test:e2e:server http://localhost:1234 \"cypress open\"",
     "test:e2e:server": "parcel ./e2e/index.html --dist-dir ./e2e/dist",
     "test:watch": "jest --watch",
-    "verify": "yarn lint:fix && yarn test"
+    "verify": "pnpm lint:fix && pnpm test"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.7",
-    "@babel/preset-env": "^7.29.7",
-    "@babel/preset-react": "^7.29.7",
-    "@babel/preset-typescript": "^7.29.7",
     "@rollup/plugin-node-resolve": "^15.3.1",
     "@rollup/plugin-typescript": "^12.3.0",
     "@testing-library/dom": "^10.4.1",
@@ -95,5 +92,14 @@
   "peerDependencies": {
     "react": ">= 18",
     "react-dom": ">= 18"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@swc/core",
+      "cypress",
+      "lmdb",
+      "msgpackr-extract"
+    ]
   }
 }

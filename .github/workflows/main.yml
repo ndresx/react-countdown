@@ -14,34 +14,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - name: Use Node.js 24.x
         uses: actions/setup-node@v4
         with:
           node-version: 24
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: "pnpm"
 
       - name: Install
-        run: yarn install
+        run: pnpm install --frozen-lockfile
 
       - name: "Lint: oxlint"
-        run: yarn lint:oxlint
+        run: pnpm lint:oxlint
 
       - name: "Lint: oxfmt"
-        run: yarn lint:oxfmt
+        run: pnpm lint:oxfmt
 
       - name: "Lint: TypeScript"
-        run: yarn lint:tsc
+        run: pnpm lint:tsc
 
   test:
     name: Test
@@ -50,31 +41,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - name: Use Node.js 24.x
         uses: actions/setup-node@v4
         with:
           node-version: 24
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: "pnpm"
 
       - name: Install
-        run: yarn install
+        run: pnpm install --frozen-lockfile
 
       - name: "Tests: Unit"
-        run: yarn test:coverage
+        run: pnpm test:coverage
 
       - name: "Tests: E2E"
-        run: yarn test:e2e
+        run: pnpm test:e2e
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
@@ -89,28 +71,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - name: Use Node.js 24.x
         uses: actions/setup-node@v4
         with:
           node-version: 24
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: "pnpm"
 
       - name: Install
-        run: yarn install
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: yarn build
+        run: pnpm build
 
   examples:
     name: Build examples
@@ -120,36 +93,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - name: Use Node.js 24.x
         uses: actions/setup-node@v4
         with:
           node-version: 24
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - uses: actions/cache@v4
-        id: yarn-cache-examples
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-examples-${{ hashFiles('examples/**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-examples-
+          cache: "pnpm"
 
       - name: Install master
-        run: yarn install
+        run: pnpm install --frozen-lockfile
 
       - name: Install
-        run: cd examples && yarn
+        run: cd examples && pnpm install --frozen-lockfile
 
       - name: Build
-        run: yarn build
+        run: cd examples && pnpm build

@@ -16,7 +16,7 @@ A customizable countdown component for React.
 
 ## Getting Started
 
-You can install the module via `npm` or `yarn`:
+You can install the module via `npm`, `yarn`, or `pnpm`:
 
 ```sh
 npm install react-countdown --save
@@ -24,6 +24,10 @@ npm install react-countdown --save
 
 ```sh
 yarn add react-countdown
+```
+
+```sh
+pnpm add react-countdown
 ```
 
 ### Imports
@@ -47,7 +51,7 @@ This countdown started as part of a small web app. Extracting it into its own pa
 
 ## Examples
 
-Here are some examples which you can try directly online. You can also clone this repo and explore some more examples in there by running `yarn start` within the `examples` folder.
+Here are some examples which you can try directly online. You can also clone this repo and explore some more examples in there by running `pnpm start` within the `examples` folder.
 
 ### Basic Usage
 

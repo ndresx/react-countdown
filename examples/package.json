@@ -13,6 +13,7 @@
     "react-dom": "^19"
   },
   "devDependencies": {
+    "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.2",
