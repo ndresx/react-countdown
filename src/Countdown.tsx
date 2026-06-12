@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { useEffect, useImperativeHandle, useRef, useSyncExternalStore } from 'react';
+import { useImperativeHandle } from 'react';
 
-import CountdownJs, { CountdownApi, CountdownProps } from './CountdownJs';
+import { CountdownApi, CountdownProps } from './CountdownJs';
+import useCountdown from './useCountdown';
 
 /**
  * The imperative handle exposed through a `ref` on `<Countdown />`.
@@ -20,40 +21,12 @@ export interface CountdownHandle {
  * @export
  */
 function Countdown(props: CountdownProps, ref: React.Ref<CountdownHandle>): React.ReactNode {
-  const countdownRef = useRef<CountdownJs | null>(null);
-  const mountedRef = useRef(false);
+  const renderProps = useCountdown(props);
 
-  // Create the instance on first render. A `key` change remounts the component
-  // (handled by React), which naturally gives us a fresh instance — the restart
-  // mechanism, identical to the previous class component.
-  if (!countdownRef.current) {
-    countdownRef.current = new CountdownJs(props);
-  }
-
-  const countdown = countdownRef.current;
-
-  // Subscribe to the countdown store; re-render whenever its state changes.
-  useSyncExternalStore(countdown.subscribe, countdown.getState, countdown.getState);
-
-  // Expose the control API directly on the ref as `ref.current.api`.
-  useImperativeHandle(ref, () => ({ api: countdown.getApi() }), [countdown]);
-
-  useEffect(() => {
-    countdown.init();
-    return countdown.destroy;
-  }, [countdown]);
-
-  // Skip the run that pairs with init(); only forward genuine prop updates afterwards.
-  useEffect(() => {
-    if (mountedRef.current) {
-      countdown.update(props);
-    } else {
-      mountedRef.current = true;
-    }
-  }, [countdown, props]);
+  // Expose the control API on the ref as `ref.current.api`.
+  useImperativeHandle(ref, () => ({ api: renderProps.api }), [renderProps.api]);
 
   const { renderer } = props;
-  const renderProps = countdown.getRenderProps();
 
   if (renderer) return renderer(renderProps);
 
