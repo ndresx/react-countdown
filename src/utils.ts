@@ -45,11 +45,7 @@ export function zeroPad(value: number | string, length: number = 2): string {
   const prefix = match[1] || '';
   const suffix = match[3] || '';
   const strNo = match[2] || strValue;
-  const paddedNo =
-    strNo.length >= length
-      ? strNo
-      : ([...Array(length)].map(() => '0').join('') + strNo).slice(length * -1);
-  return `${prefix}${paddedNo}${suffix}`;
+  return `${prefix}${strNo.padStart(length, '0')}${suffix}`;
 }
 
 export const timeDeltaFormatOptionsDefaults: CountdownTimeDeltaFormatOptions = {

@@ -23,7 +23,7 @@ const { now, timeDiff } = mockDateNow();
 describe('<Countdown />', () => {
   jest.useFakeTimers();
 
-  let countdownRef: React.RefObject<CountdownHandle>;
+  let countdownRef: React.RefObject<CountdownHandle | null>;
   let container: RenderResult['container'];
   let unmount: RenderResult['unmount'];
   let rerender: RenderResult['rerender'];
