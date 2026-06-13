@@ -1,6 +1,22 @@
-import CountdownJs from './CountdownJs';
+import CountdownJs, { CountdownStatus } from './CountdownJs';
 
 describe('CountdownJs', () => {
+  describe('setState', () => {
+    it('merges state and notifies listeners when no callback is provided', () => {
+      const countdown = new CountdownJs({ date: 2000, now: () => 1000 });
+      const listener = jest.fn();
+      countdown.subscribe(listener);
+      const prevTimeDelta = countdown.state.timeDelta;
+
+      // Called without the optional callback (the path setTimeDeltaState never takes).
+      expect(() => countdown.setState({ status: CountdownStatus.PAUSED })).not.toThrow();
+
+      expect(countdown.state.status).toBe(CountdownStatus.PAUSED);
+      expect(countdown.state.timeDelta).toBe(prevTimeDelta);
+      expect(listener).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('calcOffsetStartTimestamp', () => {
     it('uses the injected now() so offset timing stays in sync with the time delta', () => {
       const now = jest.fn(() => 1000);
