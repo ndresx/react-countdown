@@ -127,9 +127,7 @@ export default class CountdownJs {
   };
 
   tick = (): void => {
-    const timeDelta = this.calcTimeDelta();
-    const callback = timeDelta.completed && !this.props.overtime ? undefined : this.props.onTick;
-    this.setTimeDeltaState(timeDelta, undefined, callback);
+    this.setTimeDeltaState(this.calcTimeDelta(), undefined, this.props.onTick);
   };
 
   calcTimeDelta(): CountdownTimeDelta {
@@ -144,7 +142,8 @@ export default class CountdownJs {
   }
 
   calcOffsetStartTimestamp(): number {
-    return (this.props.now ?? Date.now)();
+    // `now` is always defaulted by `computeProps`, so the non-null assertion is safe.
+    return this.props.now!();
   }
 
   start = (): void => {
@@ -202,6 +201,7 @@ export default class CountdownJs {
       overtime: false,
       freezeProps: false,
       ...props,
+      now: props.now ?? Date.now,
     };
   }
 

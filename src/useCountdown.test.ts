@@ -157,17 +157,13 @@ describe('useCountdown', () => {
     expect(result.current.total).toBe(1000);
 
     act(() => {
-      // The End: onComplete callback gets triggered instead of onTick
+      // The End: the completing tick fires onTick (with completed) and then onComplete
       now.mockReturnValue(countdownDate);
       jest.advanceTimersByTime(1000);
     });
 
-    expect(onTick.mock.calls.length).toBe(9);
-    expect(onTick).toHaveBeenCalledWith({
-      ...defaultStats,
-      total: 1000,
-      seconds: 1,
-    });
+    expect(onTick.mock.calls.length).toBe(10);
+    expect(onTick).toHaveBeenLastCalledWith({ ...defaultStats, completed: true });
 
     expect(onComplete.mock.calls.length).toBe(1);
     expect(onComplete).toHaveBeenCalledWith({ ...defaultStats, completed: true }, false);

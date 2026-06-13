@@ -319,7 +319,7 @@ The countdown invokes a set of optional lifecycle callbacks that you pass as pro
 
 ### `onTick`
 
-`onTick` is a callback and triggered every time a new period is started, based on what the [`intervalDelay`](#intervaldelay)'s value is. It only gets triggered when the countdown's [`controlled`](#controlled) prop is set to `false`, meaning that the countdown has full control over its interval. The tick that completes the countdown is reported through [`onComplete`](#oncomplete) instead, so `onTick` does not fire for it (unless [`overtime`](#overtime) is `true`, where there is no completing tick and ticks keep coming). It receives a [time delta object](#calctimedelta) as the first argument.
+`onTick` is a callback and triggered every time a new period is started, based on what the [`intervalDelay`](#intervaldelay)'s value is. It only gets triggered when the countdown's [`controlled`](#controlled) prop is set to `false`, meaning that the countdown has full control over its interval. This includes the tick that completes the countdown: `onTick` fires for it with a [time delta object](#calctimedelta) whose `completed` is `true`, and [`onComplete`](#oncomplete) is then fired in addition. It receives a [time delta object](#calctimedelta) as the first argument.
 
 ### `onComplete`
 

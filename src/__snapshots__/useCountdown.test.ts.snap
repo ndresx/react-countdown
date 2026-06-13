@@ -30,6 +30,32 @@ exports[`useCountdown should use countdown 1`] = `
     "daysInHours": false,
     "freezeProps": false,
     "intervalDelay": 1000,
+    "now": [MockFunction] {
+      "calls": [
+        [],
+        [],
+        [],
+        [],
+      ],
+      "results": [
+        {
+          "type": "return",
+          "value": 1482363367071,
+        },
+        {
+          "type": "return",
+          "value": 1482363367071,
+        },
+        {
+          "type": "return",
+          "value": 1482363367071,
+        },
+        {
+          "type": "return",
+          "value": 1482363367071,
+        },
+      ],
+    },
     "overtime": false,
     "precision": 0,
     "zeroPadTime": 2,

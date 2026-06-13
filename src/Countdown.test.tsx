@@ -137,15 +137,11 @@ describe('<Countdown />', () => {
     expect(getCountdownJsState().timeDelta.total).toBe(1000);
     expect(getCountdownJsState().timeDelta.completed).toBe(false);
 
-    // The End: onComplete callback gets triggered instead of the onTick callback
+    // The End: the completing tick fires onTick (with completed) and then onComplete
     now.mockReturnValue(countdownDate);
     act(() => jest.advanceTimersByTime(1000));
-    expect(onTick.mock.calls.length).toBe(9);
-    expect(onTick).toHaveBeenCalledWith({
-      ...defaultStats,
-      total: 1000,
-      seconds: 1,
-    });
+    expect(onTick.mock.calls.length).toBe(10);
+    expect(onTick).toHaveBeenLastCalledWith({ ...defaultStats, completed: true });
 
     expect(onComplete).toHaveBeenCalledTimes(1);
     expect(onComplete).toHaveBeenCalledWith({ ...defaultStats, completed: true }, false);
@@ -178,7 +174,7 @@ describe('<Countdown />', () => {
       act(() => jest.advanceTimersByTime(1000));
     }
 
-    expect(calls).toEqual(['onStart', ...Array(9).fill('onTick'), 'onComplete']);
+    expect(calls).toEqual(['onStart', ...Array(10).fill('onTick'), 'onComplete']);
   });
 
   it('should trigger onComplete callback on start if date is in the past when countdown starts', () => {

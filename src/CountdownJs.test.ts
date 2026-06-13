@@ -14,5 +14,13 @@ describe('CountdownJs', () => {
       expect(countdown.calcOffsetStartTimestamp()).toBe(5000);
       dateNow.mockRestore();
     });
+
+    it('falls back to Date.now when now is explicitly undefined', () => {
+      const dateNow = jest.spyOn(Date, 'now').mockReturnValue(5000);
+      const countdown = new CountdownJs({ date: 6000, now: undefined });
+      expect(() => countdown.calcOffsetStartTimestamp()).not.toThrow();
+      expect(countdown.calcOffsetStartTimestamp()).toBe(5000);
+      dateNow.mockRestore();
+    });
   });
 });
