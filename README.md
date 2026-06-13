@@ -11,23 +11,24 @@ A customizable countdown component for React.
 - [API Reference](#api-reference)
 - [Helpers](#helpers)
 - [FAQ](#faq)
+- [Changelog](#changelog)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Getting Started
 
-You can install the module via `npm`, `yarn`, or `pnpm`:
+You can install the module via `npm`, `pnpm`, or `yarn`:
 
 ```sh
 npm install react-countdown --save
 ```
 
 ```sh
-yarn add react-countdown
+pnpm add react-countdown
 ```
 
 ```sh
-pnpm add react-countdown
+yarn add react-countdown
 ```
 
 ### Imports
@@ -478,6 +479,10 @@ return <Countdown {...props} />;
 ```
 
 Alternatively, wrap the output in [`suppressHydrationWarning`](https://react.dev/reference/react-dom/components/common#suppressing-unavoidable-hydration-mismatch-errors) to silence the warning, or set [`autoStart`](#autostart) to `false` and start the countdown through the [API](#api-reference) once it is available on the client. Here are some related [issues](https://github.com/ndresx/react-countdown/issues/152) that might help.
+
+## Changelog
+
+See the [CHANGELOG](https://github.com/ndresx/react-countdown/blob/master/CHANGELOG.md) for the full release history. Upgrading from 2.x? Start with the [Migrating from 2.x](https://github.com/ndresx/react-countdown/blob/master/CHANGELOG.md#migrating-from-2x) guide.
 
 ## Contributing
 
