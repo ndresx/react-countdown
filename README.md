@@ -17,6 +17,8 @@ A customizable countdown component for React.
 
 ## Getting Started
 
+> **v3 is in beta.** Install it with `npm install react-countdown@next`. The current stable release is documented at the [v2.3.6 tag](https://github.com/ndresx/react-countdown/tree/v2.3.6). See the [Changelog](#changelog) for what changed and how to migrate.
+
 You can install the module via `npm`, `pnpm`, or `yarn`:
 
 ```sh

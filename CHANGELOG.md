@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here. This project adheres to [Semantic Versioning](https://semver.org/).
 
-## 3.0.0
+## 3.0.0 (Unreleased)
 
 A full rewrite of the internals: all countdown logic now lives in a framework-agnostic engine, and React is a thin adapter on top of it. The component is built on a new public `useCountdown` hook, so both surfaces share one lifecycle. Changes below are relative to 2.3.6.
 
