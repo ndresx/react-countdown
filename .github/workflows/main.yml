@@ -35,8 +35,13 @@ jobs:
         run: pnpm lint:tsc
 
   test:
-    name: Test
+    name: Test (React ${{ matrix.react }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        react: ["18", "19"]
 
     steps:
       - uses: actions/checkout@v4
@@ -52,13 +57,23 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # The lockfile pins React 19; override it to validate the matrix's other
+      # major against the actual runtime. Type-checking stays pinned to the
+      # lockfile in the lint job, since the @types/react 18/19 ref-variance
+      # differences are a DefinitelyTyped concern, not the library's.
+      - name: "Override React ${{ matrix.react }}"
+        if: matrix.react != '19'
+        run: pnpm add -D react@^${{ matrix.react }} react-dom@^${{ matrix.react }} @types/react@^${{ matrix.react }} @types/react-dom@^${{ matrix.react }}
+
       - name: "Tests: Unit"
         run: pnpm test:coverage
 
       - name: "Tests: E2E"
+        if: matrix.react == '19'
         run: pnpm test:e2e
 
       - name: Coveralls
+        if: matrix.react == '19'
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
