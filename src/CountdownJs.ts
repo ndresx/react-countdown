@@ -107,14 +107,20 @@ export default class CountdownJs {
     const nextProps = this.computeProps(props);
 
     if (!nextProps.freezeProps && !this.shallowCompare(nextProps, this.props)) {
-      if (this.props.date !== nextProps.date) {
+      const dateChanged = this.props.date !== nextProps.date;
+      if (dateChanged) {
         this.initialTimestamp = this.calcOffsetStartTimestamp();
         this.offsetStartTimestamp = this.initialTimestamp;
         this.offsetTime = 0;
       }
 
       this.props = nextProps;
-      this.setTimeDeltaState(this.calcTimeDelta());
+      // Only recompute the live clock while running (or when `date` redefines the
+      // target). While paused/stopped/completed the value is frozen, so recomputing
+      // against `now()` here would let an unrelated prop change drift it.
+      const timeDelta =
+        this.isStarted() || dateChanged ? this.calcTimeDelta() : this.state.timeDelta;
+      this.setTimeDeltaState(timeDelta);
       return true;
     }
 

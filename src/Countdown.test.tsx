@@ -221,6 +221,66 @@ describe('<Countdown />', () => {
     expect(api.isCompleted()).toBe(true);
   });
 
+  it('fires onComplete (but never onTick) when controlled and the date reaches zero', () => {
+    const onComplete = jest.fn();
+    const onTick = jest.fn();
+
+    ({ container, rerender } = render(
+      <Countdown
+        ref={countdownRef}
+        date={1000}
+        controlled
+        onComplete={onComplete}
+        onTick={onTick}
+      />
+    ));
+
+    // No interval is owned in controlled mode, so onTick can never fire.
+    expect(getCountdownJsInstance().timerId).toBeUndefined();
+    expect(onComplete).not.toHaveBeenCalled();
+
+    rerender(
+      <Countdown ref={countdownRef} date={0} controlled onComplete={onComplete} onTick={onTick} />
+    );
+
+    // completedOnStart is false: it transitioned into completion via a prop update.
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledWith({ ...defaultStats, completed: true }, false);
+    expect(onTick).not.toHaveBeenCalled();
+  });
+
+  it('does not let a paused value drift when the parent re-renders', () => {
+    act(() => {
+      ({ container, rerender } = render(<Countdown ref={countdownRef} date={countdownDate} />));
+    });
+    const api = getCountdownApi();
+
+    // Run for 2s, then pause with 8000ms remaining.
+    now.mockReturnValue(countdownDate - 8000);
+    act(() => jest.advanceTimersByTime(2000));
+    act(() => api.pause());
+    expect(getCountdownJsState().timeDelta.total).toBe(8000);
+
+    // 3s elapse while paused, then the parent re-renders with a fresh (inline) renderer.
+    // That prop is shallow-unequal, so it drives an update() while paused.
+    now.mockReturnValue(countdownDate - 5000);
+    act(() => {
+      rerender(<Countdown ref={countdownRef} date={countdownDate} renderer={() => null} />);
+    });
+
+    // Pause must hold: the value should stay at 8000, not drift toward now() (5000).
+    expect(api.isPaused()).toBe(true);
+    expect(getCountdownJsState().timeDelta.total).toBe(8000);
+
+    // And the offset isn't corrupted: resuming credits the 3s pause and continues
+    // from 8000, so 1s of running afterwards reads 7000 (not 4000).
+    act(() => api.start());
+    expect(getCountdownJsState().timeDelta.total).toBe(8000);
+    now.mockReturnValue(countdownDate - 4000);
+    act(() => jest.advanceTimersByTime(1000));
+    expect(getCountdownJsState().timeDelta.total).toBe(7000);
+  });
+
   it('should only re-set time delta state when props have changed', () => {
     ({ container, rerender } = render(<Countdown ref={countdownRef} date={1000} />));
 
