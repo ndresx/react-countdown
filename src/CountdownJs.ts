@@ -244,6 +244,13 @@ export default class CountdownJs {
     );
   }
 
+  subscribe = (listener: () => void): (() => void) => {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  };
+
   setTimeDeltaState(
     timeDelta: CountdownTimeDelta,
     status?: CountdownStatus,
@@ -259,6 +266,7 @@ export default class CountdownJs {
     }
 
     let newStatus = status || this.state.status;
+
     if (timeDelta.completed && !this.props.overtime) {
       newStatus = CountdownStatus.COMPLETED;
     } else if (!status && newStatus === CountdownStatus.COMPLETED) {
@@ -273,6 +281,12 @@ export default class CountdownJs {
       }
     });
   }
+
+  setState = (partialState: Partial<CountdownState>, callback?: () => void): void => {
+    this.state = { ...this.state, ...partialState };
+    this.listeners.forEach((listener) => listener());
+    if (callback) callback();
+  };
 
   getApi(): CountdownApi {
     return (this.api = this.api || {
@@ -308,18 +322,5 @@ export default class CountdownJs {
 
   getState = (): CountdownState => {
     return this.state;
-  };
-
-  subscribe = (listener: () => void): (() => void) => {
-    this.listeners.add(listener);
-    return () => {
-      this.listeners.delete(listener);
-    };
-  };
-
-  setState = (partialState: Partial<CountdownState>, callback?: () => void): void => {
-    this.state = { ...this.state, ...partialState };
-    this.listeners.forEach((listener) => listener());
-    if (callback) callback();
   };
 }
