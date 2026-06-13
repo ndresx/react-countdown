@@ -292,7 +292,7 @@ A library-owned token used to **restart** the countdown. Passing in a new `strin
 
 > **Requires React 18 or higher**
 
-The library also ships with a built-in Hook called `useCountdown`. It supports the same [props](#props) as its component counterpart, with the exception that the [`renderer`](#renderer) prop is ignored due to the already provided flexibility.
+The library also ships with a built-in Hook called `useCountdown`. It supports the same [props](#props) as its component counterpart, with the exception that the [`renderer`](#renderer) prop is not supported (it is omitted from the Hook's type) due to the flexibility the Hook already provides.
 
 ```js
 const { total, api } = useCountdown(props);
@@ -402,7 +402,7 @@ const renderer = ({ hours, minutes, seconds }) => (
 }
 ```
 
-The `total` value is the absolute time difference in milliseconds, whereas the other time-related values contain their relative portion of the current time difference. The `completed` value indicates whether the countdown reached its initial end or not.
+The `total` value is the overall time difference in milliseconds. It is signed: with [`overtime`](#overtime) enabled it can become negative once the target is passed, while the other time-related values contain the (always non-negative) relative portion of the current time difference. The `completed` value indicates whether the countdown reached its initial end or not.
 
 The `calcTimeDelta` function accepts two arguments in total; only the first one is required.
 
