@@ -6,11 +6,11 @@ interface ControlledCountdownState {
   readonly date: number;
 }
 
-export default class ControlledCountdown extends Component<{}, ControlledCountdownState> {
+export default class ControlledCountdown extends Component<unknown, ControlledCountdownState> {
   state = { date: 5000 };
   countdownInterval = 0;
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.start();
   }
 
@@ -32,7 +32,7 @@ export default class ControlledCountdown extends Component<{}, ControlledCountdo
     window.clearInterval(this.countdownInterval);
   }
 
-  render() {
+  render(): React.ReactNode {
     return (
       <>
         <h3>Controlled Countdown</h3>

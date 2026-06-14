@@ -4,7 +4,7 @@ on:
   push:
     branches: [master]
   pull_request:
-    branches: ['*']
+    branches: ["*"]
 
 jobs:
   lint:
@@ -12,68 +12,85 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v5
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 24
+          cache: "pnpm"
 
       - name: Install
-        run: yarn install
+        run: pnpm install --frozen-lockfile
 
-      - name: 'Lint: Prettier'
-        run: yarn lint:prettier
+      - name: "Lint: oxlint"
+        run: pnpm lint:oxlint
 
-      - name: 'Lint: TypeScript'
-        run: yarn lint:tslint && yarn lint:tsc
+      - name: "Lint: oxfmt"
+        run: pnpm lint:oxfmt
+
+      - name: "Lint: TypeScript"
+        run: pnpm lint:tsc
 
   test:
-    name: Test
+    name: Test (React ${{ matrix.react }})
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        react: ["18", "19"]
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v5
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 24
+          cache: "pnpm"
 
       - name: Install
-        run: yarn install
+        run: pnpm install --frozen-lockfile
 
-      - name: 'Tests: Unit'
-        run: yarn test:coverage
+      # The lockfile pins React 19; override it to validate the matrix's other
+      # major against the actual runtime. Type-checking stays pinned to the
+      # lockfile in the lint job, since the @types/react 18/19 ref-variance
+      # differences are a DefinitelyTyped concern, not the library's.
+      - name: "Override React ${{ matrix.react }}"
+        if: matrix.react != '19'
+        run: pnpm add -D react@^${{ matrix.react }} react-dom@^${{ matrix.react }} @types/react@^${{ matrix.react }} @types/react-dom@^${{ matrix.react }}
 
-      - name: 'Tests: E2E'
-        run: yarn test:e2e
+      - name: "Tests: Unit"
+        run: pnpm test:coverage
+
+      # pnpm's side-effects cache (restored via setup-node's pnpm cache) makes
+      # `pnpm install` skip Cypress's postinstall, but the binary it downloads
+      # lives in ~/.cache/Cypress, outside the pnpm store. Cache that path and
+      # install explicitly so the binary is present even when postinstall is
+      # skipped. See https://on.cypress.io/not-installed-ci-error
+      - name: Cache Cypress binary
+        if: matrix.react == '19'
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: cypress-${{ runner.os }}-
+
+      - name: "Install: Cypress binary"
+        if: matrix.react == '19'
+        run: pnpm exec cypress install
+
+      - name: "Tests: E2E"
+        if: matrix.react == '19'
+        run: pnpm test:e2e
 
       - name: Coveralls
+        if: matrix.react == '19'
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -84,30 +101,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v5
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 24
+          cache: "pnpm"
 
       - name: Install
-        run: yarn install
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: yarn build
+        run: pnpm build
 
   examples:
     name: Build examples
@@ -115,38 +123,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v5
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - uses: actions/cache@v4
-        id: yarn-cache-examples
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-examples-${{ hashFiles('examples/**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-examples-
+          node-version: 24
+          cache: "pnpm"
 
       - name: Install master
-        run: yarn install
+        run: pnpm install --frozen-lockfile
 
       - name: Install
-        run: cd examples && yarn
+        run: cd examples && pnpm install --frozen-lockfile
 
       - name: Build
-        run: yarn build
+        run: cd examples && pnpm build

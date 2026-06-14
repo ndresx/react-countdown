@@ -28,10 +28,16 @@ Once you have forked the project and checked it out locally, create a new branch
 
 ### Linting
 
-You can run the linting tools with the following command:
+Linting (oxlint), format checking (oxfmt), and type-checking (`tsc`) all run via:
 
 ```sh
-yarn lint
+pnpm lint
+```
+
+To auto-fix lint and formatting issues before committing:
+
+```sh
+pnpm lint:fix
 ```
 
 ### Tests
@@ -39,10 +45,10 @@ yarn lint
 Make sure that all tests are passing and that the code coverage is close to 100%.
 
 ```sh
-yarn test
+pnpm test
 ```
 
 For End-to-End tests, please run the following command:
 ```sh
-yarn test:e2e
+pnpm test:e2e
 ```

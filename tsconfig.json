@@ -1,14 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "es2015",
+    "target": "es2017",
+    "module": "esnext",
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
     "noImplicitAny": false,
     "removeComments": true,
     "jsx": "react",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    // @types/jest 30 delegates to expect/pretty-format, which defeats TS's
+    // automatic @types discovery (esp. under pnpm isolation), so the Jest
+    // globals must be requested explicitly. React types come in via imports.
+    "types": ["jest"],
     "resolveJsonModule": true,
     "rootDir": "./src",
     "outDir": "./dist",

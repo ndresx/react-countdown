@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 
 import Countdown, { CountdownRenderProps } from 'react-countdown';
 import ControlledCountdown from './ControlledCountdown';
 import CountdownApi from './CountdownApi';
+import CountdownRef from './CountdownRef';
+import Stopwatch from './Stopwatch';
 
 // Random component
 const Completionist = () => <span>You are good to go!</span>;
@@ -23,7 +25,7 @@ const renderer = ({ hours, minutes, seconds, completed }: CountdownRenderProps) 
   );
 };
 
-class App extends Component {
+class App extends React.PureComponent {
   render() {
     return (
       <>
@@ -32,11 +34,6 @@ class App extends Component {
         <h3>Basic Usage</h3>
         <Countdown date={Date.now() + 10000} />
         <hr />
-        <h3>Custom & Conditional Rendering</h3>
-        <h4>Using a React Child for the Completed State</h4>
-        <Countdown date={Date.now() + 5000}>
-          <Completionist />
-        </Countdown>
         <h3>Custom Renderer with Completed Condition</h3>
         <Countdown date={Date.now() + 5000} renderer={renderer} />
         <hr />
@@ -60,9 +57,20 @@ class App extends Component {
         />
         <hr />
         <CountdownApi />
+        <hr />
+        <h3>Overtime (counts past zero)</h3>
+        <Countdown date={Date.now() + 5000} overtime />
+        <hr />
+        <h3>Stopwatch (overtime starting at zero)</h3>
+        <Stopwatch />
+        <hr />
+        <h3>Imperative Control via Ref</h3>
+        <CountdownRef />
       </>
     );
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(<App />);

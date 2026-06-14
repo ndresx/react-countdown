@@ -1,18 +1,26 @@
-export {
-  zeroPad,
-  calcTimeDelta,
-  formatTimeDelta,
+export { zeroPad, calcTimeDelta, formatTimeDelta } from './utils';
+export type {
   CountdownTimeDeltaOptions,
   CountdownTimeDelta,
   CountdownTimeDeltaFormatted,
   CountdownTimeDeltaFormatOptions,
 } from './utils';
 
-export {
+export { CountdownStatus } from './CountdownJs';
+export type {
   CountdownProps,
-  CountdownRenderProps,
   CountdownRendererFn,
+  CountdownRenderProps,
   CountdownApi,
-} from './Countdown';
+  CountdownTimeDeltaFn,
+} from './CountdownJs';
+
 import Countdown from './Countdown';
+
 export default Countdown;
+export type { CountdownHandle } from './Countdown';
+
+import useCountdown from './useCountdown';
+
+export { useCountdown };
+export type { UseCountdownProps, UseCountdownResult } from './useCountdown';
