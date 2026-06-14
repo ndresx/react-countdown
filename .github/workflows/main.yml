@@ -68,6 +68,23 @@ jobs:
       - name: "Tests: Unit"
         run: pnpm test:coverage
 
+      # pnpm's side-effects cache (restored via setup-node's pnpm cache) makes
+      # `pnpm install` skip Cypress's postinstall, but the binary it downloads
+      # lives in ~/.cache/Cypress, outside the pnpm store. Cache that path and
+      # install explicitly so the binary is present even when postinstall is
+      # skipped. See https://on.cypress.io/not-installed-ci-error
+      - name: Cache Cypress binary
+        if: matrix.react == '19'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: cypress-${{ runner.os }}-
+
+      - name: "Install: Cypress binary"
+        if: matrix.react == '19'
+        run: pnpm exec cypress install
+
       - name: "Tests: E2E"
         if: matrix.react == '19'
         run: pnpm test:e2e
