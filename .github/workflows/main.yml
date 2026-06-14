@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
 
       - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: "pnpm"
@@ -44,12 +44,12 @@ jobs:
         react: ["18", "19"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
 
       - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: "pnpm"
@@ -75,7 +75,7 @@ jobs:
       # skipped. See https://on.cypress.io/not-installed-ci-error
       - name: Cache Cypress binary
         if: matrix.react == '19'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/Cypress
           key: cypress-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -101,12 +101,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
 
       - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: "pnpm"
@@ -123,12 +123,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
 
       - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: "pnpm"
