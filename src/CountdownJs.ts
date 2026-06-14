@@ -53,6 +53,7 @@ export interface CountdownApi {
   readonly start: () => void;
   readonly pause: () => void;
   readonly stop: () => void;
+  readonly refresh: () => void;
   readonly isStarted: () => boolean;
   readonly isPaused: () => boolean;
   readonly isStopped: () => boolean;
@@ -108,6 +109,7 @@ export default class CountdownJs {
 
     if (!nextProps.freezeProps && !this.shallowCompare(nextProps, this.props)) {
       const dateChanged = this.props.date !== nextProps.date;
+
       if (dateChanged) {
         this.initialTimestamp = this.calcOffsetStartTimestamp();
         this.offsetStartTimestamp = this.initialTimestamp;
@@ -120,6 +122,7 @@ export default class CountdownJs {
       // against `now()` here would let an unrelated prop change drift it.
       const timeDelta =
         this.isStarted() || dateChanged ? this.calcTimeDelta() : this.state.timeDelta;
+
       this.setTimeDeltaState(timeDelta);
       return true;
     }
@@ -134,6 +137,13 @@ export default class CountdownJs {
 
   tick = (): void => {
     this.setTimeDeltaState(this.calcTimeDelta(), undefined, this.props.onTick);
+  };
+
+  // Recompute the time delta and re-render on demand, without changing status or
+  // offsets. Useful for forcing an immediate update after the interval was throttled
+  // (e.g. a backgrounded tab) by calling it from a `visibilitychange` listener.
+  refresh = (): void => {
+    this.tick();
   };
 
   calcTimeDelta(): CountdownTimeDelta {
@@ -212,28 +222,24 @@ export default class CountdownJs {
   }
 
   isStarted = (): boolean => {
-    return this.isStatus(CountdownStatus.STARTED);
+    return this.state.status === CountdownStatus.STARTED;
   };
 
   isPaused = (): boolean => {
-    return this.isStatus(CountdownStatus.PAUSED);
+    return this.state.status === CountdownStatus.PAUSED;
   };
 
   isStopped = (): boolean => {
-    return this.isStatus(CountdownStatus.STOPPED);
+    return this.state.status === CountdownStatus.STOPPED;
   };
 
   isCompleted = (): boolean => {
-    return this.isStatus(CountdownStatus.COMPLETED);
+    return this.state.status === CountdownStatus.COMPLETED;
   };
 
   getStatus = (): CountdownStatus => {
     return this.state.status;
   };
-
-  isStatus(status: CountdownStatus): boolean {
-    return this.state.status === status;
-  }
 
   shallowCompare(objA: object, objB: object): boolean {
     const keysA = Object.keys(objA);
@@ -293,6 +299,7 @@ export default class CountdownJs {
       start: this.start,
       pause: this.pause,
       stop: this.stop,
+      refresh: this.refresh,
       isStarted: this.isStarted,
       isPaused: this.isPaused,
       isStopped: this.isStopped,

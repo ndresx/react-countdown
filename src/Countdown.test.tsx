@@ -281,6 +281,49 @@ describe('<Countdown />', () => {
     expect(getCountdownJsState().timeDelta.total).toBe(7000);
   });
 
+  it('recomputes the time delta on api.refresh() without waiting for a tick', () => {
+    const onTick = jest.fn();
+    act(() => {
+      render(<Countdown ref={countdownRef} date={countdownDate} onTick={onTick} />);
+    });
+    const api = getCountdownApi();
+
+    // 2s pass, but the interval never fires (e.g. a throttled background tab), so the
+    // state is stale: still the initial 10000ms.
+    now.mockReturnValue(countdownDate - 8000);
+    expect(getCountdownJsState().timeDelta.total).toBe(10000);
+    expect(onTick).not.toHaveBeenCalled();
+
+    // refresh() forces an immediate recompute against the moved clock, staying STARTED.
+    act(() => api.refresh());
+    expect(getCountdownJsState().timeDelta.total).toBe(8000);
+    expect(api.isStarted()).toBe(true);
+    expect(onTick).toHaveBeenCalledTimes(1);
+  });
+
+  it('fires onComplete once when api.refresh() crosses zero', () => {
+    const onComplete = jest.fn();
+    act(() => {
+      render(<Countdown ref={countdownRef} date={countdownDate} onComplete={onComplete} />);
+    });
+    const api = getCountdownApi();
+
+    // The countdown reaches zero while the interval is throttled, so nothing fired yet.
+    now.mockReturnValue(countdownDate);
+    expect(api.isCompleted()).toBe(false);
+    expect(onComplete).not.toHaveBeenCalled();
+
+    // refresh() catches up: it completes and fires onComplete (not a completed-on-start).
+    act(() => api.refresh());
+    expect(api.isCompleted()).toBe(true);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledWith({ ...defaultStats, completed: true }, false);
+
+    // A second refresh is a no-op for onComplete (already completed).
+    act(() => api.refresh());
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
+
   it('should only re-set time delta state when props have changed', () => {
     ({ container, rerender } = render(<Countdown ref={countdownRef} date={1000} />));
 

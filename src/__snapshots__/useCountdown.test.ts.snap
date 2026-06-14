@@ -9,6 +9,7 @@ exports[`useCountdown should use countdown 1`] = `
     "isStarted": [Function],
     "isStopped": [Function],
     "pause": [Function],
+    "refresh": [Function],
     "start": [Function],
     "stop": [Function],
   },
