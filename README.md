@@ -344,6 +344,23 @@ Pauses the running countdown. This only works as expected if the [`controlled`](
 
 Stops the countdown. This only works as expected if the [`controlled`](#controlled) prop is set to `false` because [`calcTimeDelta`](#calctimedelta) calculates an offset time internally.
 
+### `refresh()`
+
+Forces an immediate recompute of the [time delta](#calctimedelta) and a re-render against the current clock, without changing the countdown's status or offsets. This is useful when the internal interval has been throttled (for example, while the tab was in the background) and you want the displayed value to update right away instead of waiting for the next tick, e.g. from a `visibilitychange` listener:
+
+```jsx
+React.useEffect(() => {
+  const onVisible = () => {
+    if (!document.hidden) ref.current?.api.refresh();
+  };
+
+  document.addEventListener('visibilitychange', onVisible);
+  return () => document.removeEventListener('visibilitychange', onVisible);
+}, []);
+```
+
+Like a regular tick, it triggers [`onTick`](#ontick); and if the recomputed time has crossed zero, it fires [`onComplete`](#oncomplete) just as the final interval tick would.
+
 ### `isStarted()`
 
 Returns a `boolean` for whether the countdown is currently started (running) or not.
@@ -398,7 +415,13 @@ const renderer = ({ hours, minutes, seconds }) => (
 
 ```js
 {
-  total, days, hours, minutes, seconds, milliseconds, completed;
+  total: number;
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  milliseconds: number;
+  completed: boolean;
 }
 ```
 
