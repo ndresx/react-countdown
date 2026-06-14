@@ -353,6 +353,7 @@ React.useEffect(() => {
   const onVisible = () => {
     if (!document.hidden) ref.current?.api.refresh();
   };
+
   document.addEventListener('visibilitychange', onVisible);
   return () => document.removeEventListener('visibilitychange', onVisible);
 }, []);
@@ -414,7 +415,13 @@ const renderer = ({ hours, minutes, seconds }) => (
 
 ```js
 {
-  total, days, hours, minutes, seconds, milliseconds, completed;
+  total: number;
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  milliseconds: number;
+  completed: boolean;
 }
 ```
 
