@@ -23,6 +23,7 @@ A full rewrite of the internals: all countdown logic now lives in a framework-ag
 - **`resetKey` prop** to restart the countdown without remounting (React's `key` still works to remount).
 - **`freezeProps` prop** to opt out of prop tracking after mount.
 - **`CountdownStatus` enum is now exported**, plus a **`getStatus()`** method on the API.
+- **`refresh()`** method on the API to force an immediate recompute and re-render against the current clock (e.g. from a `visibilitychange` listener after the interval was throttled in a background tab).
 - Dual **ESM + CJS** build with bundled type definitions and `sideEffects: false` for tree-shaking.
 
 ### Migrating from 2.x
