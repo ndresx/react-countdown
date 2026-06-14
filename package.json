@@ -55,6 +55,7 @@
     "lint:oxfmt": "oxfmt --check './**/*.{ts,tsx}'",
     "lint:tsc": "tsc --noEmit",
     "lint:fix": "oxlint --fix && oxfmt './**/*.{ts,tsx}' && tsc --noEmit",
+    "pack:dry": "pnpm build && pnpm pack --dry-run",
     "prepublishOnly": "pnpm build",
     "test": "jest",
     "test:all": "pnpm test && pnpm test:e2e",
