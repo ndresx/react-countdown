@@ -91,8 +91,14 @@
     "typescript": "^6.0.3"
   },
   "peerDependencies": {
+    "@types/react": ">= 18",
     "react": ">= 18",
     "react-dom": ">= 18"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "pnpm": {
     "onlyBuiltDependencies": [
